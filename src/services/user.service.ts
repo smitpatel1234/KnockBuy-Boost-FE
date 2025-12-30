@@ -1,0 +1,31 @@
+import api from "./api.service";
+import { UserProfile } from "../types/user.type";
+import { PageParams, PaginationResponse } from "../types/pagination.type";
+
+export const getAllUsers = () => {
+  return api.get<{ message: string; data: UserProfile[] }>("/user/get-all-users");
+};
+
+
+export const getAllUsersPage = async (params: PageParams): Promise<{ data: PaginationResponse<UserProfile> }> => {
+  const response = await api.get<{ message: string; data: PaginationResponse<UserProfile> }>("/user/get-all-user-page", {
+    params: {
+      page: params.pagination.page,
+      limit: params.pagination.limit,
+      filters: JSON.stringify(params.filters),
+      sort: JSON.stringify(params.sort),
+    },
+  });
+  return response.data;
+};
+
+export const updateUser = (data: Partial<UserProfile>) =>
+  api.put("/user/update-user", data);
+
+export const getUser = (id: string) =>
+  api.get<{ message: string; data: UserProfile }>("/user/get-user", { params: { id } });
+
+export const deleteUser = (id: string) => {
+  return api.delete("/user/delete-user", { data: { user_id: id } });
+};
+

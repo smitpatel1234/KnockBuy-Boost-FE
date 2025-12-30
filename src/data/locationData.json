@@ -1,0 +1,91 @@
+{
+    "countries": [
+        {
+            "id": "IN",
+            "name": "India",
+            "states": [
+                {
+                    "id": "MH",
+                    "name": "Maharashtra",
+                    "cities": [
+                        "Mumbai",
+                        "Pune",
+                        "Nagpur",
+                        "Nashik",
+                        "Aurangabad"
+                    ]
+                },
+                {
+                    "id": "GJ",
+                    "name": "Gujarat",
+                    "cities": [
+                        "Ahmedabad",
+                        "Surat",
+                        "Vadodara",
+                        "Rajkot",
+                        "Bhavnagar"
+                    ]
+                },
+                {
+                    "id": "DL",
+                    "name": "Delhi",
+                    "cities": [
+                        "New Delhi",
+                        "North Delhi",
+                        "South Delhi",
+                        "East Delhi",
+                        "West Delhi"
+                    ]
+                },
+                {
+                    "id": "KA",
+                    "name": "Karnataka",
+                    "cities": [
+                        "Bangalore",
+                        "Mysore",
+                        "Hubli",
+                        "Dharwad",
+                        "Mangalore"
+                    ]
+                },
+                {
+                    "id": "TN",
+                    "name": "Tamil Nadu",
+                    "cities": [
+                        "Chennai",
+                        "Coimbatore",
+                        "Madurai",
+                        "Tiruchirappalli",
+                        "Salem"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "US",
+            "name": "United States",
+            "states": [
+                {
+                    "id": "CA",
+                    "name": "California",
+                    "cities": [
+                        "Los Angeles",
+                        "San Francisco",
+                        "San Diego",
+                        "San Jose"
+                    ]
+                },
+                {
+                    "id": "NY",
+                    "name": "New York",
+                    "cities": [
+                        "New York City",
+                        "Buffalo",
+                        "Rochester",
+                        "Yonkers"
+                    ]
+                }
+            ]
+        }
+    ]
+}

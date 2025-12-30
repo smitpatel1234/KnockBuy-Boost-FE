@@ -1,0 +1,69 @@
+"use client";
+
+import React from "react";
+import GenericTable from "@/components/molecules/GenericTable";
+import Pagination from "@/components/molecules/Pagination";
+import { ColumnConfig } from "@/types/GenericTable";
+import { useTable } from "@/hooks/useTable";
+import { PageParams, PaginationResponse } from "@/types/pagination.type";
+
+interface TableWithFilterProps<T> {
+  data: Partial<T>[],
+  dataOfColumn: ColumnConfig[];
+  fetchData: (params: PageParams) => Promise<number>;
+  onEdit?: (row: T) => void;
+  onDelete?: (row: T) => void;
+  columnRenderers?: Record<string, (value: any, row: T) => React.ReactNode>;
+  initialLimit?: number;
+}
+
+export default function TableWithFilter<T>({
+  data,
+  dataOfColumn,
+  fetchData,
+  onEdit,
+  onDelete,
+  columnRenderers,
+  initialLimit = 10,
+}: TableWithFilterProps<T>) {
+  const {
+
+    loading,
+    total,
+    page,
+    limit,
+    filters,
+    sorts,
+    handlePageChange,
+    handleLimitChange,
+    handleFilterChange,
+    handleSort,
+  } = useTable<T>({ fetchData, dataOfColumn, initialLimit });
+
+  return (
+    <div className="flex flex-col gap-2">
+      <div className={`transition-opacity duration-300`}>
+        <GenericTable
+          dataOfColumn={dataOfColumn}
+          data={data}
+          loading={loading}
+          filters={filters}
+          sorts={sorts}
+          onEdit={onEdit}
+          onDelete={onDelete}
+          onSort={handleSort}
+          onFilterChange={handleFilterChange}
+          columnRenderers={columnRenderers}
+        />
+      </div>
+
+      <Pagination
+        page={page}
+        total={total}
+        limit={limit}
+        onPageChange={handlePageChange}
+        onLimitChange={handleLimitChange}
+      />
+    </div>
+  );
+}
