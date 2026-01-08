@@ -43,7 +43,7 @@ export interface ButtonProps
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, debounceMs = 500, onClick, ...props }, ref) => {
+  ({ className, variant, size, asChild = false, debounceMs = 0, onClick, ...props }, ref) => {
     const Comp = asChild ? Slot : "button"
     const timerRef = React.useRef<NodeJS.Timeout | null>(null)
 
@@ -60,7 +60,6 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       }
     }
 
-    // Cleanup timeout on unmount
     React.useEffect(() => {
       return () => {
         if (timerRef.current) {

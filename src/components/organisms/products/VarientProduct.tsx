@@ -11,10 +11,11 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { PlusCircleIcon, Trash2Icon } from "lucide-react";
-import { FormikProps } from "formik";
-import { Item } from "@/types/item.type";
+import type { FormikProps } from "formik";
+import type { Item } from "@/types/item.types";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { fetchVariantData } from "@/redux/features/variant-slice";
+import type { VariantProperty, VariantValue } from "@/types/variant.types";
 
 interface VarientProductProps {
   formik: FormikProps<Item>;
@@ -26,16 +27,16 @@ export default function VarientProduct({ formik }: VarientProductProps) {
 
 
   useEffect(() => {
-    dispatch(fetchVariantData());
-  }, [dispatch]);
+    void dispatch(fetchVariantData());
+  }, []);
 
   const addVariant = () => {
-    formik.setFieldValue("variant", [
+    void formik.setFieldValue("variant", [
       ...(formik.values.variant ?? []),
       {
         variantProperty_id: "",
         variantValue_id: "",
-        item_variantvalue_mapping_id: Math.random().toString(36).substr(2, 9),
+        item_variantvalue_mapping_id: Math.random().toString(36).slice(2, 11),
       },
     ]);
   };
@@ -44,7 +45,7 @@ export default function VarientProduct({ formik }: VarientProductProps) {
   const removeVariant = (index: number) => {
     const updated = [...(formik.values.variant ?? [])];
     updated.splice(index, 1);
-    formik.setFieldValue("variant", updated);
+    void formik.setFieldValue("variant", updated);
   };
 
 
@@ -63,7 +64,7 @@ export default function VarientProduct({ formik }: VarientProductProps) {
         : {}),
     };
 
-    formik.setFieldValue("variant", updated);
+    void formik.setFieldValue("variant", updated);
   };
 
   const variants = formik.values.variant ?? [];
@@ -89,12 +90,12 @@ export default function VarientProduct({ formik }: VarientProductProps) {
       <div className="space-y-3">
         {variants.map((variant, index) => {
           const allowedValues = values.filter(
-            (v) => v.variantProperty_id === variant.variantProperty_id
+            (v: VariantValue) => v.variantProperty_id === variant.variantProperty_id
           );
 
           return (
             <div
-              key={variant.item_variantvalue_mapping_id || index}
+              key={variant.item_variantvalue_mapping_id ?? String(index)}
               className="bg-slate-50 border border-slate-200 rounded-lg p-3 flex items-center gap-4"
             >
               <div className="flex-1 grid grid-cols-2 gap-4">
@@ -105,15 +106,14 @@ export default function VarientProduct({ formik }: VarientProductProps) {
                   </Label>
                   <Select
                     value={variant.variantProperty_id}
-                    onValueChange={(val) =>
-                      updateVariantField(index, "variantProperty_id", val)
+                    onValueChange={(val) => { updateVariantField(index, "variantProperty_id", val); }
                     }
                   >
                     <SelectTrigger className="bg-white">
                       <SelectValue placeholder="Select Property" />
                     </SelectTrigger>
                     <SelectContent>
-                      {properties.map((p) => (
+                      {properties.map((p: VariantProperty) => (
                         <SelectItem
                           key={p.variantProperty_id}
                           value={p.variantProperty_id}
@@ -133,15 +133,14 @@ export default function VarientProduct({ formik }: VarientProductProps) {
                   <Select
                     value={variant.variantValue_id}
                     disabled={!variant.variantProperty_id}
-                    onValueChange={(val) =>
-                      updateVariantField(index, "variantValue_id", val)
+                    onValueChange={(val) => { updateVariantField(index, "variantValue_id", val); }
                     }
                   >
                     <SelectTrigger className="bg-white">
                       <SelectValue placeholder="Select Value" />
                     </SelectTrigger>
                     <SelectContent>
-                      {allowedValues.map((val) => (
+                      {allowedValues.map((val: VariantValue) => (
                         <SelectItem
                           key={val.variantValue_id}
                           value={val.variantValue_id}
@@ -161,7 +160,7 @@ export default function VarientProduct({ formik }: VarientProductProps) {
                   variant="ghost"
                   size="icon"
                   className="h-9 w-9 text-red-500 hover:text-red-700 hover:bg-red-50"
-                  onClick={() => removeVariant(index)}
+                  onClick={() => { removeVariant(index); }}
                 >
                   <Trash2Icon className="w-4 h-4" />
                 </Button>

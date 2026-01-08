@@ -14,8 +14,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Discount } from "@/types/discount.type";
-import { useDiscountForm } from "@/hooks/use-discount-form";
+import type { Discount } from "@/types/discount.types";
+import { useDiscountForm } from "@/hooks/useDiscountForm";
+import { Checkbox } from "@/components/ui/checkbox";
+
 interface DialogboxProps {
   isOpen: boolean;
   item?: Discount | null;
@@ -34,11 +36,18 @@ export default function Dialogbox({
     onClose,
     onSuccess,
   });
+
   const generateCode = () => {
     const code =
       "DSC" + Math.random().toString(36).substring(2, 8).toUpperCase();
-    formik.setFieldValue("discount_code", code);
+    void formik.setFieldValue("discount_code", code);
+    void formik.setFieldTouched("discount_code", true);
   };
+
+  const renderError = (field: keyof typeof formik.values) =>
+    formik.touched[field] && formik.errors[field] ? (
+      <p className="text-xs text-red-500">{formik.errors[field]}</p>
+    ) : null;
 
   return (
     <GenericDialog
@@ -48,38 +57,40 @@ export default function Dialogbox({
       onClose={onClose}
     >
       {() => (
-        <div className="flex flex-col gap-6 p-2">
+        <form
+          onSubmit={(e) => { formik.handleSubmit(e); }}
+          className="flex flex-col gap-6 p-2"
+        >
+          {/* Active Flag */}
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="active_flag"
+              checked={!!formik.values.active_flag}
+              onCheckedChange={(checked) => {
+                void formik.setFieldValue("active_flag", checked ? 1 : 0);
+              }}
+            />
+            <label
+              htmlFor="active_flag"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              Active
+            </label>
+          </div>
+
           {/* Discount Name */}
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium text-muted-foreground">
               Discount Name
             </label>
             <Input
-              name="active_flag"
-              type="checkbox"
-              checked={!!formik.values.active_flag}
-              onChange={(e) => {
-                if (e.target.checked) {
-                  formik.setFieldValue("active_flag", 1);
-                } else {
-                  formik.setFieldValue("active_flag", 0);
-                }
-              }}
-              onBlur={formik.handleBlur}
-            />
-
-            <Input
-              placeholder="Discount name"
               name="discount_name"
+              placeholder="Discount name"
               value={formik.values.discount_name}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
             />
-            {formik.touched.discount_name && formik.errors.discount_name && (
-              <div className="text-red-500 text-xs">
-                {formik.errors.discount_name}
-              </div>
-            )}
+            {renderError("discount_name")}
           </div>
 
           {/* Discount Code */}
@@ -89,9 +100,8 @@ export default function Dialogbox({
             </label>
             <div className="flex gap-2">
               <Input
-                placeholder="DISCOUNT10"
-                className="flex-1"
                 name="discount_code"
+                placeholder="DISCOUNT10"
                 value={formik.values.discount_code}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
@@ -99,17 +109,12 @@ export default function Dialogbox({
               <Button
                 type="button"
                 variant="outline"
-                className="whitespace-nowrap"
                 onClick={generateCode}
               >
                 Generate
               </Button>
             </div>
-            {formik.touched.discount_code && formik.errors.discount_code && (
-              <div className="text-red-500 text-xs">
-                {formik.errors.discount_code}
-              </div>
-            )}
+            {renderError("discount_code")}
           </div>
 
           {/* Discount Type */}
@@ -119,9 +124,10 @@ export default function Dialogbox({
             </label>
             <Select
               value={formik.values.discount_type}
-              onValueChange={(val) =>
-                formik.setFieldValue("discount_type", val)
-              }
+              onValueChange={(value) => {
+                void formik.setFieldValue("discount_type", value);
+                void formik.setFieldTouched("discount_type", true);
+              }}
             >
               <SelectTrigger className="h-9">
                 <SelectValue placeholder="Select type" />
@@ -134,32 +140,23 @@ export default function Dialogbox({
                 </SelectGroup>
               </SelectContent>
             </Select>
-            {formik.touched.discount_type && formik.errors.discount_type && (
-              <div className="text-red-500 text-xs">
-                {formik.errors.discount_type}
-              </div>
-            )}
+            {renderError("discount_type")}
           </div>
 
-          {/* Discount Value */}
+          {/* Discount Amount */}
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium text-muted-foreground">
               Discount Value
             </label>
             <Input
               type="number"
-              placeholder="e.g. 10 or 500"
               name="discount_amount"
+              placeholder="e.g. 10 or 500"
               value={formik.values.discount_amount}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
             />
-            {formik.touched.discount_amount &&
-              formik.errors.discount_amount && (
-                <div className="text-red-500 text-xs">
-                  {formik.errors.discount_amount}
-                </div>
-              )}
+            {renderError("discount_amount")}
           </div>
 
           {/* Offer Start Date */}
@@ -170,25 +167,28 @@ export default function Dialogbox({
             <DateInputComponent
               placeholder="Select offer start date"
               value={formik.values.discount_start_date}
-              onChange={(date) =>
-                formik.setFieldValue("discount_start_date", date)
-              }
+              onChange={(date) => {
+                void formik.setFieldValue("discount_start_date", date);
+                void formik.setFieldTouched("discount_start_date", true);
+              }}
             />
+            {renderError("discount_start_date")}
           </div>
 
           {/* Duration */}
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium text-muted-foreground">
-              Duration
+              Duration (days)
             </label>
             <Input
               type="number"
-              placeholder="e.g. 30 days"
               name="duration"
+              placeholder="e.g. 30"
               value={formik.values.duration}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
             />
+            {renderError("duration")}
           </div>
 
           {/* Description */}
@@ -197,39 +197,30 @@ export default function Dialogbox({
               Description
             </label>
             <Textarea
-              placeholder="Discount description"
               name="description"
+              placeholder="Discount description"
               value={formik.values.description}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
             />
-          </div>
-          <div>
-            {formik.touched.description && formik.errors.description && (
-              <div className="text-red-500 text-xs">
-                {formik.errors.description}
-              </div>
-            )}
+            {renderError("description")}
           </div>
 
-          {/* Action Buttons */}
+          {/* Actions */}
           <div className="flex justify-end gap-2 pt-2">
             <Button
+              type="button"
               variant="outline"
               onClick={onClose}
               disabled={formik.isSubmitting}
             >
               Cancel
             </Button>
-            <Button
-              onClick={() => formik.handleSubmit()}
-              type="submit"
-              disabled={formik.isSubmitting}
-            >
+            <Button type="submit" disabled={formik.isSubmitting}>
               {formik.isSubmitting ? "Saving..." : "Save"}
             </Button>
           </div>
-        </div>
+        </form>
       )}
     </GenericDialog>
   );

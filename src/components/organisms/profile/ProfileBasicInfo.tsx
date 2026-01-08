@@ -1,6 +1,6 @@
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
-import { UserProfile } from '@/types/auth.type'
+import type { UserProfile } from '@/types/auth.types'
 
 interface ProfileBasicInfoProps {
   profile: UserProfile
@@ -20,7 +20,7 @@ export default function ProfileBasicInfo({
         <div className="grid grid-cols-2 gap-4">
           <div>
             <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">UserName </p>
-            <p className="text-sm font-medium text-gray-900">{profile.Username}</p>
+            <p className="text-sm font-medium text-gray-900">{profile.username}</p>
           </div>
 
         </div>
@@ -47,7 +47,7 @@ export default function ProfileBasicInfo({
         </Label>
         <Input
           id="firstName"
-          value={profile.Username}
+          value={profile.username}
           onChange={(e) => onChange?.('firstName', e.target.value)}
         />
       </div>
@@ -75,7 +75,7 @@ export default function ProfileBasicInfo({
         <Input
           id="phone"
           type="tel"
-          value={profile.phone || ''}
+          value={profile.phone ?? ''}
           onChange={(e) => onChange?.('phone', e.target.value)}
           placeholder="+1 (555) 000-0000"
         />

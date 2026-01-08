@@ -5,7 +5,9 @@ import itemReducer from './features/item-slice';
 import variantReducer from './features/variant-slice';
 import userReducer from './features/user-slice'
 import discountReducer from './features/discount-slice';
-import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
+import wishlistReducer from './features/wishlist-slice';
+import type { TypedUseSelectorHook } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 export const store = configureStore({
     reducer: {
@@ -15,6 +17,7 @@ export const store = configureStore({
         variant: variantReducer,
         user: userReducer,
         discount: discountReducer,
+        wishlist: wishlistReducer,
     },
 });
 

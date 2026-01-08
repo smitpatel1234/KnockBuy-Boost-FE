@@ -12,9 +12,9 @@ export const registerSchema = Yup.object({
     .email("Please enter a valid email")
     .required("Email is required"),
 
-  phone_number: Yup.number()
-    .min(1000000000, "Phone number must be 10 digits")
-    .max(9999999999, "Phone number must be 10 digits")
+  phone_number: Yup.string()
+    .min(10, "Phone number must be 10 digits")
+    .max(10, "Phone number must be 10 digits")
     .required("Phone number is required"),
 
   password: Yup.string()

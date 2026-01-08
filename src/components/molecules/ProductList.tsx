@@ -2,14 +2,7 @@
 
 import React from 'react'
 import ProductCard from '@/components/atoms/ProductCard'
-import { Item } from '@/types/item.type'
-
-interface ProductListProps {
-  products: Item[]
-  title?: string
-  subtitle?: string
-  columns?: 2 | 3 | 4
-}
+import type { ProductListProps } from '@/types/productlist.types'
 
 export default function ProductList({
   products,
@@ -25,7 +18,7 @@ export default function ProductList({
 
   return (
     <div className="space-y-4">
-      {(title || subtitle) && (
+      {(title ?? subtitle) && (
         <div className="space-y-1">
           {title && (
             <h2 className="text-lg md:text-xl font-semibold text-gray-900">

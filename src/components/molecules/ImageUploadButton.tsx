@@ -2,12 +2,7 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-
-interface ImageUploadProps {
-  onImageSelect: (file: File) => void;
-  accept?: string;
-  disabled?: boolean;
-}
+import type { ImageUploadProps } from "@/types/imageupload.types";
 
 export function ImageUploadButton({
   onImageSelect,
@@ -23,7 +18,7 @@ export function ImageUploadButton({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      onImageSelect(file);
+      void onImageSelect(file);
     }
   };
 

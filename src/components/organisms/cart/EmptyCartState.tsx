@@ -2,14 +2,6 @@ import { ShoppingCart, ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 
-/**
- * EmptyCartState Component
- * Displays when cart is empty with CTA to continue shopping
- * 
- * Responsibility:
- * - Show empty state message
- * - Provide link back to shopping
- */
 export default function EmptyCartState() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">

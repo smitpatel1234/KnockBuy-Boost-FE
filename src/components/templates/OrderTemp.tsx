@@ -1,6 +1,4 @@
 import React from "react";
-import TableWithFilter from "@/components/organisms/TableWithFilter";
-import { orderColumn } from "@/data/orderColumn";
 
 export default function OrderTemp() {
   return (

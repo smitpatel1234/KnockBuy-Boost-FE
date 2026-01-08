@@ -1,5 +1,6 @@
+import type { ColumnConfig } from "@/types/generic-table.types";
 
-export const itemColumn = [
+export const itemColumn: ColumnConfig[] = [
     {
         title: "Item Name",
         key: "item_name",

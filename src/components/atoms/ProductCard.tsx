@@ -2,43 +2,69 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Star, ShoppingCart } from "lucide-react";
+import { Star, ShoppingCart, Heart, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Item } from "@/types/item.type";
-
-interface ProductCardProps {
-  product: Item;
-}
+import type { ProductCardProps } from "@/types/productcard.types";
+import FallBackImage from "../../stories/assets/download.jpg";
+import { Button } from "@/components/ui/button";
+import { useItemSlug } from "@/hooks/useItemSlug";
+import { useWishlist } from "@/hooks/useWishlist";
 
 export default function ProductCard({ product }: ProductCardProps) {
+  const { isItemInWishlist, toggleWishlist } = useWishlist();
+  const { AddToCart } = useItemSlug(product.slug ?? "");
+
+  if (!product.slug) {
+    return (
+      <div className="flex justify-center  ">
+        <Loader2 className="mt-20" />
+      </div>
+    );
+  }
+
+  const isInWishlist = isItemInWishlist(product.item_id);
+
   return (
-   
-      <div className="group bg-white border border-slate-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow duration-200 cursor-pointer h-full flex flex-col">
-        {/* Image Container*/}
+    <div className="group bg-white border border-slate-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow duration-200 cursor-pointer h-full flex flex-col relative">
+      <div className="absolute top-2 right-2 z-10">
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            void toggleWishlist(product.item_id);
+          }}
+          className={`p-1.5 rounded-full bg-white/80 backdrop-blur-sm shadow-sm transition-colors duration-200 ${isInWishlist ? "text-red-500" : "text-gray-400 hover:text-red-500"
+            }`}
+        >
+          <Heart className={`w-4 h-4 ${isInWishlist ? "fill-current" : ""}`} />
+        </button>
+      </div>
+
+      <Link href={`/product/${product.slug}`}>
         <div className="relative w-full h-40 bg-slate-100 overflow-hidden">
-          {/* <Image
-            src={product.image}
-            alt={product.name}
+          <Image
+            src={product.image_url ?? FallBackImage}
+            alt={product.item_name}
             fill
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover"
           />
-          {product.badge && (
-            <div className="absolute top-2 right-2">
+          {product.item_name && (
+            <div className="absolute top-2 left-10">
               <Badge className="bg-blue-600 text-white capitalize text-xs">
-                {product.badge}
+                {product.item_name}
               </Badge>
             </div>
           )}
           {product.item_price && (
             <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-semibold">
-               {product.item_price}
+              {product.item_price}
             </div>
-          )} */}
+          )}
         </div>
+      </Link>
 
-        {/* Content */}
-        <div className="p-3 flex-1 flex flex-col">
+      <div className="p-3 flex-1 flex flex-col">
+        <Link href={`/product/${product.slug}`}>
           <p className="text-xs text-gray-500 uppercase tracking-wide font-medium mb-1">
             {product.category_name}
           </p>
@@ -46,46 +72,36 @@ export default function ProductCard({ product }: ProductCardProps) {
             {product.item_name}
           </h3>
 
-          {/* Rating */}
           <div className="flex items-center gap-1 mb-2">
             <div className="flex items-center">
-              {product.rating &&
-                Array.from({ length: 5 }).map((_, i) => (
-                  <Star
-                    key={i}
-                    className={`w-3 h-3 ${
-                      product.rating
-                        ? "fill-yellow-400 text-yellow-400"
-                        : "text-gray-300"
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Star
+                  key={i}
+                  className={`w-3 h-3 ${(product.rating ?? 0) >= i + 1
+                    ? "fill-yellow-400 text-yellow-400"
+                    : "text-gray-300"
                     }`}
-                  />
-                ))}
+                />
+              ))}
             </div>
           </div>
 
-          {/* Price */}
           <div className="flex items-center gap-2 mb-3">
             <span className="text-sm font-bold text-gray-900">
-              ${product.item_price}
+              ₹{product.item_price}
             </span>
-            {product.item_price && (
-              <span className="text-xs text-gray-500 line-through">
-                ${product.item_price}
-              </span>
-            )}
           </div>
-
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-            }}
-            className="mt-auto w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded text-xs font-medium flex items-center justify-center gap-1 transition-colors duration-200"
-          >
-            <ShoppingCart className="w-3 h-3" />
-            <span>Add</span>
-          </button>
-        </div>
+        </Link>
+        <Button
+          onClick={() => {
+            void AddToCart();
+          }}
+          className="mt-auto w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded text-xs font-medium flex items-center justify-center gap-1 transition-colors duration-200"
+        >
+          <ShoppingCart className="w-3 h-3" />
+          <span>Add</span>
+        </Button>
       </div>
-    
+    </div>
   );
 }

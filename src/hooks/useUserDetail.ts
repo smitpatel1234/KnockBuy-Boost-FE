@@ -7,24 +7,25 @@ import { useParams } from "next/navigation";
 import { getUser, updateUser } from "@/services/user.service";
 import { toast } from "sonner";
 import { uploadFiles } from "../services/uploads.service";
+import type { UserProfile } from "@/types/user.types";
 
 export const useUserDetail = () => {
     const { user_id } = useParams();
     const [loading, setLoading] = useState(true);
 
-    const formik = useFormik({
+    const formik = useFormik<UserProfile>({
         initialValues: {
             user_id: "",
             username: "",
             email: "",
-            phone_number: 0,
-            wishlist_name: "",
-            profile_image: "",
+            phone_number: '',
+            wishlist_name: '',
+            profile_image: '',
         },
         validationSchema: Yup.object({
             username: Yup.string().required("Username is required"),
             email: Yup.string().email("Invalid email").required("Email is required"),
-            phone_number: Yup.number().required("Phone number is required"),
+            phone_number: Yup.string().required("Phone number is required"),
         }),
         onSubmit: async (values) => {
             try {
@@ -43,13 +44,13 @@ export const useUserDetail = () => {
             setLoading(true);
             const response = await getUser(user_id as string);
             const userData = response.data.data;
-            formik.setValues({
+            void formik.setValues({
                 user_id: userData.user_id,
                 username: userData.username,
                 email: userData.email,
                 phone_number: userData.phone_number,
-                wishlist_name: userData.wishlist_name || "",
-                profile_image: userData.profile_image || "",
+                wishlist_name: userData.wishlist_name ?? '',
+                profile_image: userData.profile_image ?? '',
             });
         } catch (err) {
             console.error("[FETCH USER ERROR]", err);
@@ -57,16 +58,16 @@ export const useUserDetail = () => {
         } finally {
             setLoading(false);
         }
-    }, [user_id, formik.setValues]);
+    }, [user_id]);
 
     const [uploading, setUploading] = useState(false);
 
     const handleImageUpload = async (file: File) => {
         try {
             setUploading(true);
-            const url = await uploadFiles([file], 'user');
-            if (url && url.data && url.data.url) {
-                formik.setFieldValue('profile_image', url.data.url);
+            const uploadRes = await uploadFiles([file], 'user');
+            if (uploadRes.data[0]?.url) {
+                void formik.setFieldValue('profile_image', uploadRes.data[0].url);
                 toast.success("Profile image uploaded successfully");
             } else {
                 toast.error("Invalid response from server");
@@ -81,7 +82,7 @@ export const useUserDetail = () => {
     };
 
     useEffect(() => {
-        fetchUser();
+        void fetchUser();
     }, [fetchUser]);
 
     return {

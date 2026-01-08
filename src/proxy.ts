@@ -1,10 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
+import type { NextRequest} from "next/server";
+import { NextResponse } from "next/server";
 import { jwtDecode } from "jwt-decode";
 
-type JwtPayload = {
+interface JwtPayload {
   sub: string;
   role: "ADMIN" | "USER";
-};
+}
 
 export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -45,7 +46,7 @@ export function proxy(req: NextRequest) {
 
   if (pathname.startsWith("/adminLogin/") && pathname !== "/adminLogin") {
     if (payload.role !== "ADMIN") {
-      const res = NextResponse.redirect(new URL("/403", req.url));
+      const res = NextResponse.redirect(new URL("/", req.url));
       return res;
     }
   }

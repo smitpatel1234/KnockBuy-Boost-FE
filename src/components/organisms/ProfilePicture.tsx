@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { ImageUp } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { ImageUploadButton } from "../molecules/ImageUploadButton";

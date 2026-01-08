@@ -6,7 +6,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 
-import { GenericDialogProps } from "@/types/dialogbox.type";
+import type { GenericDialogProps } from "@/types/dialogbox.types";
 
 export function GenericDialog<T>({
   open,

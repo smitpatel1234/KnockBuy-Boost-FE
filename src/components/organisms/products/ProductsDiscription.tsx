@@ -2,12 +2,7 @@ import React from 'react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { FormikProps } from 'formik'
-import { Item } from '@/types/item.type'
-
-interface ProductsDiscriptionProps {
-  formik: FormikProps<Item>
-}
+import type { ProductsDiscriptionProps } from '@/types/productsdescription.types'
 
 export default function ProductsDiscription({ formik }: ProductsDiscriptionProps) {
   return (
@@ -39,6 +34,7 @@ export default function ProductsDiscription({ formik }: ProductsDiscriptionProps
           <div className="text-red-500 text-sm mt-1">{formik.errors.description}</div>
         )}
       </div>
+      
     </div>
   )
 }

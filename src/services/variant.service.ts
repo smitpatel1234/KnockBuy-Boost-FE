@@ -1,5 +1,5 @@
 import api, { publicapi } from "./api.service";
-import { PageParams, PaginationResponse } from "../types/pagination.type";
+import type { PageParams, PaginationResponse } from "../types/pagination.types";
 
 export const getAllVariantProperties = () => publicapi.get("/variant/get-all-variant-properties");
 
@@ -18,8 +18,8 @@ export const deleteVariantProperty = (id: string) =>
 
 export const getAllVariantValues = () => publicapi.get("/variant/get-all-variant-values");
 
-export const getAllVariantValuesPage = async (params: PageParams): Promise<{ data: PaginationResponse<any> }> => {
-    const response = await api.get<{ message: string; data: PaginationResponse<any> }>("/variant/get-all-variant-values-page", {
+export const getAllVariantValuesPage = async (params: PageParams): Promise<{ data: PaginationResponse<Record<string, unknown>> }> => {
+    const response = await api.get<{ message: string; data: PaginationResponse<Record<string, unknown>> }>("/variant/get-all-variant-values-page", {
         params: {
             page: params.pagination.page,
             limit: params.pagination.limit,
@@ -45,3 +45,10 @@ export const deleteVariantValue = (id: string) =>
     api.delete("/variant/delete-variant-value", {
         data: { variantValue_id: id },
     });
+
+// Variant Collection APIs
+export const deleteVariantCollection = (variant_collection_id: string) =>
+    api.delete("/variant/delete-variant-collection", {
+        data: { variant_collection_id },
+    });
+

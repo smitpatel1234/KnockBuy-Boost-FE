@@ -5,8 +5,9 @@ import ProductsDiscription from "../organisms/products/ProductsDiscription";
 import ProductsPrice from "../organisms/products/ProductsDynamic";
 import { ProductImage } from "../organisms/products/ProductImage";
 import VarientProduct from "../organisms/products/VarientProduct";
+import VariantCollectionComponent from "../organisms/products/VariantCollectionComponent";
 import { Button } from "../atoms/Button";
-import { useItemForm } from "@/hooks/use-item-form";
+import { useItemForm } from "@/hooks/useItemForm";
 import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { loading as setLoading } from "@/redux/features/item-slice";
@@ -21,7 +22,7 @@ interface ProductsPageProps {
 export default function ProductsPage({ item_id }: ProductsPageProps) {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { loading } = useAppSelector((state) => state.item);
+  const { loading ,error} = useAppSelector((state) => state.item);
 
   const handleOnClose = () => {
     router.push("/adminLogin/admin/item");
@@ -32,45 +33,43 @@ export default function ProductsPage({ item_id }: ProductsPageProps) {
   });
 
   useEffect(() => {
-    dispatch(fetchVariantData());
-    dispatch(fetchCategoriesAll());
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (!item_id) return;
+    void dispatch(fetchVariantData());
+    void dispatch(fetchCategoriesAll());
 
     const fetchItem = async () => {
-      dispatch(setLoading(true));
+      if (!item_id) return;
+      void dispatch(setLoading(true));
       const res = await getItem(item_id);
-      dispatch(setLoading(false));
-      if (res?.data?.message === "Unauthorized") {
+      void dispatch(setLoading(false));
+      if (res.data.message === "Unauthorized") {
         router.push("/adminLogin/admin");
         return;
       }
-      if (!res?.data?.data) return;
 
       const data = res.data.data;
 
       if (formik.values.item_id) return;
 
-      formik.setValues({
+      void formik.setValues({
         item_id: data.item_id,
         item_name: data.item_name,
-        item_price: Number(data.item_price),
+        item_price: data.item_price,
         category_id: data.category_id,
         stock: data.stock,
         description: data.description,
         sku: data.sku,
-        rating: Number(data.rating),
-        variant: (data.variant || []).map((v: { variantValue_id: string; variantProperty_id: string; variant_value: string; Property_name: string }) => ({
+        rating: data.rating,
+        variant: (data.variant ?? []).map((v: { variantValue_id: string; variantProperty_id: string; variant_value: string; property_name: string }) => ({
           ...v,
-          item_variantvalue_mapping_id: Math.random().toString(36).substr(2, 9)
+          item_variantvalue_mapping_id: Math.random().toString(36).substring(2, 11)
         })),
+        variant_collections: data.variant_collections ?? [],
+        images: data.images ?? [],
       });
     };
 
-    fetchItem();
-  }, [item_id, dispatch, formik.setValues, formik.values.item_id]);
+    void fetchItem();
+  }, []);
 
   if (item_id && loading) {
     return (
@@ -85,7 +84,7 @@ export default function ProductsPage({ item_id }: ProductsPageProps) {
     );
   }
 
-  if (item_id && !loading && !formik.values.item_id) {
+  if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="text-center p-8 bg-white rounded-xl shadow-lg border border-slate-200 max-w-md">
@@ -101,9 +100,13 @@ export default function ProductsPage({ item_id }: ProductsPageProps) {
     );
   }
 
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
-      <form onSubmit={formik.handleSubmit}>
+      <form onSubmit={(e) => {
+        
+        formik.handleSubmit(e);
+      }}>
         <div className="border-b border-slate-200 bg-white shadow-sm sticky top-0 z-10">
           <div className="max-w-7xl mx-auto px-4 py-6 flex justify-between items-center">
             <div>
@@ -146,11 +149,25 @@ export default function ProductsPage({ item_id }: ProductsPageProps) {
             <Section title="Product Variants" subtitle="Size, color, etc.">
               <VarientProduct formik={formik} />
             </Section>
+
+            <Section title="Variant Collections" subtitle="Group related items">
+              <VariantCollectionComponent
+                formik={formik}
+              />
+            </Section>
           </div>
 
           <div className="space-y-8">
             <Section title="Product Image" subtitle="Main product image">
-              <ProductImage />
+              <ProductImage
+                images={formik.values.images ?? []}
+                onUpload={(file) => void formik.handleImageUpload([file])}
+                onRemove={(index) => {
+                  const newImages = [...(formik.values.images ?? [])];
+                  newImages.splice(index, 1);
+                  void formik.setFieldValue("images", newImages);
+                }}
+              />
             </Section>
 
             <div className="bg-blue-50 rounded-xl p-6 border border-blue-100">

@@ -1,7 +1,7 @@
 "use client";
 
 import { GenericDialog } from "@/components/molecules/GenericDialogProps";
-import { useState, useEffect } from "react";
+import { useState ,useEffect} from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/atoms/Button";
 import {
@@ -13,10 +13,11 @@ import {
 } from "@/components/ui/select";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { editVariantValue } from "@/redux/features/variant-slice";
+import type { VariantProperty } from "@/types/variant.types";
 
 interface EditVariantValueDialogProps {
     isOpen: boolean;
-    variantValue: any;
+    variantValue: { variantValue_id: string; variant_value?: string; variantProperty_id?: string } | null;
     onClose: () => void;
 }
 
@@ -34,13 +35,13 @@ export default function EditVariantValueDialog({
 
     useEffect(() => {
         if (variantValue) {
-            setSelectedPropId(variantValue.variantProperty_id || "");
-            setValueName(variantValue.variant_value || "");
+            setSelectedPropId(variantValue.variantProperty_id ?? "");
+            setValueName(variantValue.variant_value ?? "");
         }
-    }, [variantValue, isOpen]);
+    }, [isOpen]);
 
     const handleSubmit = async () => {
-        if (!selectedPropId || !valueName.trim()) return;
+        if (!selectedPropId || !valueName.trim() || !variantValue) return;
 
         setLoading(true);
         try {
@@ -66,8 +67,6 @@ export default function EditVariantValueDialog({
         >
             {() => (
                 <div className="flex flex-col gap-6 p-2">
-
-                    {/* Property Selection */}
                     <div className="flex flex-col gap-1">
                         <label className="text-sm font-medium text-muted-foreground">
                             Property
@@ -77,7 +76,7 @@ export default function EditVariantValueDialog({
                                 <SelectValue placeholder="Select a property" />
                             </SelectTrigger>
                             <SelectContent>
-                                {properties.map((p) => (
+                                {properties.map((p: VariantProperty) => (
                                     <SelectItem key={p.variantProperty_id} value={p.variantProperty_id}>
                                         {p.property_name}
                                     </SelectItem>
@@ -86,7 +85,7 @@ export default function EditVariantValueDialog({
                         </Select>
                     </div>
 
-                    {/* Value Name */}
+
                     <div className="flex flex-col gap-1">
                         <label className="text-sm font-medium text-muted-foreground">
                             Value Name
@@ -94,11 +93,11 @@ export default function EditVariantValueDialog({
                         <Input
                             placeholder="e.g. Red, XL, Cotton"
                             value={valueName}
-                            onChange={(e) => setValueName(e.target.value)}
+                            onChange={(e) => { setValueName(e.target.value); }}
                         />
                     </div>
 
-                    {/* Action Buttons */}
+
                     <div className="flex justify-end gap-2 pt-2">
                         <Button variant="outline" onClick={onClose} disabled={loading}>
                             Cancel

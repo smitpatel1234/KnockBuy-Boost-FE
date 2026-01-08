@@ -1,0 +1,85 @@
+'use client';
+
+import React, { useState, useCallback } from "react";
+import TableWithFilter from "@/components/organisms/TableWithFilter";
+import { useRouter } from "next/navigation";
+import { Badge } from "@/components/ui/badge";
+import { ORDER_COLUMNS, STATUS_COLORS } from "@/data/order.data";
+import { getAllOrders, deleteOrder } from "@/services/order.service";
+import type { OrderAllType } from "@/types/order.types";
+import type { PageParams } from "@/types/pagination.types";
+import { toast } from "sonner";
+
+export default function OrderTemplate() {
+    const router = useRouter();
+    const [data, setData] = useState<OrderAllType[]>([]);
+
+    const fetchOrders = useCallback(async (params: PageParams): Promise<number> => {
+        try {
+            const apiParams = {
+                page: params.pagination?.page || 1,
+                limit: params.pagination?.limit || 10,
+                search: (params.filters && typeof params.filters === 'object' && 'search' in params.filters) ? String(params.filters.search) : "",
+            };
+
+            const res = await getAllOrders(apiParams);
+            const responseData = res.data.data;
+            setData(responseData.data || responseData);
+            return responseData.meta?.total || 0;
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to fetch orders");
+            return 0;
+        }
+    }, []);
+
+    const handleDelete = async (order: OrderAllType) => {
+        try {
+            await deleteOrder(order.order_id);
+            toast.success("Order deleted successfully");
+            window.location.reload();
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to delete order");
+        }
+    };
+
+    const columnRenderers = {
+        order_date: (val: string | number | null | undefined) =>
+            val ? new Date(String(val)).toLocaleDateString() : "-",
+        total_amount: (val: string | number | null | undefined) =>
+            `₹${parseFloat(String(val ?? 0)).toFixed(2)}`,
+        status: (val: string | number | null | undefined) => (
+            <Badge className={STATUS_COLORS[String(val || "").toLowerCase()] || "bg-gray-100 text-gray-800"}>
+                {val}
+            </Badge>
+        ),
+        payment_status: (val: string | number | null | undefined) => (
+            <Badge variant="outline" className={val === "paid" ? "border-green-500 text-green-600" : "border-yellow-500 text-yellow-600"}>
+                {val}
+            </Badge>
+        ),
+    };
+
+    return (
+        <div className="flex flex-col gap-6 p-4">
+            <div className="flex items-center justify-between">
+                <div>
+                    <h1 className="text-2xl font-bold tracking-tight text-slate-900">Orders Management</h1>
+                    <p className="text-sm text-slate-500">View and manage customer orders.</p>
+                </div>
+            </div>
+
+            <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+                <TableWithFilter<OrderAllType>
+                    data={data}
+                    dataOfColumn={ORDER_COLUMNS}
+                    fetchData={fetchOrders}
+                    onEdit={(row) => { router.push(`/adminLogin/admin/order/${row.order_id}`); }}
+                    onDelete={handleDelete}
+                    columnRenderers={columnRenderers}
+                />
+            </div>
+        </div>
+    );
+}

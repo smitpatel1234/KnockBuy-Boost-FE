@@ -1,0 +1,28 @@
+import Image from "next/image";
+import type { Item } from "@/types/item.types";
+import { MouseEvent } from "react";
+export default function CarouselBox({
+  carousel_images,
+  HandelOnhover,
+}: {
+  carousel_images: Item["images"];
+  HandelOnhover: (e: MouseEvent<HTMLDivElement>) => void;
+}) {
+  return (
+    <div className="flex flex-row h-20  justify-center  ">
+      {carousel_images?.map((image, index) => (
+        <div className="flex flex-row h-20" key={image}>
+          <Image
+            onMouseEnter={HandelOnhover}
+            key={index}
+            src={image}
+            alt="smit"
+            className="m-1 rounded-xl border border-black-600 hover:border-blue-600 "
+            width={80}
+            height={80}
+          />
+        </div>
+      ))}
+    </div>
+  );
+}

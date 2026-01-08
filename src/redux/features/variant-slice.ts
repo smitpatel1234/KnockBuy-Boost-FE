@@ -1,9 +1,10 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { getAllVariantValuesPage,getAllVariantProperties, createVariantProperty, updateVariantProperty, deleteVariantProperty, getAllVariantValues, createVariantValue, updateVariantValue, deleteVariantValue } from '../../services/variant.service';
-import {PageParams} from '../../types/pagination.type';
+import { getAllVariantValuesPage, getAllVariantProperties, createVariantProperty, updateVariantProperty, deleteVariantProperty, getAllVariantValues, createVariantValue, updateVariantValue, deleteVariantValue } from '../../services/variant.service';
+import type { PageParams } from '../../types/pagination.types';
+import type { VariantProperty, VariantValue } from '../../types/variant.types';
 interface VariantState {
-    properties: any[];
-    values: any[];
+    properties: VariantProperty[];
+    values: VariantValue[];
     loading: boolean;
     error: string | null;
 }
@@ -14,20 +15,21 @@ const initialState: VariantState = {
     loading: false,
     error: null,
 };
-export const  fetchVariantValuePage = createAsyncThunk(
-'variant/fetchAllPage',
-    async (pageParams:PageParams, { rejectWithValue }) => {
+export const fetchVariantValuePage = createAsyncThunk(
+    'variant/fetchAllPage',
+    async (pageParams: PageParams, { rejectWithValue }) => {
         try {
             const [propsRes, valuesRes] = await Promise.all([
                 getAllVariantProperties(),
                 getAllVariantValuesPage(pageParams)
             ]);
             return {
-                properties: propsRes.data.data || [],
-                values: valuesRes.data || []
+                properties: (propsRes.data.data as VariantProperty[]) ?? [],
+                values: valuesRes.data ?? []
             };
-        } catch (err: any) {
-            return rejectWithValue(err.response?.data?.message || 'Failed to fetch variant data');
+        } catch (err: unknown) {
+            const error = err as { response?: { data?: { message?: string } } };
+            return rejectWithValue(error.response?.data?.message ?? 'Failed to fetch variant data');
         }
     }
 )
@@ -41,11 +43,12 @@ export const fetchVariantData = createAsyncThunk(
                 getAllVariantValues()
             ]);
             return {
-                properties: propsRes.data.data || [],
-                values: valuesRes.data.data || []
+                properties: (propsRes.data.data as VariantProperty[]) ?? [],
+                values: (valuesRes.data.data as VariantValue[]) ?? []
             };
-        } catch (err: any) {
-            return rejectWithValue(err.response?.data?.message || 'Failed to fetch variant data');
+        } catch (err: unknown) {
+            const error = err as { response?: { data?: { message?: string } } };
+            return rejectWithValue(error.response?.data?.message ?? 'Failed to fetch variant data');
         }
     }
 );
@@ -55,10 +58,11 @@ export const addVariantProperty = createAsyncThunk(
     async (data: { property_name: string }, { rejectWithValue, dispatch }) => {
         try {
             await createVariantProperty(data);
-            dispatch(fetchVariantData());
+            void dispatch(fetchVariantData());
             return;
-        } catch (err: any) {
-            return rejectWithValue(err.response?.data?.message || 'Failed to add variant property');
+        } catch (err: unknown) {
+            const error = err as { response?: { data?: { message?: string } } };
+            return rejectWithValue(error.response?.data?.message ?? 'Failed to add variant property');
         }
     }
 );
@@ -68,10 +72,11 @@ export const editVariantProperty = createAsyncThunk(
     async (data: { variantProperty_id: string; property_name: string }, { rejectWithValue, dispatch }) => {
         try {
             await updateVariantProperty(data);
-            dispatch(fetchVariantData());
+            void dispatch(fetchVariantData());
             return;
-        } catch (err: any) {
-            return rejectWithValue(err.response?.data?.message || 'Failed to update variant property');
+        } catch (err: unknown) {
+            const error = err as { response?: { data?: { message?: string } } };
+            return rejectWithValue(error.response?.data?.message ?? 'Failed to update variant property');
         }
     }
 );
@@ -81,10 +86,11 @@ export const removeVariantProperty = createAsyncThunk(
     async (id: string, { rejectWithValue, dispatch }) => {
         try {
             await deleteVariantProperty(id);
-            dispatch(fetchVariantData());
+            void dispatch(fetchVariantData());
             return;
-        } catch (err: any) {
-            return rejectWithValue(err.response?.data?.message || 'Failed to delete variant property');
+        } catch (err: unknown) {
+            const error = err as { response?: { data?: { message?: string } } };
+            return rejectWithValue(error.response?.data?.message ?? 'Failed to delete variant property');
         }
     }
 );
@@ -94,10 +100,11 @@ export const addVariantValue = createAsyncThunk(
     async (data: { variant_value: string; variantProperty_id: string }, { rejectWithValue, dispatch }) => {
         try {
             await createVariantValue(data);
-            dispatch(fetchVariantData());
+            void dispatch(fetchVariantData());
             return;
-        } catch (err: any) {
-            return rejectWithValue(err.response?.data?.message || 'Failed to add variant value');
+        } catch (err: unknown) {
+            const error = err as { response?: { data?: { message?: string } } };
+            return rejectWithValue(error.response?.data?.message ?? 'Failed to add variant value');
         }
     }
 );
@@ -107,10 +114,11 @@ export const editVariantValue = createAsyncThunk(
     async (data: { variantValue_id: string; variant_value: string; variantProperty_id: string }, { rejectWithValue, dispatch }) => {
         try {
             await updateVariantValue(data);
-            dispatch(fetchVariantData());
+            void dispatch(fetchVariantData());
             return;
-        } catch (err: any) {
-            return rejectWithValue(err.response?.data?.message || 'Failed to update variant value');
+        } catch (err: unknown) {
+            const error = err as { response?: { data?: { message?: string } } };
+            return rejectWithValue(error.response?.data?.message ?? 'Failed to update variant value');
         }
     }
 );
@@ -120,10 +128,11 @@ export const removeVariantValue = createAsyncThunk(
     async (id: string, { rejectWithValue, dispatch }) => {
         try {
             await deleteVariantValue(id);
-            dispatch(fetchVariantData());
+            void dispatch(fetchVariantData());
             return;
-        } catch (err: any) {
-            return rejectWithValue(err.response?.data?.message || 'Failed to delete variant value');
+        } catch (err: unknown) {
+            const error = err as { response?: { data?: { message?: string } } };
+            return rejectWithValue(error.response?.data?.message ?? 'Failed to delete variant value');
         }
     }
 );
@@ -146,7 +155,7 @@ const variantSlice = createSlice({
             state.loading = false;
             state.error = action.payload as string;
         });
-         builder.addCase(fetchVariantValuePage.pending, (state) => {
+        builder.addCase(fetchVariantValuePage.pending, (state) => {
             state.loading = true;
             state.error = null;
         });
@@ -154,7 +163,6 @@ const variantSlice = createSlice({
             state.loading = false;
             state.properties = action.payload.properties;
             state.values = action.payload.values.data;
-        
         });
         builder.addCase(fetchVariantValuePage.rejected, (state, action) => {
             state.loading = false;

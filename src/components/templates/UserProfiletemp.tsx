@@ -4,7 +4,7 @@ import UserDetail from "../organisms/user/UserDetail";
 import UserAddress from "../organisms/user/UserAddress";
 import { useUserDetail } from "@/hooks/useUserDetail";
 export default function UserProfileTemp() {
-  const { formik, loading , uploading , handleImageUpload} = useUserDetail();
+  const { formik, loading, uploading, handleImageUpload } = useUserDetail();
 
   return (
     <div className="w-full min-h-screen bg-muted/40">
@@ -25,7 +25,7 @@ export default function UserProfileTemp() {
           <div className="space-y-6">
             <div className="rounded-lg border bg-background p-4">
               <h2 className="text-sm font-medium mb-3">Profile Photo</h2>
-              <ProfilePicture setImage={handleImageUpload} loading={uploading} src={formik.values.profile_image} />
+              <ProfilePicture setImage={(file) => { void handleImageUpload(file); }} loading={uploading} src={formik.values.profile_image} />
             </div>
           </div>
 

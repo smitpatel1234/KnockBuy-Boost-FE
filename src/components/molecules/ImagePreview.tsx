@@ -1,12 +1,7 @@
 "use client";
 
-import React from "react";
-
-interface ImagePreviewProps {
-  src?: string;
-  alt?: string;
-  className?: string;
-}
+import Image from "next/image";
+import type { ImagePreviewProps } from "@/types/imagepreview.types";
 
 export function ImagePreview({
   src,
@@ -21,5 +16,15 @@ export function ImagePreview({
     );
   }
 
-  return <img src={src} alt={alt} className={className} />;
+  return (
+    <div className={`relative ${className} overflow-hidden`}>
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        className="object-cover"
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+      />
+    </div>
+  );
 }

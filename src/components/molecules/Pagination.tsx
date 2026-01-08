@@ -16,14 +16,8 @@ import {
   ChevronRightIcon,
   ChevronsRightIcon,
 } from "lucide-react";
-
-interface PaginationProps {
-  page: number;
-  total: number;
-  limit: number;
-  onPageChange: (page: number) => void;
-  onLimitChange: (limit: number) => void;
-}
+import type { PaginationProps} from "@/hooks/usePagination";
+import { usePagination } from "@/hooks/usePagination";
 
 export default function Pagination({
   page,
@@ -32,12 +26,8 @@ export default function Pagination({
   onPageChange,
   onLimitChange,
 }: PaginationProps) {
-  const totalPages = Math.ceil(total / limit);
-
-  const handleGoToFirst = () => onPageChange(1);
-  const handleGoToLast = () => onPageChange(totalPages);
-  const handleGoToPrevious = () => onPageChange(Math.max(1, page - 1));
-  const handleGoToNext = () => onPageChange(Math.min(totalPages, page + 1));
+  const { totalPages, handleGoToFirst, handleGoToLast, handleGoToPrevious, handleGoToNext } =
+    usePagination(page, total, limit, onPageChange);
 
   return (
     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-4 px-2">
@@ -48,7 +38,7 @@ export default function Pagination({
           </Label>
           <Select
             value={limit.toString()}
-            onValueChange={(val) => onLimitChange(parseInt(val))}
+            onValueChange={(val) => { onLimitChange(parseInt(val)); }}
           >
             <SelectTrigger className="h-9 w-[70px] bg-white border-slate-200 focus:ring-1 focus:ring-primary/20">
               <SelectValue placeholder={limit.toString()} />

@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { Calendar } from 'lucide-react';
+import type { DateInputProps } from '@/types/dateinput.types';
+
 // Demo wrapper to show the component working
 export default function DateInputComponent({ placeholder, value, onChange }: { placeholder?: string, value?: string, onChange?: (date: string) => void }) {
   // Use internal state if value/onChange not provided (controlled vs uncontrolled behavior could be better, but this matches the wrapper pattern)
   const [internalDate, setInternalDate] = useState('');
 
-  const effectiveValue = value !== undefined ? value : internalDate;
-  const effectiveOnChange = onChange || setInternalDate;
+  const effectiveValue = value ?? internalDate;
+  const effectiveOnChange = onChange ?? setInternalDate;
 
   return (
     <DateInput
@@ -17,21 +19,9 @@ export default function DateInputComponent({ placeholder, value, onChange }: { p
   );
 }
 
-// The actual DateInput component
-interface DateInputProps {
-  label?: string;
-  placeholder?: string;
-  value?: string;
-  onChange?: (date: string) => void;
-  disabled?: boolean;
-  className?: string;
-}
-
 const DateInput = React.forwardRef<HTMLDivElement, DateInputProps>(
-  (
-    { label, placeholder = 'Pick a date', value, onChange, disabled = false, className = '' },
-    ref
-  ) => {
+  ({ placeholder = 'Pick a date', value, onChange, disabled = false, className = '' },
+    ref) => {
     const [open, setOpen] = useState(false);
 
     const selectedDate = React.useMemo(() => {
@@ -54,7 +44,7 @@ const DateInput = React.forwardRef<HTMLDivElement, DateInputProps>(
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
-        const dateString = `${year}-${month}-${day}`;
+        const dateString = `${String(year)}-${month}-${day}`;
         onChange(dateString);
       }
       setOpen(false);
@@ -67,7 +57,7 @@ const DateInput = React.forwardRef<HTMLDivElement, DateInputProps>(
         <div className="relative">
           <button
             type="button"
-            onClick={() => !disabled && setOpen(!open)}
+            onClick={() => { if (!disabled) setOpen(!open); }}
             disabled={disabled}
             className={`
               w-full h-10 px-4 flex items-center justify-start gap-2
@@ -84,14 +74,14 @@ const DateInput = React.forwardRef<HTMLDivElement, DateInputProps>(
             `}
           >
             <Calendar className={`h-4 w-4 ${open ? 'text-blue-500' : 'text-slate-400'}`} />
-            <span className="flex-1 text-left">{displayDate || placeholder}</span>
+            <span className="flex-1 text-left">{displayDate ?? placeholder}</span>
           </button>
 
           {open && !disabled && (
             <>
               <div
                 className="fixed inset-0 z-40"
-                onClick={() => setOpen(false)}
+                onClick={() => { setOpen(false); }}
               />
               <div className="absolute left-0 top-full mt-2 z-50 bg-white rounded-lg shadow-md border border-slate-200 p-4 animate-in fade-in slide-in-from-top-2 duration-200">
                 <MiniCalendar
@@ -118,7 +108,7 @@ interface MiniCalendarProps {
 }
 
 function MiniCalendar({ selected, onSelect, disabled }: MiniCalendarProps) {
-  const [currentMonth, setCurrentMonth] = useState(() => selected || new Date());
+  const [currentMonth, setCurrentMonth] = useState(() => selected ?? new Date());
 
   const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'];
@@ -156,7 +146,7 @@ function MiniCalendar({ selected, onSelect, disabled }: MiniCalendarProps) {
 
   const days = [];
   for (let i = 0; i < firstDayOfMonth; i++) {
-    days.push(<div key={`empty-${i}`} className="h-8" />);
+    days.push(<div key={`empty-${String(i)}`} className="h-8" />);
   }
 
   for (let day = 1; day <= daysInMonth; day++) {
@@ -164,7 +154,7 @@ function MiniCalendar({ selected, onSelect, disabled }: MiniCalendarProps) {
       <button
         key={day}
         type="button"
-        onClick={() => handleDayClick(day)}
+        onClick={() => { handleDayClick(day); }}
         disabled={disabled}
         className={`
           h-8 rounded font-medium text-xs

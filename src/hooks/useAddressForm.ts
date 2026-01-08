@@ -1,10 +1,10 @@
 "use client";
 
 import { useFormik } from "formik";
-import * as Yup from "yup";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import locationData from "../data/locationData.json";
-import { Address, AddAddress } from "../types/address.type";
+import type { Address, AddAddress } from "../types/address.types";
+import { AddressSchema } from "../schemas/address.schema";
 
 interface UseAddressFormProps {
   initialValues?: Partial<Address>;
@@ -15,28 +15,22 @@ export const useAddressForm = ({
   initialValues,
   onSubmit,
 }: UseAddressFormProps) => {
-  const formik = useFormik({
+  const formik = useFormik<Address | AddAddress>({
     initialValues: {
-      address_id: initialValues?.address_id || "",
-      address_line1: initialValues?.address_line1 || "",
-      address_line2: initialValues?.address_line2 || "",
-      country: initialValues?.country || "",
-      state: initialValues?.state || "",
-      city: initialValues?.city || "",
-      pincode: initialValues?.pincode || 0,
-    },
-    validationSchema: Yup.object({
-      address_line1: Yup.string().required("Required"),
-      country: Yup.string().required("Required"),
-      state: Yup.string().required("Required"),
-      city: Yup.string().required("Required"),
-      pincode: Yup.number().required("Required").positive().integer(),
-    }),
+      address_id: initialValues?.address_id ?? "",
+      address_line1: initialValues?.address_line1 ?? "",
+      address_line2: initialValues?.address_line2 ?? "",
+      country: initialValues?.country ?? "",
+      state: initialValues?.state ?? "",
+      city: initialValues?.city ?? "",
+      pincode: initialValues?.pincode ?? 0,
+    } as Address | AddAddress,
+    validationSchema: AddressSchema,
     onSubmit: (values) => {
-      const { address_id, ...data } = values;
-      if (address_id) {
-        onSubmit(values as Address);
+      if ('address_id' in values && values.address_id) {
+        onSubmit(values);
       } else {
+        const { address_id: _, ...data } = values as Address;
         onSubmit(data as AddAddress);
       }
     },
@@ -53,7 +47,7 @@ export const useAddressForm = ({
       (c) => c.name === formik.values.country || c.id === formik.values.country
     );
     return (
-      selectedCountry?.states.map((s) => ({ id: s.id, name: s.name })) || []
+      selectedCountry?.states.map((s) => ({ id: s.id, name: s.name })) ?? []
     );
   }, [formik.values.country]);
 
@@ -64,15 +58,10 @@ export const useAddressForm = ({
     const selectedState = selectedCountry?.states.find(
       (s) => s.name === formik.values.state || s.id === formik.values.state
     );
-    return selectedState?.cities.map((c) => ({ id: c, name: c })) || [];
+    return selectedState?.cities.map((c) => ({ id: c, name: c })) ?? [];
   }, [formik.values.country, formik.values.state]);
 
-  // Reset state when country changes
-  useEffect(() => {
-    if (formik.values.country && !initialValues?.country) {
-      // Only reset if it's not the initial load or if the value actually changed
-    }
-  }, [formik.values.country]);
+
 
   return {
     formik,

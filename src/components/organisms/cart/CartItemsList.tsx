@@ -3,24 +3,8 @@ import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import CartItemRow from './CartItemRow'
-import { CartItem } from '@/types/cart.type'
+import type { CartItemsListProps } from '@/types/cart.types'
 
-interface CartItemsListProps {
-  items: CartItem[]
-  onQuantityChange: (id: string, quantity: number) => void
-  onRemove: (id: string) => void
-}
-
-/**
- * CartItemsList Component
- * Displays all cart items in a scrollable list format
- * 
- * Responsibility:
- * - Render multiple CartItemRow components
- * - Display item count
- * - Handle empty state with continue shopping link
- * - Pass callbacks to child components
- */
 export default function CartItemsList({
   items,
   onQuantityChange,
@@ -34,9 +18,9 @@ export default function CartItemsList({
 
       <div className="space-y-4">
         {items.map((item) => (
-          <div key={item.id}>
+          <div key={item.cart_item_id}>
             <CartItemRow
-              item={item}
+              cartitem={item}
               onQuantityChange={onQuantityChange}
               onRemove={onRemove}
             />

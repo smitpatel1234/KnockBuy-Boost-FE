@@ -1,4 +1,6 @@
-export const cetogoryColumn = [
+import type { ColumnConfig } from "@/types/generic-table.types";
+
+export const cetogoryColumn: ColumnConfig[] = [
    {
       title: "Image",
       key: "image_url",
@@ -22,7 +24,7 @@ export const cetogoryColumn = [
    {
       title: "Description",
       key: "description",
-      sortable: true,
+      filterKey: "category.description",
       searchable: true
    },
 ];

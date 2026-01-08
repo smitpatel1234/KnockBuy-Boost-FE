@@ -1,5 +1,6 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { Item, AddItemParams } from "../../types/item.type";
+import type { PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import type { Item, AddItemParams } from "../../types/item.types";
 import {
   getAllItemsPage,
   createItem,
@@ -7,7 +8,7 @@ import {
   deleteItem,
 
 } from "../../services/item.service";
-import { PageParams  } from "@/types/pagination.type";
+import type { PageParams, PaginationResponse } from "@/types/pagination.types";
 import { initialPage } from "@/redux/features/const";
 interface ItemState {
   items: Item[];
@@ -22,15 +23,16 @@ const initialState: ItemState = {
 };
 
 
-export const fetchItems = createAsyncThunk(
+export const fetchItems = createAsyncThunk<PaginationResponse<Item>, PageParams>(
   "item/fetchAll",
-  async (pageParams:PageParams, { rejectWithValue }) => {
+  async (pageParams: PageParams, { rejectWithValue }) => {
     try {
       const response = await getAllItemsPage(pageParams);
-      return response.data || [];
-    } catch (err: any) {
+      return response.data;
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
       return rejectWithValue(
-        err.response?.data?.message || "Failed to fetch items"
+        error.response?.data?.message ?? "Failed to fetch items"
       );
     }
   }
@@ -41,12 +43,13 @@ export const addItem = createAsyncThunk(
   async (data: AddItemParams, { rejectWithValue, dispatch }) => {
     try {
       await createItem(data);
-      dispatch(fetchItems(initialPage));
-      
+      void dispatch(fetchItems(initialPage));
+
       return;
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
       return rejectWithValue(
-        err.response?.data?.message || "Failed to add item"
+        error.response?.data?.message ?? "Failed to add item"
       );
     }
   }
@@ -57,11 +60,12 @@ export const editItem = createAsyncThunk(
   async (data: Partial<Item>, { rejectWithValue, dispatch }) => {
     try {
       await updateItem(data);
-      dispatch(fetchItems(initialPage));
+      void dispatch(fetchItems(initialPage));
       return;
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
       return rejectWithValue(
-        err.response?.data?.message || "Failed to update item"
+        error.response?.data?.message ?? "Failed to update item"
       );
     }
   }
@@ -72,11 +76,12 @@ export const removeItem = createAsyncThunk(
   async (id: string, { rejectWithValue, dispatch }) => {
     try {
       await deleteItem(id);
-      dispatch(fetchItems(initialPage));
+      void dispatch(fetchItems(initialPage));
       return;
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
       return rejectWithValue(
-        err.response?.data?.message || "Failed to delete item"
+        error.response?.data?.message ?? "Failed to delete item"
       );
     }
   }
@@ -93,9 +98,31 @@ const itemSlice = createSlice({
     });
     builder.addCase(fetchItems.fulfilled, (state, action) => {
       state.loading = false;
-      state.items = action.payload.data;
+      state.items = action.payload?.data ?? [];
     });
     builder.addCase(fetchItems.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload as string;
+    });
+    builder.addCase(editItem.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(editItem.fulfilled, (state, action) => {
+      state.loading = false;
+    });
+    builder.addCase(editItem.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload as string;
+    });
+        builder.addCase(addItem.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(addItem.fulfilled, (state, action) => {
+      state.loading = false;
+    });
+    builder.addCase(addItem.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload as string;
     });

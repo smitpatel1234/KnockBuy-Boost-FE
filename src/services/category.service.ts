@@ -1,13 +1,16 @@
 import api, { publicapi } from "./api.service";
-import { Category, AddCategoryParams } from "../types/category.type";
-import { AxiosResponse } from "axios";
-import { PageParams, PaginationResponse } from "../types/pagination.type";
+import type { Category, AddCategoryParams } from "../types/category.types";
+import type { AxiosResponse } from "axios";
+import type { PageParams, PaginationResponse } from "../types/pagination.types";
 
 export const getAllCategories = async (): Promise<AxiosResponse<{ message: string; data: Category[] }>> => {
     return await publicapi.get("/category/getAll-categories");
 };
 
+
+
 export const getAllCategoriesPage = async (params: PageParams): Promise<{ data: PaginationResponse<Category> }> => {
+    console.log("Fetching categories with params: in getAllCategoriesPage ", params);
     const response = await api.get<{ message: string; data: PaginationResponse<Category> }>("/category/get-all-categories-page", {
         params: {
             page: params.pagination.page,

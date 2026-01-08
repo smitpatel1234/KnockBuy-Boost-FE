@@ -1,8 +1,10 @@
-import { UserProfile } from "@/types/user.type";
-import { createSlice , createAsyncThunk , PayloadAction} from "@reduxjs/toolkit";
-import { getAllUsersPage,updateUser,getUser,deleteUser } from "@/services/user.service";
-import { PageParams } from "@/types/pagination.type";
+import type { UserProfile } from "@/types/user.types";
+import type { PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { getAllUsersPage, updateUser, deleteUser } from "@/services/user.service";
+import type { PageParams, PaginationResponse } from "@/types/pagination.types";
 import { initialPage } from "./const";
+
 interface UserState {
   user: UserProfile[];
   loading: boolean;
@@ -10,52 +12,53 @@ interface UserState {
 }
 
 const initialState: UserState = {
-    user: [],
-    loading: false,
-    error: null,
+  user: [],
+  loading: false,
+  error: null,
 };
 
-export const fetchUser = createAsyncThunk(
-   "user/getAllUsersPage",
-   async (pageParams:PageParams, { rejectWithValue }) => {
-     try {
-       const response = await getAllUsersPage(pageParams);
-       return response.data || [];
-     } catch (err: any) {
-       return rejectWithValue(
-         err.response?.data?.message || "Failed to fetch items"
-       );
-     }
-   }
+export const fetchUser = createAsyncThunk<PaginationResponse<UserProfile>, PageParams>(
+  "user/getAllUsersPage",
+  async (pageParams: PageParams, { rejectWithValue }) => {
+    try {
+      const response = await getAllUsersPage(pageParams);
+      return response.data;
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
+      return rejectWithValue(
+        error.response?.data?.message ?? "Failed to fetch users"
+      );
+    }
+  }
 )
-
-
 
 export const editUser = createAsyncThunk(
   "user/edit",
   async (data: Partial<UserProfile>, { rejectWithValue, dispatch }) => {
     try {
       await updateUser(data);
-      dispatch(fetchUser(initialPage));
+      void dispatch(fetchUser(initialPage));
       return;
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
       return rejectWithValue(
-        err.response?.data?.message || "Failed to update item"
+        error.response?.data?.message ?? "Failed to update item"
       );
     }
   }
 );
 
-export const User= createAsyncThunk(
+export const removeUser = createAsyncThunk(
   "user/remove",
   async (id: string, { rejectWithValue, dispatch }) => {
     try {
       await deleteUser(id);
-      dispatch(fetchUser(initialPage));
+      void dispatch(fetchUser(initialPage));
       return;
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
       return rejectWithValue(
-        err.response?.data?.message || "Failed to delete item"
+        error.response?.data?.message ?? "Failed to delete item"
       );
     }
   }
@@ -82,5 +85,3 @@ const userSlice = createSlice({
 });
 export const { loading } = userSlice.actions;
 export default userSlice.reducer;
-
-

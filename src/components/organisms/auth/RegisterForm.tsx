@@ -10,14 +10,8 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 
 import { registerSchema } from "@/utils/validation/schemas/register_user";
-import { RegisterCredentials } from "@/types/auth.type";
-
-interface RegisterFormProps {
-  onSubmit: (values: RegisterCredentials) => void;
-  isLoading?: boolean;
-  error?: string;
-}
-
+import type { RegisterFormProps } from "@/types/registerform.types";
+import { usePasswordStrength } from "@/types/registerform.types";
 export default function RegisterForm({
   onSubmit,
   isLoading = false,
@@ -25,29 +19,14 @@ export default function RegisterForm({
 }: RegisterFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  const passwordStrength = (password: string) => {
-    let strength = 0;
-    if (password.length >= 8) strength++;
-    if (/[A-Z]/.test(password)) strength++;
-    if (/[0-9]/.test(password)) strength++;
-    if (/[^A-Za-z0-9]/.test(password)) strength++;
-    return strength;
-  };
-
-  const strengthColor = (level: number) => {
-    if (level <= 1) return "bg-red-500";
-    if (level === 2) return "bg-yellow-500";
-    if (level === 3) return "bg-blue-500";
-    return "bg-green-500";
-  };
+  const { passwordStrength, strengthColor } = usePasswordStrength();
 
   return (
     <Formik
       initialValues={{
         username: "",
         email: "",
-        phone_number: 0,
+        phone_number: "",
         password: "",
         confirmPassword: "",
         agreeToTerms: false,
@@ -124,7 +103,7 @@ export default function RegisterForm({
                 />
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
+                  onClick={() => { setShowPassword(!showPassword); }}
                   className="absolute right-3 top-1/2 -translate-y-1/2"
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -169,7 +148,7 @@ export default function RegisterForm({
                 <button
                   type="button"
                   onClick={() =>
-                    setShowConfirmPassword(!showConfirmPassword)
+                    { setShowConfirmPassword(!showConfirmPassword); }
                   }
                   className="absolute right-3 top-1/2 -translate-y-1/2"
                 >
@@ -191,9 +170,9 @@ export default function RegisterForm({
             <div className="flex items-start gap-2">
               <Checkbox
                 checked={values.agreeToTerms}
-                onCheckedChange={(v) =>
-                  setFieldValue("agreeToTerms", v)
-                }
+                onCheckedChange={(v) => {
+                  void setFieldValue("agreeToTerms", v);
+                }}
               />
               <Label className="text-sm">
                 I agree to the Terms and Privacy Policy

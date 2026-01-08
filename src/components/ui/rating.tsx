@@ -13,7 +13,7 @@ import {
   useState,
 } from 'react';
 import { cn } from '@/lib/utils';
-type RatingContextValue = {
+interface RatingContextValue {
   value: number;
   readOnly: boolean;
   hoverValue: number | null;
@@ -25,7 +25,7 @@ type RatingContextValue = {
   handleKeyDown: (event: KeyboardEvent<HTMLButtonElement>) => void;
   setHoverValue: (value: number | null) => void;
   setFocusedStar: (value: number | null) => void;
-};
+}
 const RatingContext = createContext<RatingContextValue | null>(null);
 const useRating = () => {
   const context = useContext(RatingContext);
@@ -55,7 +55,7 @@ export const RatingButton = ({
     setFocusedStar,
   } = useRating();
   const index = providedIndex ?? 0;
-  const isActive = index < (hoverValue ?? focusedStar ?? value ?? 0);
+  const isActive = index < (hoverValue ?? focusedStar ?? value);
   let tabIndex = -1;
   if (!readOnly) {
     tabIndex = value === index + 1 ? 0 : -1;
@@ -106,7 +106,7 @@ export const RatingButton = ({
     </button>
   );
 };
-export type RatingProps = {
+export interface RatingProps {
   defaultValue?: number;
   value?: number;
   onChange?: (
@@ -117,7 +117,7 @@ export type RatingProps = {
   readOnly?: boolean;
   className?: string;
   children?: ReactNode;
-};
+}
 export const Rating = ({
   value: controlledValue,
   onValueChange: controlledOnValueChange,
@@ -143,7 +143,7 @@ export const Rating = ({
     ) => {
       if (!readOnly) {
         onChange?.(event, newValue);
-        onValueChange?.(newValue);
+        onValueChange(newValue);
       }
     },
     [readOnly, onChange, onValueChange]
@@ -154,7 +154,7 @@ export const Rating = ({
         return;
       }
       const total = Children.count(children);
-      let newValue = focusedStar !== null ? focusedStar : (value ?? 0);
+      let newValue = focusedStar ?? value;
       switch (event.key) {
         case 'ArrowRight':
           if (event.shiftKey || event.metaKey) {
@@ -182,11 +182,11 @@ export const Rating = ({
   useEffect(() => {
     if (focusedStar !== null && containerRef.current) {
       const buttons = containerRef.current.querySelectorAll('button');
-      buttons[focusedStar - 1]?.focus();
+      buttons[focusedStar - 1].focus();
     }
-  }, [focusedStar]);
+  }, []);
   const contextValue: RatingContextValue = {
-    value: value ?? 0,
+    value: value,
     readOnly,
     hoverValue,
     focusedStar,
@@ -200,10 +200,12 @@ export const Rating = ({
       <div
         aria-label="Rating"
         className={cn('inline-flex items-center gap-0.5', className)}
-        onMouseLeave={() => setHoverValue(null)}
+        onMouseLeave={() => {
+          setHoverValue(null);
+        }}
         ref={containerRef}
         role="radiogroup"
-        {...(props as any)}
+        {...(props as Record<string, unknown>)}
       >
         {Children.map(children, (child, index) => {
           if (!child) {

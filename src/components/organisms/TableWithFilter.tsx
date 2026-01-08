@@ -3,9 +3,9 @@
 import React from "react";
 import GenericTable from "@/components/molecules/GenericTable";
 import Pagination from "@/components/molecules/Pagination";
-import { ColumnConfig } from "@/types/GenericTable";
+import type { ColumnConfig } from "@/types/generic-table.types";
 import { useTable } from "@/hooks/useTable";
-import { PageParams, PaginationResponse } from "@/types/pagination.type";
+import type { PageParams } from "@/types/pagination.types";
 
 interface TableWithFilterProps<T> {
   data: Partial<T>[],
@@ -13,7 +13,7 @@ interface TableWithFilterProps<T> {
   fetchData: (params: PageParams) => Promise<number>;
   onEdit?: (row: T) => void;
   onDelete?: (row: T) => void;
-  columnRenderers?: Record<string, (value: any, row: T) => React.ReactNode>;
+  columnRenderers?: Record<string, (value: string | number | null | undefined, row: T) => React.ReactNode>;
   initialLimit?: number;
 }
 
@@ -45,7 +45,7 @@ export default function TableWithFilter<T>({
       <div className={`transition-opacity duration-300`}>
         <GenericTable
           dataOfColumn={dataOfColumn}
-          data={data}
+          data={data as T[]}
           loading={loading}
           filters={filters}
           sorts={sorts}

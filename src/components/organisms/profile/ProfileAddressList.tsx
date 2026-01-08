@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Plus, Edit2 } from 'lucide-react'
-import { Address } from '@/types/auth.type'
+import type { Address } from '@/types/auth.types'
 
 interface ProfileAddressListProps {
   addresses: Address[]
@@ -10,17 +10,6 @@ interface ProfileAddressListProps {
   onDelete?: (id: string) => void
 }
 
-/**
- * ProfileAddressList Molecule
- * Displays user's saved addresses with edit/delete options
- * 
- * Responsibility:
- * - Show all saved addresses
- * - Highlight default address
- * - Allow adding new addresses
- * - Allow editing existing addresses
- * - Allow deleting addresses
- */
 export default function ProfileAddressList({
   addresses,
   onAdd,

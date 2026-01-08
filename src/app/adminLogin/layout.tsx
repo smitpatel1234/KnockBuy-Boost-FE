@@ -9,14 +9,9 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: React.PropsWithChildren) {
-  return (
-    <html lang="en" suppressHydrationWarning>
-
-      <body
-        className={`bg-zinc-50 font-sans antialiased`}
-      >
-        {children}
-      </body>
-    </html>
+  return (<>
+  {children}
+  </>
+        
   );
 }

@@ -13,10 +13,11 @@ import {
 } from "@/components/ui/select";
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { addVariantProperty, addVariantValue, removeVariantProperty } from '@/redux/features/variant-slice';
+import type { VariantProperty } from '@/types/variant.types';
 
 export default function VarientConfig() {
   const dispatch = useAppDispatch();
-  const { properties = [] } = useAppSelector((state) => state.variant);
+  const { properties } = useAppSelector((state) => state.variant);
 
   const [newPropertyName, setNewPropertyName] = useState("");
   const [selectedPropId, setSelectedPropId] = useState<string>("");
@@ -24,14 +25,14 @@ export default function VarientConfig() {
 
   const handleAddProperty = () => {
     if (newPropertyName.trim()) {
-      dispatch(addVariantProperty({ property_name: newPropertyName }));
+      void dispatch(addVariantProperty({ property_name: newPropertyName }));
       setNewPropertyName("");
     }
   };
 
   const handleAddValue = () => {
     if (selectedPropId && newValueName.trim()) {
-      dispatch(addVariantValue({
+      void dispatch(addVariantValue({
         variant_value: newValueName,
         variantProperty_id: selectedPropId
       }));
@@ -41,7 +42,7 @@ export default function VarientConfig() {
 
   const handleDeleteProperty = () => {
     if (selectedPropId) {
-      dispatch(removeVariantProperty(selectedPropId));
+      void dispatch(removeVariantProperty(selectedPropId));
       setSelectedPropId("");
     }
   }
@@ -56,7 +57,7 @@ export default function VarientConfig() {
             <Label className="text-xs text-gray-500 mb-1.5 block">Property Name (e.g. Size, Color, Fabric)</Label>
             <Input
               value={newPropertyName}
-              onChange={(e) => setNewPropertyName(e.target.value)}
+              onChange={(e) => { setNewPropertyName(e.target.value); }}
               placeholder="Enter property name..."
               className="bg-white"
             />
@@ -80,7 +81,7 @@ export default function VarientConfig() {
                   <SelectValue placeholder="Select a property" />
                 </SelectTrigger>
                 <SelectContent>
-                  {properties.map((p) => (
+                  {properties.map((p: VariantProperty) => (
                     <SelectItem key={p.variantProperty_id} value={p.variantProperty_id}>
                       {p.property_name}
                     </SelectItem>
@@ -100,7 +101,7 @@ export default function VarientConfig() {
             <div className="flex gap-2">
               <Input
                 value={newValueName}
-                onChange={(e) => setNewValueName(e.target.value)}
+                onChange={(e) => { setNewValueName(e.target.value); }}
                 placeholder="Enter value..."
                 disabled={!selectedPropId}
               />

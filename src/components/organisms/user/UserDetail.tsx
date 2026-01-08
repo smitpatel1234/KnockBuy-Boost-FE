@@ -5,8 +5,15 @@ import { Card, CardContent } from "@/components/atoms/Card";
 import { Input } from "@/components/atoms/Input";
 import { Label } from "@/components/atoms/Label";
 import { Button } from "@/components/atoms/Button";
-import { useUserDetail } from "@/hooks/useUserDetail";
-export default function UserDetail({formik,loading}:any) {
+import type { FormikProps } from "formik";
+import type { UserProfile as User } from "@/types/user.types";
+
+interface UserDetailProps {
+  formik: FormikProps<User>;
+  loading?: boolean;
+}
+
+export default function UserDetail({ formik, loading }: UserDetailProps) {
   if (loading) return (
     <div className="animate-pulse flex flex-col gap-4">
       <div className="h-10 bg-slate-100 rounded"></div>
@@ -20,16 +27,6 @@ export default function UserDetail({formik,loading}:any) {
       <CardContent className="p-6">
         <form onSubmit={formik.handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* User ID */}
-            <div className="space-y-1 md:col-span-2">
-              <Label className="text-xs font-bold text-slate-500 uppercase">User ID</Label>
-              <Input
-                disabled
-                className="h-10 bg-slate-50 border-slate-200 text-slate-400 font-mono text-xs"
-                value={formik.values.user_id}
-              />
-            </div>
-
             {/* Username */}
             <div className="space-y-1">
               <Label className="text-xs font-bold text-slate-500 uppercase">Username</Label>
@@ -66,14 +63,14 @@ export default function UserDetail({formik,loading}:any) {
               <Label className="text-xs font-bold text-slate-500 uppercase">Phone Number</Label>
               <Input
                 name="phone_number"
-                type="number"
+                type="tel"
                 value={formik.values.phone_number}
                 onChange={formik.handleChange}
                 className="h-10 focus:ring-blue-500"
                 placeholder="Phone number"
               />
               {formik.errors.phone_number && formik.touched.phone_number && (
-                <div className="text-red-500 text-[10px] font-bold uppercase">{formik.errors.phone_number as string}</div>
+                <div className="text-red-500 text-[10px] font-bold uppercase">{formik.errors.phone_number}</div>
               )}
             </div>
 

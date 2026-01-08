@@ -4,10 +4,10 @@ import React, { useState, useEffect } from "react";
 import { Button } from "@/components/atoms/Button";
 import { PlusIcon, MapPinIcon } from "lucide-react";
 import { useParams } from "next/navigation";
-import { Address, AddAddress } from "@/types/address.type";
+import type { Address, AddAddress } from "@/types/address.types";
 import {
-  getAllAddressByUserId,
-  createAddress,
+  getAllAddressByUserIdInParams,
+  createAddressInParams,
   updateAddress as updateAddressService,
   deleteAddress
 } from "@/services/address.service";
@@ -21,28 +21,28 @@ export default function UserAddress() {
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const fetchAddresses = async () => {
+  const fetchAddresses = React.useCallback(async () => {
     if (!user_id) return;
     setLoading(true);
     try {
-      const response = await getAllAddressByUserId(user_id as string);
+      const response = await getAllAddressByUserIdInParams(user_id as string);
       setAddresses(response.data.data);
     } catch (error) {
       console.error("Failed to fetch addresses", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [user_id]);
 
   useEffect(() => {
-    fetchAddresses();
-  }, [user_id]);
+    void fetchAddresses();
+  }, [fetchAddresses]);
 
   const handleCreate = async (values: Address | AddAddress) => {
     try {
-      await createAddress(values as AddAddress);
+      await createAddressInParams(values as AddAddress, user_id as string);
       setIsAdding(false);
-      fetchAddresses();
+      void fetchAddresses();
     } catch (error) {
       console.error("Failed to create address", error);
     }
@@ -52,7 +52,7 @@ export default function UserAddress() {
     try {
       await updateAddressService(values as Address);
       setEditingAddress(null);
-      fetchAddresses();
+      void fetchAddresses();
     } catch (error) {
       console.error("Failed to update address", error);
     }
@@ -61,7 +61,7 @@ export default function UserAddress() {
   const handleDelete = async (addressId: string) => {
     try {
       await deleteAddress(addressId);
-      fetchAddresses();
+      void fetchAddresses();
     } catch (error) {
       console.error("Failed to delete address", error);
     }
@@ -81,7 +81,7 @@ export default function UserAddress() {
             variant="default"
             size="sm"
             className="gap-1 bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
-            onClick={() => setIsAdding(true)}
+            onClick={() => { setIsAdding(true); }}
           >
             <PlusIcon className="h-4 w-4" />
             Add New Address
@@ -93,7 +93,7 @@ export default function UserAddress() {
       {isAdding && (
         <div className="animate-in fade-in slide-in-from-top-2 duration-300">
           <AddressForm
-            onCancel={() => setIsAdding(false)}
+            onCancel={() => { setIsAdding(false); }}
             onSubmit={handleCreate}
           />
         </div>
@@ -103,7 +103,7 @@ export default function UserAddress() {
         <div className="animate-in fade-in slide-in-from-top-2 duration-300">
           <AddressForm
             initialValues={editingAddress}
-            onCancel={() => setEditingAddress(null)}
+            onCancel={() => { setEditingAddress(null); }}
             onSubmit={handleUpdate}
           />
         </div>
@@ -128,7 +128,7 @@ export default function UserAddress() {
                       variant="outline"
                       size="sm"
                       className="text-xs font-bold uppercase tracking-wider hover:bg-blue-50 hover:text-blue-600 transition-all"
-                      onClick={() => setEditingAddress(addr)}
+                      onClick={() => { setEditingAddress(addr); }}
                     >
                       Edit
                     </Button>
@@ -136,7 +136,7 @@ export default function UserAddress() {
                       variant="destructive"
                       size="sm"
                       className="text-xs font-bold uppercase tracking-wider hover:bg-red-600 transition-all shadow-sm"
-                      onClick={() => handleDelete(addr.address_id)}
+                      onClick={() => { void handleDelete(addr.address_id); }}
                     >
                       Delete
                     </Button>

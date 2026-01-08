@@ -4,28 +4,36 @@ import React from "react";
 import VarientConfig from "../organisms/products/VarientConfig";
 import TableWithFilter from "../organisms/TableWithFilter";
 import { varientconfigColumn } from "@/data/varientColumn";
-import { useAppDispatch ,useAppSelector} from "@/redux/store";
+import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { removeVariantValue, fetchVariantValuePage } from "@/redux/features/variant-slice";
 import EditVariantValueDialog from "../organisms/products/EditVariantValueDialog";
-import { PageParams } from "@/types/pagination.type"; 
+import type { PageParams } from "@/types/pagination.types";
 
 
- export default function  VarientConfigPage (){
+export default function VarientConfigPage() {
   const dispatch = useAppDispatch();
-  const [editValue, setEditValue] = React.useState<any>(null);
+  const [editValue, setEditValue] = React.useState<{
+    variantValue_id: string;
+    variant_value: string;
+    variantProperty_id: string;
+  } | null>(null);
   const { values } = useAppSelector((state) => state.variant);
 
 
-  const handleDeleteValue = (row: any) => {
-    dispatch(removeVariantValue(row.variantValue_id));
+  const handleDeleteValue = (row: { variantValue_id: string }) => {
+    void dispatch(removeVariantValue(row.variantValue_id));
   };
 
-  const handleEditValue = (row: any) => {
+  const handleEditValue = (row: {
+    variantValue_id: string;
+    variant_value: string;
+    variantProperty_id: string;
+  }) => {
     setEditValue(row);
   };
   const fetchdata = async (PageParams: PageParams) => {
-       const data = await dispatch(fetchVariantValuePage(PageParams)).unwrap();
-       return data.values.meta.total ;
+    const data = await dispatch(fetchVariantValuePage(PageParams)).unwrap();
+    return data.values.meta.total;
   }
   return (
     <div className="flex flex-col gap-6 p-4">
@@ -33,7 +41,9 @@ import { PageParams } from "@/types/pagination.type";
         <EditVariantValueDialog
           isOpen={!!editValue}
           variantValue={editValue}
-          onClose={() => setEditValue(null)}
+          onClose={() => {
+            setEditValue(null);
+          }}
         />
       )}
 
@@ -77,8 +87,12 @@ import { PageParams } from "@/types/pagination.type";
           </div>
 
           <div className="p-0">
-            <TableWithFilter<any>
-              data = {values}
+            <TableWithFilter<{
+              variantValue_id: string;
+              variant_value: string;
+              variantProperty_id: string;
+            }>
+              data={values}
               dataOfColumn={varientconfigColumn}
               fetchData={fetchdata}
               onEdit={handleEditValue}

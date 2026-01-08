@@ -12,27 +12,32 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 
-interface FilterState {
-  priceRange: [number, number];
-  selectedRating: string;
-  selectedColors: string[];
-  selectedSizes: string[];
-}
+import type { FilterSidebarProps } from '@/types/filter.types';
 
-interface FilterSidebarProps {
-  onFiltersChange?: (filters: FilterState) => void;
-}
-
-const COLORS: string[] = ['Red', 'Blue', 'Green', 'Black', 'White', 'Yellow'];
-const SIZES: string[] = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+const DEFAULT_COLORS: string[] = ['Red', 'Blue', 'Green', 'Black', 'White', 'Yellow'];
+const DEFAULT_SIZES: string[] = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 const RATINGS: number[] = [4, 3, 2, 1];
 
 
-export default function FilterSidebar({ onFiltersChange }: FilterSidebarProps): React.ReactElement {
+export default function FilterSidebar({ onFilterChange, dynamicOptions }: FilterSidebarProps): React.ReactElement {
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 200]);
   const [selectedRating, setSelectedRating] = useState<string>('0');
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
+
+  const availableColors = dynamicOptions?.colors && dynamicOptions.colors.length > 0 ? dynamicOptions.colors : DEFAULT_COLORS;
+  const availableSizes = dynamicOptions?.sizes && dynamicOptions.sizes.length > 0 ? dynamicOptions.sizes : DEFAULT_SIZES;
+
+  React.useEffect(() => {
+    onFilterChange?.({
+      priceRange,
+      selectedRating,
+      selectedColors,
+      selectedSizes,
+      search: '',
+      sortBy: 'newest'
+    });
+  }, []);
 
   const handleColorChange = useCallback((color: string, checked: boolean | string): void => {
     setSelectedColors((prev: string[]): string[] =>
@@ -78,8 +83,8 @@ export default function FilterSidebar({ onFiltersChange }: FilterSidebarProps): 
               className="mb-2"
             />
             <div className="flex justify-between text-sm text-gray-600">
-              <span>${priceRange[0]}</span>
-              <span>${priceRange[1]}</span>
+              <span>${String(priceRange[0])}</span>
+              <span>${String(priceRange[1])}</span>
             </div>
           </div>
         </CollapsibleContent>
@@ -101,12 +106,12 @@ export default function FilterSidebar({ onFiltersChange }: FilterSidebarProps): 
             </div>
             {RATINGS.map((rating: number) => (
               <div key={rating} className="flex items-center space-x-2 mb-2">
-                <RadioGroupItem value={rating.toString()} id={`r${rating}`} />
-                <Label htmlFor={`r${rating}`} className="flex items-center cursor-pointer">
-                  {[...Array(rating)].map((_, i: number) => (
+                <RadioGroupItem value={rating.toString()} id={`r${String(rating)}`} />
+                <Label htmlFor={`r${String(rating)}`} className="flex items-center cursor-pointer">
+                  {Array.from({ length: rating }).map((_, i: number) => (
                     <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                   ))}
-                  {[...Array(5 - rating)].map((_, i: number) => (
+                  {Array.from({ length: 5 - rating }).map((_, i: number) => (
                     <Star key={i} className="w-4 h-4 text-gray-300" />
                   ))}
                   <span className="ml-2">& Up</span>
@@ -126,14 +131,14 @@ export default function FilterSidebar({ onFiltersChange }: FilterSidebarProps): 
           <ChevronDown className="w-4 h-4" />
         </CollapsibleTrigger>
         <CollapsibleContent className="space-y-2">
-          {COLORS.map((color: string) => (
+          {availableColors.map((color: string) => (
             <div key={color} className="flex items-center space-x-2">
               <Checkbox
                 id={`color-${color}`}
                 checked={selectedColors.includes(color)}
-                onCheckedChange={(checked: boolean | string) => handleColorChange(color, checked)}
+                onCheckedChange={(checked: boolean | string) => { handleColorChange(color, checked); }}
               />
-              <Label htmlFor={`color-${color}`} className="cursor-pointer">
+              <Label htmlFor={`color-${String(color)}`} className="cursor-pointer">
                 {color}
               </Label>
             </div>
@@ -150,14 +155,14 @@ export default function FilterSidebar({ onFiltersChange }: FilterSidebarProps): 
           <ChevronDown className="w-4 h-4" />
         </CollapsibleTrigger>
         <CollapsibleContent className="space-y-2">
-          {SIZES.map((size: string) => (
+          {availableSizes.map((size: string) => (
             <div key={size} className="flex items-center space-x-2">
               <Checkbox
                 id={`size-${size}`}
                 checked={selectedSizes.includes(size)}
-                onCheckedChange={(checked: boolean | string) => handleSizeChange(size, checked)}
+                onCheckedChange={(checked: boolean | string) => { handleSizeChange(size, checked); }}
               />
-              <Label htmlFor={`size-${size}`} className="cursor-pointer">
+              <Label htmlFor={`size-${String(size)}`} className="cursor-pointer">
                 {size}
               </Label>
             </div>

@@ -1,6 +1,6 @@
 import api from "./api.service";
 
-export const uploadFiles = async (files: File[], type: 'user' | 'category' | 'item' = 'item') => {
+export const uploadFiles = async (files: File[], type: 'user' | 'category' | 'item' = 'item'): Promise<{ data: { url?: string }[] }> => {
     const formData = new FormData();
     files.forEach((file) => {
         formData.append("files", file);
@@ -11,5 +11,5 @@ export const uploadFiles = async (files: File[], type: 'user' | 'category' | 'it
             "Content-Type": "multipart/form-data",
         },
     });
-    return response.data;
+    return response.data as { data: { url?: string }[] };
 };

@@ -1,17 +1,16 @@
 "use client";
 
-import { useCategorySlider } from "@/hooks/use-category-slider";
+import { useCategorySlider } from "@/hooks/useCategorySlider";
 import { ChevronRight, ChevronLeft, List, Check, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState, useMemo } from "react";
-import { Category } from "@/types/category.type";
+import type { Category } from "@/types/category.types";
 import { Button } from "@/components/ui/button";
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-
 export default function CategorySlider() {
     const {
         categories,
@@ -44,7 +43,7 @@ export default function CategorySlider() {
 
         if (hasChildren) {
             setCurrentParentId(category.category_id);
-             selectCategory(category.category_id);
+            selectCategory(category.category_id);
         } else {
             selectCategory(category.category_id);
             setIsPopoverOpen(false);
@@ -62,7 +61,7 @@ export default function CategorySlider() {
     }
 
     return (
-        <div className="w-full bg-white border-b border-gray-100 py-3">
+        <div className="w-1/4 bg-white border-b border-gray-100 py-3">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center gap-4">
                 <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
                     <PopoverTrigger asChild>
@@ -74,7 +73,7 @@ export default function CategorySlider() {
                             )}
                         >
                             <List className="h-4 w-4" />
-                            {selectedCategory ? selectedCategory.category_name : "All Categories"}
+                            {selectedCategory?.category_name ?? "All Categories"}
                             <ChevronRight className={cn("h-4 w-4 transition-transform duration-200 opacity-60", isPopoverOpen && "rotate-90")} />
                         </Button>
                     </PopoverTrigger>
@@ -92,7 +91,7 @@ export default function CategorySlider() {
                                     className="flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-700 transition-colors uppercase tracking-tight"
                                 >
                                     <ChevronLeft className="h-3.5 w-3.5" />
-                                    Back to {getParentCategory(currentParentId)?.category_name || "All"}
+                                    Back to {getParentCategory(currentParentId)?.category_name ?? "All"}
                                 </button>
                             ) : (
                                 <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">
@@ -100,7 +99,7 @@ export default function CategorySlider() {
                                 </span>
                             )}
                             <button
-                                onClick={() => setIsPopoverOpen(false)}
+                                onClick={() => { setIsPopoverOpen(false); }}
                                 className="p-1 rounded-full hover:bg-gray-200 text-gray-400 hover:text-gray-600 transition-colors"
                             >
                                 <X className="h-3.5 w-3.5" />
@@ -134,7 +133,7 @@ export default function CategorySlider() {
                                     return (
                                         <button
                                             key={cat.category_id}
-                                            onClick={() => handleSelectAction(cat)}
+                                            onClick={() => { handleSelectAction(cat); }}
                                             className={cn(
                                                 "flex items-center justify-between w-full px-3 py-2.5 text-sm transition-all rounded-lg group mb-0.5",
                                                 isSelected
@@ -172,7 +171,7 @@ export default function CategorySlider() {
                         <span className="text-gray-300 hidden sm:block">/</span>
                         <span className="font-medium text-gray-500 truncate max-w-[150px]">{selectedCategory.category_name}</span>
                         <button
-                            onClick={() => selectCategory(null)}
+                            onClick={() => { selectCategory(null); }}
                             className="p-1 hover:bg-gray-100 rounded-full transition-colors group"
                             title="Clear selection"
                         >

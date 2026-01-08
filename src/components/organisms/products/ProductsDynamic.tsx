@@ -4,10 +4,11 @@ import { Rating, RatingButton } from '@/components/ui/rating';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectGroup, SelectLabel, SelectItem } from '@/components/ui/select';
-import { FormikProps } from 'formik';
-import { Item } from '@/types/item.type';
-import { useAppSelector, RootState } from '@/redux/store';
-import { Category } from '@/types/category.type';
+import type { FormikProps } from 'formik';
+import type { Item } from '@/types/item.types';
+import type { RootState } from '@/redux/store';
+import { useAppSelector } from '@/redux/store';
+import type { Category } from '@/types/category.types';
 
 interface ProductsPriceProps {
   formik: FormikProps<Item>
@@ -15,21 +16,22 @@ interface ProductsPriceProps {
 
 export default function ProductsPrice({ formik }: ProductsPriceProps) {
   const { categories } = useAppSelector((state: RootState) => state.category);
-   
+
   return (
     <div className="space-y-4">
       <div className="flex items-end gap-4 overflow-x-auto pb-4">
-        <div className="flex flex-col min-w-[150px] bg-slate-50 border border-slate-200 rounded-lg p-4 ">
-          <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Product Rating</h3>
-          <Rating
-            value={formik.values.rating}
-            onValueChange={(val) => formik.setFieldValue('rating', val)}
-            className='mt-1'
-          >
-            {Array.from({ length: 5 }).map((_, index) => (
-              <RatingButton key={index} className='mt-1' />
-            ))}
-          </Rating>
+        <div className="flex-1 min-w-[150px] space-y-2">
+           <Label htmlFor="item_price" className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Product Price</Label>
+          <Input
+            type="string"
+            id="sku"
+            name="sku"
+            placeholder="sku-Android"
+            className="h-10 border-slate-300 focus:ring-2 focus:ring-blue-500"
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            value={formik.values.sku}
+          />
         </div>
 
         <div className="flex-1 min-w-[150px] space-y-2">
@@ -70,7 +72,7 @@ export default function ProductsPrice({ formik }: ProductsPriceProps) {
           <Label className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Category</Label>
           <Select
             value={formik.values.category_id}
-            onValueChange={(value) => formik.setFieldValue('category_id', value)}
+            onValueChange={(value) => { void formik.setFieldValue('category_id', value); }}
           >
             <SelectTrigger className="h-10 border-slate-300 focus:ring-2 focus:ring-blue-500">
               <SelectValue placeholder="Select Category" />

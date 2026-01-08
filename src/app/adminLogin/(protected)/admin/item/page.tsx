@@ -1,5 +1,5 @@
 import { SiteHeader } from "@/components/site-header";
-import ProductTemp from '@/components/templates/ProductTemp';
+import ProductTemp from '@/components/templates/ProductTemplate';
 
 export default function ItemsPage() {
   return (
