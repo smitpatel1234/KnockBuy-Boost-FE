@@ -11,7 +11,7 @@ export const itemColumn: ColumnConfig[] = [
         title: "Price",
         key: "item_price",
         sortable: true,
-        searchable: true
+        searchByNumber: true
     },
     {
         title: "Category",
@@ -24,7 +24,7 @@ export const itemColumn: ColumnConfig[] = [
         title: "Stock",
         key: "stock",
         sortable: true,
-        searchable: true
+        searchByNumber: true
     },
     {
         title: "SKU",

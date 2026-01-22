@@ -7,7 +7,6 @@ import nextTs from "eslint-config-next/typescript";
 import storybook from "eslint-plugin-storybook";
 
 export default defineConfig([
-
   globalIgnores([
     ".next/**",
     "out/**",
@@ -19,11 +18,8 @@ export default defineConfig([
     "postcss.config.js",
     ".storybook/**",
   ]),
-
-
   ...tseslint.configs.strictTypeChecked,
   ...tseslint.configs.stylisticTypeChecked,
-
   {
     languageOptions: {
       parserOptions: {
@@ -32,16 +28,11 @@ export default defineConfig([
       },
     },
     rules: {
-
       "@typescript-eslint/no-explicit-any": "error",
       "@typescript-eslint/no-unsafe-assignment": "error",
       "@typescript-eslint/no-unsafe-call": "error",
       "@typescript-eslint/no-unsafe-member-access": "error",
-
-
       "@typescript-eslint/use-unknown-in-catch-callback-variable": "error",
-
-
       "@typescript-eslint/no-unused-vars": [
         "warn",
         { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
@@ -52,8 +43,6 @@ export default defineConfig([
       ],
     },
   },
-
-
   {
     files: ["**/*.{ts,tsx}"],
     plugins: {
@@ -66,25 +55,26 @@ export default defineConfig([
     rules: {
       "react/react-in-jsx-scope": "off",
       "react/jsx-uses-react": "off",
-
       "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": "warn",
-
       "react/no-unescaped-entities": "error",
+      "max-lines": [
+        "error",
+        { max: 100, skipBlankLines: true, skipComments: true },
+      ],
+      "max-lines-per-function": [
+        "error",
+        { max: 150, skipBlankLines: true, skipComments: true },
+      ],
     },
   },
-
-
   ...nextVitals,
   ...nextTs,
-
-
   {
     files: ["**/*.stories.@(ts|tsx)", "**/.storybook/**/*"],
     plugins: { storybook },
     rules: {
       ...storybook.configs.recommended.rules,
-
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/no-unsafe-assignment": "off",
     },

@@ -17,13 +17,13 @@ export const useAddressForm = ({
 }: UseAddressFormProps) => {
   const formik = useFormik<Address | AddAddress>({
     initialValues: {
-      address_id: initialValues?.address_id ?? "",
-      address_line1: initialValues?.address_line1 ?? "",
-      address_line2: initialValues?.address_line2 ?? "",
-      country: initialValues?.country ?? "",
-      state: initialValues?.state ?? "",
-      city: initialValues?.city ?? "",
-      pincode: initialValues?.pincode ?? 0,
+      address_id: initialValues?.address_id ,
+      address_line1: initialValues?.address_line1,
+      address_line2: initialValues?.address_line2 ,
+      country: initialValues?.country,
+      state: initialValues?.state ,
+      city: initialValues?.city ,
+      pincode: initialValues?.pincode ,
     } as Address | AddAddress,
     validationSchema: AddressSchema,
     onSubmit: (values) => {

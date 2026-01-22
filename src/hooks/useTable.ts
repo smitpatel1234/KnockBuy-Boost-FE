@@ -5,12 +5,15 @@ import { debounce } from "lodash";
 import type {
   PageParams,
   Sort,
-  Filter
+  Filter,
+  PaginationResponse,
+  MaxMinConstraints,
 } from "../types/pagination.types";
 import type { ColumnConfig } from "../types/generic-table.types";
+import { DateToTime } from "@/utils/common/formatDate";
 
 interface UseTableProps<T> {
-  fetchData: (params: PageParams) => Promise<number>;
+  fetchData: (params: PageParams) => Promise<PaginationResponse<T>>;
   dataOfColumn: ColumnConfig[];
   initialLimit?: number;
 }
@@ -24,18 +27,46 @@ export const useTable = <T>({
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(initialLimit);
-  const [filters, setFilters] = useState<Record<string, string>>({});
-  const [localFilters, setLocalFilters] = useState<Record<string, string>>({});
+  const [filters, setFilters] = useState<Filter[]>([]);
+  const [localFilters, setLocalFilters] = useState<Filter[]>([]);
   const [sorts, setSorts] = useState<Sort[]>([]);
+  const [constraints, setConstraints] = useState<MaxMinConstraints[]>([]);
 
   const formattedFilters: Filter[] = useMemo(() => {
-    return Object.entries(filters)
-      .filter(([, value]) => value !== "")
-      .map(([key, value]) => {
-        const col = dataOfColumn.find((c) => c.key === key);
+    if (!filters.length) {
+      return filters.concat(
+        ...dataOfColumn.map((col) => {
+          return {
+            isSearchByDate: col?.searchByDate,
+            isSearchByNumber: col?.searchByNumber,
+            column: col?.filterKey ?? col.key,
+
+          };
+        }),
+      );
+    }
+    return filters
+      .filter(
+        (v) =>
+          v.value !== "" ||
+          v.lowerBoundDate ||
+          v.upperBoundDate ||
+          v.lowerBoundNumber ||
+          v.upperBoundNumber ||
+          v.isSearchByNumber ||
+          v.isSearchByDate,
+      )
+      .map((v) => {
+        const col = dataOfColumn.find(
+          (c) => c.key === v.column || c.searchByDate || c.searchByNumber,
+        );
         return {
-          column: col?.filterKey ?? key,
-          value,
+          ...v,
+          lowerBoundDate: DateToTime(v.lowerBoundDate),
+          upperBoundDate: DateToTime(v.upperBoundDate),
+          isSearchByDate: col?.searchByDate,
+          isSearchByNumber: col?.searchByNumber,
+          column: col?.filterKey ?? v.column,
         };
       });
   }, [filters, dataOfColumn]);
@@ -56,14 +87,17 @@ export const useTable = <T>({
       filters: formattedFilters,
       sort: formattedSorts,
     }),
-    [page, limit, formattedFilters, formattedSorts]
+    [page, limit, formattedFilters, formattedSorts],
   );
 
   const loadData = useCallback(async () => {
     setLoading(true);
     try {
-      const totalentry = await fetchData(params);
-      setTotal(totalentry);
+      const response = await fetchData(params);
+      setTotal(response.meta.total);
+      if (response.meta.constraints) {
+        setConstraints(response.meta.constraints);
+      }
     } catch (error) {
       console.error("Error fetching table data:", error);
     } finally {
@@ -73,11 +107,11 @@ export const useTable = <T>({
 
   const debouncedSetFilters = useMemo(
     () =>
-      debounce((newFilters: Record<string, string>) => {
+      debounce((newFilters: Filter[]) => {
         setFilters(newFilters);
         setPage(1);
       }, 500),
-    []
+    [],
   );
 
   useEffect(() => {
@@ -93,8 +127,20 @@ export const useTable = <T>({
     setPage(1);
   };
 
-  const handleFilterChange = (column: string, value: string) => {
-    const nextFilters = { ...localFilters, [column]: value };
+  const handleFilterChange = (
+    column: string,
+    filterData: Omit<Filter, "column">,
+  ) => {
+    let index = localFilters.findIndex((v) => v.column === column);
+    let nextFilters: Filter[];
+
+    if (index !== -1) {
+      nextFilters = [...localFilters];
+      nextFilters[index] = { ...nextFilters[index], ...filterData };
+    } else {
+      nextFilters = [...localFilters, { column, ...filterData }];
+    }
+
     setLocalFilters(nextFilters);
     debouncedSetFilters(nextFilters);
   };
@@ -133,5 +179,6 @@ export const useTable = <T>({
     handleFilterChange,
     handleSort,
     refresh: loadData,
+    constraints,
   };
 };

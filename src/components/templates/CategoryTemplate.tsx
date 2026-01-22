@@ -12,7 +12,7 @@ import type { Category } from "@/types/category.types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/atoms/Avatar";
 import { fetchCategories } from "@/redux/features/category-slice";
 import { useAppSelector } from "@/redux/store";
-import type { PageParams } from "@/types/pagination.types";
+import type { PageParams, PaginationResponse } from "@/types/pagination.types";
 export default function CategoterTemp() {
   const dispatch = useAppDispatch();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -46,9 +46,9 @@ export default function CategoterTemp() {
       </Avatar>
     )
   };
-  const fetchData = async (params: PageParams): Promise<number> => {
+  const fetchData = async (params: PageParams): Promise<PaginationResponse<Category>> => {
     const response = await dispatch(fetchCategories(params)).unwrap();
-    return response.meta.total;
+    return response;
   }
 
   return (

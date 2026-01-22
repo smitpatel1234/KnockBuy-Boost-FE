@@ -21,7 +21,7 @@ export const getOrderHistory = (): Promise<AxiosResponse<{ message: string; data
 
 // Admin Methods
 export const getAllOrders = (params: any): Promise<AxiosResponse<{ message: string; data: { data: OrderAllType[]; meta: any } }>> => {
-    return api.get("/order", { params });
+    return api.post("/order", params);
 };
 
 export const updateOrder = (order_id: string, data: any): Promise<AxiosResponse<{ message: string }>> => {

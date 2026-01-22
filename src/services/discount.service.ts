@@ -4,14 +4,7 @@ import type { PageParams, PaginationResponse } from "../types/pagination.types";
 
 export const getAllDiscounts = () => publicapi.get("/discount/get-all-discounts");
 export const getAllDiscountsPage = async (params: PageParams): Promise<{ data: PaginationResponse<Discount> }> => {
-    const response = await api.get<{ message: string; data: PaginationResponse<Discount> }>("/discount/get-all-discounts-page", {
-        params: {
-            page: params.pagination.page,
-            limit: params.pagination.limit,
-            filters: JSON.stringify(params.filters),
-            sort: JSON.stringify(params.sort),
-        },
-    });
+    const response = await api.post<{ message: string; data: PaginationResponse<Discount> }>("/discount/get-all-discounts-page", params);
     return response.data;
 };
 export const createDiscount = (data: AddDiscountParams) => api.post("/discount/create-discount", data);

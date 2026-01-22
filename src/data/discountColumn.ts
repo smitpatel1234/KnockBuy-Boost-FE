@@ -31,9 +31,9 @@ export const discountColumn: ColumnConfig[] = [
   {
     title: "Start Date",
     key: "discount_start_date",
-    filterKey: "discount.discount_start_date",
+    filterKey: "discount_start_date",
     sortable: true,
-    searchable: true,
+    searchByDate: true,
   },
   {
     title: "Duration",

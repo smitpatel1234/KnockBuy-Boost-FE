@@ -11,7 +11,7 @@ import type { GetAllItemCartType } from "@/types/itemcart.types";
 import type { Discount } from "@/types/discount.types";
 import type { payment_method as PaymentMethodType } from "@/types/placeorder.type";
 import { useRouter } from "next/navigation";
-
+import { socket } from "@/utils/helper/socket";
 export const useCheckout = () => {
     const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
     const [paymentMethod, setPaymentMethod] = useState<PaymentMethodType>("CASH_ON_DELIVERY");
@@ -84,12 +84,14 @@ export const useCheckout = () => {
 
         try {
             setLoading(true);
-            await palceOrder({
+            const orderRes = await palceOrder({
                 address_id: selectedAddress.address_id,
                 payment_method: paymentMethod,
                 discount_id: discount?.discount_id ?? undefined,
             });
-
+            socket.connect();
+            socket.emit("placeOrderEvent", orderRes.data.data.order_id);
+            socket.disconnect();
             toast.success("Order placed successfully!");
             setIsOrderPlaced(true);
         } catch (e) {

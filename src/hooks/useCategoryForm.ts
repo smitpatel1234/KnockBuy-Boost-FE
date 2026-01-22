@@ -43,7 +43,7 @@ export const useCategoryForm = ({ initialData, onClose }: UseCategoryFormProps) 
     const handleImageUpload = async (file: File) => {
         try {
             setUploading(true);
-            const response = await uploadFiles([file], 'category') as { data: { url: string } };
+            const response = await uploadFiles([file], 'category') as { data: { url?: string } };
             if (response.data.url) {
                 void formik.setFieldValue('image_url', response.data.url);
             }

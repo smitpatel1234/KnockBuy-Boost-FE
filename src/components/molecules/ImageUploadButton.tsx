@@ -18,7 +18,7 @@ export function ImageUploadButton({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      void onImageSelect(file);
+      onImageSelect(file);
     }
   };
 

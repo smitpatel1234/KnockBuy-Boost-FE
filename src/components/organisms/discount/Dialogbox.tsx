@@ -165,6 +165,7 @@ export default function Dialogbox({
               Offer Start Date
             </label>
             <DateInputComponent
+            className=""
               placeholder="Select offer start date"
               value={formik.values.discount_start_date}
               onChange={(date) => {

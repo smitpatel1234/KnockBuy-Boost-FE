@@ -8,7 +8,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { useRouter } from "next/navigation";
 import type { UserProfile } from "@/types/user.types";
 import { fetchUser } from "@/redux/features/user-slice";
-import type { PageParams } from "@/types/pagination.types";
+import type { PageParams, PaginationResponse } from "@/types/pagination.types";
 export default function UserTemp() {
 
   const router = useRouter();
@@ -30,9 +30,9 @@ export default function UserTemp() {
       console.error("Failed to delete user", error);
     }
   };
-  const fetchData = async (PageParams: PageParams): Promise<number> => {
+  const fetchData = async (PageParams: PageParams): Promise<PaginationResponse<UserProfile>> => {
     const res = await dispatch(fetchUser(PageParams)).unwrap();
-    return res.meta.total;
+    return res;
   }
   return (
     <div className="flex flex-col gap-6 p-4">

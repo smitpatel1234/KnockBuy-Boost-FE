@@ -6,6 +6,7 @@ import variantReducer from './features/variant-slice';
 import userReducer from './features/user-slice'
 import discountReducer from './features/discount-slice';
 import wishlistReducer from './features/wishlist-slice';
+import cartReducer from './features/cart-slice';
 import type { TypedUseSelectorHook } from 'react-redux';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -18,6 +19,7 @@ export const store = configureStore({
         user: userReducer,
         discount: discountReducer,
         wishlist: wishlistReducer,
+        cart: cartReducer,
     },
 });
 

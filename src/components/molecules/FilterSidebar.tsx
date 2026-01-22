@@ -19,14 +19,23 @@ const DEFAULT_SIZES: string[] = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 const RATINGS: number[] = [4, 3, 2, 1];
 
 
-export default function FilterSidebar({ onFilterChange, dynamicOptions }: FilterSidebarProps): React.ReactElement {
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 200]);
+export default function FilterSidebar({ onFilterChange, dynamicOptions, constraints = [] }: FilterSidebarProps & { constraints?: any[] }): React.ReactElement {
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 500]);
   const [selectedRating, setSelectedRating] = useState<string>('0');
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
 
   const availableColors = dynamicOptions?.colors && dynamicOptions.colors.length > 0 ? dynamicOptions.colors : DEFAULT_COLORS;
   const availableSizes = dynamicOptions?.sizes && dynamicOptions.sizes.length > 0 ? dynamicOptions.sizes : DEFAULT_SIZES;
+
+  React.useEffect(() => {
+    if (constraints && constraints.length > 0) {
+      const priceConstraint = constraints.find((c: any) => c.column === 'item.item_price');
+      if (priceConstraint) {
+        setPriceRange([Number(priceConstraint.min), Number(priceConstraint.max)]);
+      }
+    }
+  }, [constraints]);
 
   React.useEffect(() => {
     onFilterChange?.({
@@ -37,8 +46,9 @@ export default function FilterSidebar({ onFilterChange, dynamicOptions }: Filter
       search: '',
       sortBy: 'newest'
     });
-  }, []);
+  }, [priceRange, selectedRating, selectedColors, selectedSizes, onFilterChange]); // Added dependencies
 
+  // ... handlers remain same
   const handleColorChange = useCallback((color: string, checked: boolean | string): void => {
     setSelectedColors((prev: string[]): string[] =>
       typeof checked === 'boolean' && checked

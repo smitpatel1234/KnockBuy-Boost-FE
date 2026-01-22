@@ -43,23 +43,13 @@ export default function ProductCard({ product }: ProductCardProps) {
       <Link href={`/product/${product.slug}`}>
         <div className="relative w-full h-40 bg-slate-100 overflow-hidden">
           <Image
-            src={product.image_url ?? FallBackImage}
+            src={product.image_url  ?? FallBackImage}
             alt={product.item_name}
             fill
             className="object-cover"
           />
-          {product.item_name && (
-            <div className="absolute top-2 left-10">
-              <Badge className="bg-blue-600 text-white capitalize text-xs">
-                {product.item_name}
-              </Badge>
-            </div>
-          )}
-          {product.item_price && (
-            <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-semibold">
-              {product.item_price}
-            </div>
-          )}
+
+
         </div>
       </Link>
 

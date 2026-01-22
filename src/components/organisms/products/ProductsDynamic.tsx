@@ -21,7 +21,7 @@ export default function ProductsPrice({ formik }: ProductsPriceProps) {
     <div className="space-y-4">
       <div className="flex items-end gap-4 overflow-x-auto pb-4">
         <div className="flex-1 min-w-[150px] space-y-2">
-           <Label htmlFor="item_price" className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Product Price</Label>
+           <Label htmlFor="item_price" className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Product SKU</Label>
           <Input
             type="string"
             id="sku"

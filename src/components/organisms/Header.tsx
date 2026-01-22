@@ -2,122 +2,87 @@
 
 import Link from "next/link";
 import { useAppSelector, useAppDispatch } from "@/redux/store";
-import { ShoppingCart, LogOut, Heart } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import CategorySlider from "./CategorySlider";
 import { useHeader } from "@/hooks/useHeader";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { fetchUserProfile } from "@/redux/features/auth-slice";
-import { SpinnerCustom } from "../ui/loading";
-import { SheetForcart } from "./SheetForcart";
 import { useWishlist } from "@/hooks/useWishlist";
+import { fetchCart } from "@/redux/features/cart-slice";
+import SearchSection from "./Header/SearchSection";
+import HeaderActions from "./Header/HeaderActions";
 
 export default function Header() {
   const dispatch = useAppDispatch();
-  const { items: wishlistItems } = useWishlist();
+  const { items: wishlistItems, fetchWishlistByUser } = useWishlist();
+  const { items: cartItems } = useAppSelector((state) => state.cart);
+
   useEffect(() => {
-    void dispatch(fetchUserProfile());
-  }, [dispatch]);
-  const { user, loading } = useAppSelector((state) => state.auth);
+    dispatch(fetchUserProfile())
+    void fetchWishlistByUser()
+    dispatch(fetchCart())
+  }, [dispatch, fetchWishlistByUser])
+
+  const { user, loading } = useAppSelector((state) => state.auth)
   const router = useRouter();
   const { handleLogout, globalSearchChange, search } = useHeader(router);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row h-auto md:h-16 items-center justify-between gap-4 py-3">
-          {/* --- Logo --- */}
-          <div className="flex items-center gap-2">
-            <Link href="/" className="flex items-center space-x-2">
-              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+      <div className="w-full px-2 sm:px-4 lg:px-8">
+        {/* Mobile Layout */}
+        <div className="md:hidden flex flex-col gap-2 py-2">
+          {/* Logo and Actions Row */}
+          <div className="flex h-16 items-center justify-between gap-2">
+            {/* Logo */}
+            <Link href="/" className="flex items-center space-x-2 flex-shrink-0">
+              <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                 Store
               </span>
             </Link>
-          </div>
-          <SheetForcart />
-          {/* --- Search & Category --- */}
-          <div className="flex w-full md:flex-1 gap-2 items-center">
-            <CategorySlider />
 
-            {/* Search Input */}
-            <Input
-              placeholder="Search products, brands, and more "
-              className="flex-1 bg-white "
-              value={search}
-              onChange={globalSearchChange}
+            {/* Actions */}
+            <HeaderActions
+              wishlistCount={wishlistItems.length}
+              cartCount={cartItems.length}
+              user={user}
+              loading={loading}
+              handleLogout={handleLogout}
             />
           </div>
 
-          {/* --- Cart & User Actions --- */}
-          <div className="flex items-center gap-4">
-            {/* Wishlist */}
-            <Link
-              href="/wishlist"
-              className="relative p-2 hover:bg-gray-100 rounded-full transition-colors"
-              title="My Wishlist"
-            >
-              <Heart className="h-5 w-5 text-gray-700" />
-              {wishlistItems.length > 0 && (
-                <span className="absolute top-0 right-0 h-4 w-4 rounded-full bg-red-500 text-[10px] font-bold text-white flex items-center justify-center">
-                  {wishlistItems.length}
-                </span>
-              )}
-            </Link>
+          {/* Search Row */}
+          <SearchSection
+            search={search}
+            globalSearchChange={globalSearchChange}
+          />
+        </div>
 
-            {/* Cart */}
-            <Link
-              href="/cart"
-              className="relative p-2 hover:bg-gray-100 rounded-full transition-colors"
-            >
-              <ShoppingCart className="h-5 w-5 text-gray-700" />
-              {/* Uncomment to show count
-              <span className="absolute top-0 right-0 h-4 w-4 rounded-full bg-blue-600 text-[10px] font-bold text-white flex items-center justify-center">
-                0
-              </span>
-              */}
-            </Link>
+        {/* Desktop Layout */}
+        <div className="hidden md:flex h-16 items-center justify-between gap-4 py-0">
+          {/* Logo */}
+          <Link href="/" className="flex items-center space-x-2 flex-shrink-0">
+            <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              Store
+            </span>
+          </Link>
 
-            {/* Auth */}
-            {loading ? (
-              <SpinnerCustom />
-            ) : (
-              <>
-                {user ? (
-                  <div className="flex items-center gap-4">
-                    <Link
-                      href="/profile"
-                      className="flex items-center gap-2 hover:bg-gray-50 p-1 pr-3 rounded-full border border-transparent hover:border-gray-200 transition-all"
-                    >
-                      <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
-                        {user.username?.[0]?.toUpperCase() ?? "U"}
-                      </div>
-                      <span className="text-sm font-medium text-gray-700 hidden sm:block">
-                        {user.username}
-                      </span>
-                    </Link>
+          {/* Search & Category */}
+          <SearchSection
+            search={search}
+            globalSearchChange={globalSearchChange}
+          />
 
-                    <button
-                      onClick={handleLogout}
-                      className="p-2 hover:bg-red-50 text-gray-600 hover:text-red-600 rounded-full transition-colors"
-                      title="Logout"
-                    >
-                      <LogOut className="h-5 w-5" />
-                    </button>
-                  </div>
-                ) : (
-                  <Link
-                    href="/auth/login"
-                    className="inline-flex items-center justify-center h-9 px-4 rounded-full bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm"
-                  >
-                    Sign In
-                  </Link>
-                )}
-              </>
-            )}
-          </div>
+          {/* Cart & User Actions */}
+          <HeaderActions
+            wishlistCount={wishlistItems.length}
+            cartCount={cartItems.length}
+            user={user}
+            loading={loading}
+            handleLogout={handleLogout}
+          />
         </div>
       </div>
     </header>
   );
 }
+

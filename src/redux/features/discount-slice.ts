@@ -10,6 +10,7 @@ import {
 import type { PageParams, PaginationResponse } from "@/types/pagination.types";
 import { initialPage } from "./const";
 import { toast } from "sonner";
+import { formatDate } from "@/utils/common/formatDate";
 
 interface DiscountState {
   discounts: Discount[];
@@ -23,19 +24,37 @@ const initialState: DiscountState = {
   error: null,
 };
 
-export const fetchDiscounts = createAsyncThunk<PaginationResponse<Discount>, PageParams>(
+export const fetchDiscounts = createAsyncThunk<
+  PaginationResponse<Discount>,
+  PageParams,
+  { rejectValue: string }
+>(
   "discount/fetchAll",
-  async (pageParams: PageParams, { rejectWithValue }) => {
+  async (pageParams, { rejectWithValue }) => {
     try {
       const response = await getAllDiscountsPage(pageParams);
-      return response.data;
+      
+      const transformedData = response.data.data.map((discount: Discount) => ({
+        ...discount,
+        ...(discount.discount_start_date && {
+          discount_start_date: formatDate(discount.discount_start_date)
+        })
+      }));
+
+      const result: PaginationResponse<Discount> = {
+        ...response.data,
+        data: transformedData
+      };
+      return result;
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } };
-      toast.error(error.response?.data?.message ?? "Failed to fetch discounts");
-      return rejectWithValue(error.response?.data?.message ?? "Failed to fetch discounts");
+      const message = error.response?.data?.message ?? "Failed to fetch discounts";
+      toast.error(message);
+      return rejectWithValue(message);
     }
   }
 );
+
 
 export const addDiscount = createAsyncThunk(
   "discount/add",

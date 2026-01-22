@@ -6,14 +6,14 @@ export default function CarouselBox({
   HandelOnhover,
 }: {
   carousel_images: Item["images"];
-  HandelOnhover: (e: MouseEvent<HTMLDivElement>) => void;
+  HandelOnhover: (e: MouseEvent<HTMLImageElement>) => void;
 }) {
   return (
     <div className="flex flex-row h-20  justify-center  ">
       {carousel_images?.map((image, index) => (
-        <div className="flex flex-row h-20" key={image}>
+        <div className="flex flex-row h-20" key={image}  >
           <Image
-            onMouseEnter={HandelOnhover}
+          onMouseEnter={HandelOnhover}
             key={index}
             src={image}
             alt="smit"

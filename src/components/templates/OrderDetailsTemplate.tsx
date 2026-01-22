@@ -22,7 +22,6 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-
 const ORDER_STATUSES = [
   "PENDING",
   "PROCESSING",
@@ -42,7 +41,6 @@ export default function OrderDetailsTemplate({
   const router = useRouter();
   const { order, loading, statusLoading, handleStatusChange } =
     useAdminOrderDetails(orderId);
-
   if (loading)
     return (
       <div className="p-8 text-center text-gray-500">

@@ -6,11 +6,9 @@ import { Badge } from "@/components/ui/badge";
 import CarouselBox from "../../molecules/CarouselBox";
 import { Button } from "@/components/ui/button";
 import ProductList from "@/components/molecules/ProductList";
-import { useState, type MouseEvent } from "react";
-import Image from "next/image";
+import { useState, type MouseEvent, useRef } from "react";
 import { useWishlist } from "@/hooks/useWishlist";
-import FallBackImage from "../../../stories/assets/download.jpg";
-
+import { useMouseOverZoom } from "@/hooks/useMouseOverZoom";
 export default function UserProductpage({ slug }: { slug: string }) {
   const { product, AddToCart, loading, varientp } = useItemSlug(slug);
   const { isItemInWishlist, toggleWishlist } = useWishlist();
@@ -18,6 +16,10 @@ export default function UserProductpage({ slug }: { slug: string }) {
   const rating = product?.rating ?? 0;
   const inStock = product?.stock ?? 0;
   const [CurrentImage, setCurrentImage] = useState<string>();
+  const source = useRef<HTMLImageElement>(null);
+  const target = useRef<HTMLCanvasElement>(null);
+  const cursor = useRef<HTMLDivElement>(null); // new
+  const isA = useMouseOverZoom(source, target, cursor, 20);
 
   if (loading && !product) {
     return (
@@ -29,22 +31,40 @@ export default function UserProductpage({ slug }: { slug: string }) {
 
   const isInWishlist = product ? isItemInWishlist(product.item_id) : false;
 
-  const HoverHandel = (e: MouseEvent<HTMLDivElement>) => {
-    setCurrentImage((e.target as HTMLImageElement).src);
+  const HoverHandel = (e: MouseEvent<HTMLImageElement>) => {
+    setCurrentImage(e.target.src);
   };
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="flex flex-col lg:flex-row gap-10">
-        <div className="lg:w-1/2 w-full ">
-          <div className="bg-white w-full  rounded-xl shadow-sm border p-1 flex justify-center h-80">
-            <Image
-              src={CurrentImage ?? product?.images?.[0] ?? FallBackImage}
-              alt="preview image"
-              width={500}
-              height={500}
+        <div className="lg:w-1/2 w-full  relative">
+          {isA && <canvas
+            ref={target}
+            width={300}
+            height={300}
+            className="absolute left-full ml-4 z-50 border bg-white"
+          />
+          }
+          <div className="bg-white w-full rounded-xl shadow-sm border p-1 flex justify-center h-80 relative overflow-hidden">
+            <div
+              ref={cursor}
+              className="absolute pointer-events-none border-2 border-sky-500 bg-sky-400/20"
+            />
+
+            <img
+              ref={source}
+              src={
+                CurrentImage ??
+                product?.images?.[0] ??
+                "../../../stories/assets/download.jpg"
+              }
+              alt={"ok"}
+              className="w-full h-full bg-gray-100 cursor-crosshair object-cover"
             />
           </div>
+
+
           <div className="h-20 w-full">
             <CarouselBox
               HandelOnhover={HoverHandel}
@@ -70,7 +90,9 @@ export default function UserProductpage({ slug }: { slug: string }) {
                 : "bg-white border-gray-200 text-gray-400 hover:text-red-500"
                 }`}
             >
-              <Heart className={`w-6 h-6 ${isInWishlist ? "fill-current" : ""}`} />
+              <Heart
+                className={`w-6 h-6 ${isInWishlist ? "fill-current" : ""}`}
+              />
             </button>
           </div>
 
@@ -128,7 +150,10 @@ export default function UserProductpage({ slug }: { slug: string }) {
               <div className="flex flex-wrap gap-2">
                 {varientp?.map((v) => (
                   <div key={v}>
-                    {product.variant?.find((vo) => vo.variantProperty_id === v)?.property_name}
+                    {
+                      product.variant?.find((vo) => vo.variantProperty_id === v)
+                        ?.property_name
+                    }
                     {product.variant?.map((variant) => (
                       <div key={variant.variantValue_id}>
                         {variant.variantProperty_id === v && (

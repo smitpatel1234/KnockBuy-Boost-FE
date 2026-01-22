@@ -23,12 +23,11 @@ export const useItemForm = ({ initialData, onClose }: UseItemFormProps) => {
             category_id: initialData?.category_id ?? "",
             stock: initialData?.stock ?? 0,
             description: initialData?.description ?? "",
-            
             sku: initialData?.sku ?? "",
             rating: initialData?.rating ?? 0,
-            variant: initialData?.variant?.map(v => ({ ...v, item_variantvalue_mapping_id: v.item_variantvalue_mapping_id })) ?? [],
+            variant: initialData?.variant ? initialData.variant.map(v => ({ ...v, item_variantvalue_mapping_id: v.item_variantvalue_mapping_id })) : [],
             images: initialData?.images ?? [],
-            variant_collections: initialData?.variant_collections ?? [],
+            variant_collections: initialData?.variant_collections ? initialData.variant_collections : [],
             isEdit: false
         },
         enableReinitialize: true,
@@ -56,10 +55,8 @@ export const useItemForm = ({ initialData, onClose }: UseItemFormProps) => {
             } else {
                 await dispatch(addItem(payload as AddItemParams));
             }
-           
             resetForm();
             onClose();
-           
         },
 
     });
@@ -70,8 +67,8 @@ export const useItemForm = ({ initialData, onClose }: UseItemFormProps) => {
         try {
             setUploading(true);
             const response = await uploadFiles(files, 'item');
-            if (Array.isArray(response.data)) {
-                const urls = response.data.map((file: { url: string | undefined }) => file.url);
+            if (response && Array.isArray(response.data)) {
+                const urls = response.data.map((file: { url: string|undefined }) => file.url);
                 const currentImages = formik.values.images ?? [];
                 void formik.setFieldValue('images', [...currentImages, ...urls]);
 

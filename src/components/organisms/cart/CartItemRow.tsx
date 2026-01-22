@@ -66,7 +66,7 @@ export default function CartItemRow({
             disabled={!!cartitem.deleted_at}
             value={cartitem.quantity}
             onChange={(e) => { onQuantityChange(cartitem, parseInt(e.target.value) || 1); }}
-            className="w-12 h-8 text-center"
+            className="w-20 h-8 text-center"
           />
           <Button
             disabled={!!cartitem.deleted_at}

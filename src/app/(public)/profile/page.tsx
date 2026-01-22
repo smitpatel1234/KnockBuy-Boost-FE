@@ -2,11 +2,12 @@
 import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/redux/store";
 import { Mail, User as UserIcon, Calendar } from "lucide-react";
+import { Package } from "lucide-react";
+import OrderHistory from "@/components/organisms/profile/OrderHistory";import { useEffect } from "react";
 
 export default function ProfilePage() {
   const { user, loading } = useAppSelector((state) => state.auth);
-  const router = useRouter();
-
+ const router = useRouter()
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -113,5 +114,4 @@ export default function ProfilePage() {
     </div>
   );
 }
-import { Package } from "lucide-react";
-import OrderHistory from "@/components/organisms/profile/OrderHistory";
+

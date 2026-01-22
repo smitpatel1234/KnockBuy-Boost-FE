@@ -5,12 +5,12 @@ import GenericTable from "@/components/molecules/GenericTable";
 import Pagination from "@/components/molecules/Pagination";
 import type { ColumnConfig } from "@/types/generic-table.types";
 import { useTable } from "@/hooks/useTable";
-import type { PageParams } from "@/types/pagination.types";
+import type { PageParams, PaginationResponse } from "@/types/pagination.types";
 
 interface TableWithFilterProps<T> {
   data: Partial<T>[],
   dataOfColumn: ColumnConfig[];
-  fetchData: (params: PageParams) => Promise<number>;
+  fetchData: (params: PageParams) => Promise<PaginationResponse<T>>;
   onEdit?: (row: T) => void;
   onDelete?: (row: T) => void;
   columnRenderers?: Record<string, (value: string | number | null | undefined, row: T) => React.ReactNode>;
@@ -38,6 +38,7 @@ export default function TableWithFilter<T>({
     handleLimitChange,
     handleFilterChange,
     handleSort,
+    constraints,
   } = useTable<T>({ fetchData, dataOfColumn, initialLimit });
 
   return (
@@ -54,6 +55,7 @@ export default function TableWithFilter<T>({
           onSort={handleSort}
           onFilterChange={handleFilterChange}
           columnRenderers={columnRenderers}
+          constraints={constraints}
         />
       </div>
 

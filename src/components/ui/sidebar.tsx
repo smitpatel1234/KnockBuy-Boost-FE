@@ -24,6 +24,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { Dispatch,SetStateAction } from "react"
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
@@ -170,6 +171,8 @@ const Sidebar = React.forwardRef<
     side?: "left" | "right"
     variant?: "sidebar" | "floating" | "inset"
     collapsible?: "offcanvas" | "icon" | "none"
+    numnotification: number;
+    setnumnotification: Dispatch<SetStateAction<number>>;
   }
 >(
   (
@@ -179,6 +182,8 @@ const Sidebar = React.forwardRef<
       collapsible = "offcanvas",
       className,
       children,
+      numnotification,
+      setnumnotification,
       ...props
     },
     ref
@@ -567,6 +572,11 @@ const SidebarMenuButton = React.forwardRef<
   ) => {
     const Comp = asChild ? Slot : "button"
     const { isMobile, state } = useSidebar()
+    const [isHydrated, setIsHydrated] = React.useState(false)
+
+    React.useEffect(() => {
+      setIsHydrated(true)
+    }, [])
 
     const button = (
       <Comp
@@ -575,6 +585,7 @@ const SidebarMenuButton = React.forwardRef<
         data-size={size}
         data-active={isActive}
         className={cn(sidebarMenuButtonVariants({ variant, size }), className)}
+        suppressHydrationWarning
         {...props}
       />
     )
@@ -587,6 +598,11 @@ const SidebarMenuButton = React.forwardRef<
       tooltip = {
         children: tooltip,
       }
+    }
+
+    // Only render Radix components after hydration to avoid ID mismatches
+    if (!isHydrated) {
+      return button
     }
 
     return (
@@ -662,11 +678,13 @@ const SidebarMenuSkeleton = React.forwardRef<
     showIcon?: boolean
   }
 >(({ className, showIcon = false, ...props }, ref) => {
-  const [width, setWidth] = React.useState("100%");
+  const [isHydrated, setIsHydrated] = React.useState(false);
 
   React.useEffect(() => {
-    setWidth(`${String(Math.floor(Math.random() * 40) + 50)}%`);
+    setIsHydrated(true);
   }, []);
+
+  const width = isHydrated ? `${String(Math.floor(Math.random() * 40) + 50)}%` : "100%";
 
   return (
     <div

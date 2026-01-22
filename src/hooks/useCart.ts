@@ -1,81 +1,59 @@
 "use client";
 import { useCallback, useMemo, useState, useEffect } from "react";
 import type { GetAllItemCartType } from "@/types/itemcart.types";
-import {
-  getItemCart,
-  deleteItemCart,
-  updateItemCart,
-} from "../services/cartitem.service";
-import { validatePromo } from "../services/discount.service";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import type { Discount } from "@/types/discount.types";
+import { useAppDispatch, useAppSelector } from "@/redux/store";
+import { fetchCart, removeCartItem, updateCartQuantity, applyPromoCode as applyCartPromo } from "@/redux/features/cart-slice";
 
 export function useCart() {
-  const [cartItems, setCartItems] = useState<GetAllItemCartType[]>([]);
+  const dispatch = useAppDispatch();
+  const { items: cartItems, discountData, loading } = useAppSelector((state) => state.cart);
   const [promoCode, setPromoCode] = useState("");
-  const [discountData, setDiscountData] = useState<Discount | null>(null);
-  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const AddToCart = useCallback(async () => {
-    const res = await getItemCart();
-    setCartItems(res.data.data);
-  }, []);
+  const AddToCart = useCallback(() => {
+    void dispatch(fetchCart());
+  }, [dispatch]);
 
   const removeItem = useCallback(
-    async (id: string) => {
-      setCartItems((prevItems) =>
-        prevItems.filter((item) => item.cart_item_id !== id)
-      );
-      await deleteItemCart({ cart_item_id: id });
-      void AddToCart();
+    (id: string) => {
+      void dispatch(removeCartItem(id));
     },
-    [AddToCart]
+    [dispatch]
   );
+
   const updateQuantity = useCallback(
-    async (cart_item:GetAllItemCartType, newQuantity: number) => {
+    (cart_item: GetAllItemCartType, newQuantity: number) => {
       if (newQuantity <= 0) {
-        void removeItem(cart_item.cart_item_id);
+        removeItem(cart_item.cart_item_id);
         return;
       }
-      if(cart_item.stock<newQuantity)
-      {
-          toast.message(`only ${cart_item.stock} Quantity  is available for ${cart_item.item_name} product`)
-          return
+      if (cart_item.stock < newQuantity) {
+        toast.message(
+          `only ${cart_item.stock.toString()} Quantity  is available for ${cart_item.item_name} product`
+        );
+        return;
       }
-      setCartItems((prevItems) =>
-        prevItems.map((item) =>
-          item.cart_item_id ===  cart_item.cart_item_id? { ...item, quantity: newQuantity } : item
-        )
-      );
 
-      await updateItemCart({
+      void dispatch(updateCartQuantity({
         cart_item_id: cart_item.cart_item_id,
         quantity: newQuantity,
         item: cart_item.item_id,
-      });
-      void AddToCart();
+      }));
     },
-    [AddToCart, removeItem]
+    [dispatch, removeItem]
   );
 
   const applyPromoCode = useCallback(async () => {
     if (!promoCode) return;
-    setLoading(true);
     try {
-      const res = await validatePromo(promoCode);
-      const discount = (res.data as { data: Discount }).data;
-      setDiscountData(discount);
+      await dispatch(applyCartPromo(promoCode)).unwrap();
       toast.success("Promo code applied successfully!");
-    } catch (error) {
-      console.error(error);
-      setDiscountData(null);
-      toast.error("Invalid or inactive promo code");
-    } finally {
-      setLoading(false);
+    } catch (error: unknown) {
+      toast.error(typeof error === "string" ? error : "Invalid or inactive promo code");
     }
-  }, [promoCode]);
+  }, [dispatch, promoCode]);
 
   const proceedToCheckout = useCallback(() => {
     let url = "/checkout";
@@ -113,11 +91,9 @@ export function useCart() {
   }, [cartItems, discountData]);
 
   useEffect(() => {
-    const fetchCart = async () => {
-      await AddToCart();
-    };
-    void fetchCart();
-  }, [AddToCart]);
+    AddToCart();
+  }, []);
+
   return {
     cartItems,
     promoCode,
@@ -131,3 +107,4 @@ export function useCart() {
     ...pricing,
   };
 }
+

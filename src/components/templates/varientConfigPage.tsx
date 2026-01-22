@@ -7,7 +7,7 @@ import { varientconfigColumn } from "@/data/varientColumn";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { removeVariantValue, fetchVariantValuePage } from "@/redux/features/variant-slice";
 import EditVariantValueDialog from "../organisms/products/EditVariantValueDialog";
-import type { PageParams } from "@/types/pagination.types";
+import type { PageParams, PaginationResponse } from "@/types/pagination.types";
 
 
 export default function VarientConfigPage() {
@@ -33,7 +33,11 @@ export default function VarientConfigPage() {
   };
   const fetchdata = async (PageParams: PageParams) => {
     const data = await dispatch(fetchVariantValuePage(PageParams)).unwrap();
-    return data.values.meta.total;
+    return data.values as unknown as PaginationResponse<{
+      variantValue_id: string;
+      variant_value: string;
+      variantProperty_id: string;
+    }>;
   }
   return (
     <div className="flex flex-col gap-6 p-4">

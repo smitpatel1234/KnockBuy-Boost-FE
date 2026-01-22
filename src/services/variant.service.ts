@@ -19,14 +19,7 @@ export const deleteVariantProperty = (id: string) =>
 export const getAllVariantValues = () => publicapi.get("/variant/get-all-variant-values");
 
 export const getAllVariantValuesPage = async (params: PageParams): Promise<{ data: PaginationResponse<Record<string, unknown>> }> => {
-    const response = await api.get<{ message: string; data: PaginationResponse<Record<string, unknown>> }>("/variant/get-all-variant-values-page", {
-        params: {
-            page: params.pagination.page,
-            limit: params.pagination.limit,
-            filters: JSON.stringify(params.filters),
-            sort: JSON.stringify(params.sort),
-        },
-    });
+    const response = await api.post<{ message: string; data: PaginationResponse<Record<string, unknown>> }>("/variant/get-all-variant-values-page", params);
     return response.data;
 };
 

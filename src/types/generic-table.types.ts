@@ -1,5 +1,5 @@
 import type React from "react";
-import type { Sort } from "./pagination.types";
+import type { Filter, Sort, MaxMinConstraints } from "./pagination.types";
 
 export interface ColumnConfig {
    title: string;
@@ -7,17 +7,20 @@ export interface ColumnConfig {
    filterKey?: string;
    sortable?: boolean;
    searchable?: boolean;
+   searchByDate?: boolean;
+   searchByNumber?: boolean;
 }
 
 export interface GenericTableType<T> {
    dataOfColumn: ColumnConfig[];
    data?: T[];
    loading?: boolean;
-   filters?: Record<string, string>;
+   filters?: Filter[];
    sorts?: Sort[];
    onEdit?: (row: T) => void;
    onDelete?: (row: T) => void;
    onSort?: (column: string) => void;
-   onFilterChange?: (column: string, value: string) => void;
+   onFilterChange?: (column: string, { value, upperBoundDate, lowerBoundDate, upperBoundNumber, lowerBoundNumber }: Omit<Filter, 'column'>) => void;
    columnRenderers?: Record<string, (value: string, row: T) => React.ReactNode>;
+   constraints?: MaxMinConstraints[];
 }

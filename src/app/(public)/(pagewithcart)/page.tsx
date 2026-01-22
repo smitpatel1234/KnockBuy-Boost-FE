@@ -7,7 +7,6 @@ import { useItemFetchAll } from '@/hooks/useItemFetchAll'
 import { useWishlist } from '@/hooks/useWishlist'
 export default function Home() {
   const { products, loading } = useItemFetchAll()
-  
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
@@ -15,7 +14,6 @@ export default function Home() {
       </div>
     )
   }
-
   if (products.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center text-slate-600">
@@ -23,10 +21,9 @@ export default function Home() {
       </div>
     )
   }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
-      <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8 space-y-12">
+         <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8 space-y-12">
         <ProductList
           products={products}
           title="Recommended For You"

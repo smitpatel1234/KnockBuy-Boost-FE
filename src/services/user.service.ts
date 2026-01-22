@@ -8,14 +8,7 @@ export const getAllUsers = () => {
 
 
 export const getAllUsersPage = async (params: PageParams): Promise<{ data: PaginationResponse<UserProfile> }> => {
-  const response = await api.get<{ message: string; data: PaginationResponse<UserProfile> }>("/user/get-all-user-page", {
-    params: {
-      page: params.pagination.page,
-      limit: params.pagination.limit,
-      filters: JSON.stringify(params.filters),
-      sort: JSON.stringify(params.sort),
-    },
-  });
+  const response = await api.post<{ message: string; data: PaginationResponse<UserProfile> }>("/user/get-all-user-page", params);
   return response.data;
 };
 

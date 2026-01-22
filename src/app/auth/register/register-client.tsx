@@ -5,7 +5,6 @@ import { Card } from "@/components/ui/card";
 import RegisterForm from "@/components/organisms/auth/RegisterForm";
 import type { RegisterFormValues } from "@/types/registerform.types";
 import { register } from "@/services/auth.service";
-import { AxiosError } from "axios";
 
 export default function RegisterPageClient() {
   const [isLoading, setIsLoading] = useState(false);
@@ -20,15 +19,15 @@ export default function RegisterPageClient() {
 
       const response = await register(credentials);
       if (response.status !== 200) {
-        throw new Error(response.data.message?? "Registration failed. Please try again.");
+        throw new Error(response.data?.message ?? "Registration failed. Please try again.");
       }
 
       setIsSuccessful(true);
+      alert("Account created successfully! (Mock)");
     } catch (err) {
-      console.log(err)
       setError(
-        err instanceof AxiosError
-          ? err?.response?.data.message
+        err instanceof Error
+          ? err.message
           : "Registration failed. Please try again."
       );
     } finally {
@@ -71,7 +70,7 @@ export default function RegisterPageClient() {
   return (
     <Card className="border-slate-200 p-6">
       <RegisterForm
-        onSubmit={(values) => { void handleRegister(values); }}
+        onSubmit={handleRegister}
         isLoading={isLoading}
         error={error}
       />

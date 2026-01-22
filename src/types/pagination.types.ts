@@ -5,7 +5,13 @@ export interface Pagination {
 
 export interface Filter {
   column: string;
-  value: string
+  value?: string;
+  isSearchByNumber?: boolean;
+  isSearchByDate?: boolean;
+  upperBoundDate?: string
+  lowerBoundDate?: string
+  upperBoundNumber?: number
+  lowerBoundNumber?: number
 }
 
 export interface SearchFilter {
@@ -16,6 +22,8 @@ export interface SearchFilter {
   in?: (number | string)[];
   like?: string;
   lt?: number | string;
+  isSearchByNumber?: boolean;
+  isSearchByDate?: boolean;
 }
 
 export interface Sort {
@@ -27,6 +35,8 @@ export interface PageParams {
   pagination: Pagination;
   filters: Filter[];
   sort: Sort[];
+
+
 }
 
 export interface SearchPageParams {
@@ -38,11 +48,17 @@ export interface SearchPageParams {
 export interface PaginationResponse<T> {
   data: T[];
   meta: {
-    total: number;
-    page: number;
     limit: number;
+    page: number;
+    total: number;
     totalPages: number;
+    constraints: MaxMinConstraints[];
   };
+}
+export interface MaxMinConstraints {
+  column: string;
+  max: number | string;
+  min: number | string;
 }
 
 export interface TableState {

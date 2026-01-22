@@ -7,29 +7,23 @@ import { Badge } from "@/components/ui/badge";
 import { ORDER_COLUMNS, STATUS_COLORS } from "@/data/order.data";
 import { getAllOrders, deleteOrder } from "@/services/order.service";
 import type { OrderAllType } from "@/types/order.types";
-import type { PageParams } from "@/types/pagination.types";
+import type { PageParams, PaginationResponse } from "@/types/pagination.types";
 import { toast } from "sonner";
+import { formatDate } from "@/utils/common/formatDate";
 
 export default function OrderTemplate() {
     const router = useRouter();
     const [data, setData] = useState<OrderAllType[]>([]);
-
-    const fetchOrders = useCallback(async (params: PageParams): Promise<number> => {
+    const fetchOrders = useCallback(async (params: PageParams): Promise<PaginationResponse<OrderAllType>> => {
         try {
-            const apiParams = {
-                page: params.pagination?.page || 1,
-                limit: params.pagination?.limit || 10,
-                search: (params.filters && typeof params.filters === 'object' && 'search' in params.filters) ? String(params.filters.search) : "",
-            };
-
-            const res = await getAllOrders(apiParams);
+            const res = await getAllOrders(params);
             const responseData = res.data.data;
             setData(responseData.data || responseData);
-            return responseData.meta?.total || 0;
+            return responseData as PaginationResponse<OrderAllType>;
         } catch (error) {
             console.error(error);
             toast.error("Failed to fetch orders");
-            return 0;
+            return { data: [], meta: {constraints:[], total: 0, page: 1, limit: 10, totalPages: 0 } };
         }
     }, []);
 
@@ -45,8 +39,11 @@ export default function OrderTemplate() {
     };
 
     const columnRenderers = {
-        order_date: (val: string | number | null | undefined) =>
-            val ? new Date(String(val)).toLocaleDateString() : "-",
+        
+        order_date: (val: string | number | null | undefined) =>    
+
+
+            val ? formatDate(val) : "-",
         total_amount: (val: string | number | null | undefined) =>
             `₹${parseFloat(String(val ?? 0)).toFixed(2)}`,
         status: (val: string | number | null | undefined) => (

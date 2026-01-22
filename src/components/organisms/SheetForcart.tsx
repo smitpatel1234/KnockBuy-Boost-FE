@@ -1,63 +1,35 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import CartLayout from '@/components/templates/CartLayout'
-import EmptyCartState from '@/components/organisms/cart/EmptyCartState'
-import { useCart } from '@/hooks/useCart'
-export function SheetForcart() {
-      const {
-        cartItems,
-        promoCode,
-        setPromoCode,
-        discountAmount,
-        discountData,
-        updateQuantity,
-        removeItem,
-        applyPromoCode,
-      } = useCart()
-    
-      if (cartItems.length === 0) {
-        return <EmptyCartState />
-      }
-  return (
-    <Sheet >
-      <SheetTrigger>
-        <Button variant="outline">Open</Button>
-      </SheetTrigger>
-      <SheetContent>
-        <SheetHeader>
-          <SheetTitle>Cart</SheetTitle>
-          <SheetDescription>
-            Subtotal
-            <Button>
-                Go To Cart
-            </Button>
-          </SheetDescription>
-        </SheetHeader>
-        <div className="grid flex-1 auto-rows-min gap-6 px-4">
-          <div className="grid gap-3">
-            <Label htmlFor="sheet-demo-name">Name</Label>
-            <Input id="sheet-demo-name" defaultValue="Pedro Duarte" />
-          </div>
-          <div className="grid gap-3">
-            <Label htmlFor="sheet-demo-username">Username</Label>
-            <Input id="sheet-demo-username" defaultValue="@peduarte" />
-          </div>
-        </div>
-        <SheetFooter>
 
-        </SheetFooter>
-      </SheetContent>
-    </Sheet>
+import EmptyCartState from '@/components/organisms/cart/EmptyCartState'
+export function SheetForcart() { 
+  return (
+    <div >
+        <aside className="w-24 flex flex-col absolute top-0 right-0 z-1000" >
+      <div className="px-6 py-4 text-xl font-semibold border-b border-gray-700">
+        My App
+      </div>
+
+      <nav className="flex-1 px-4 py-6 space-y-2">
+        <a href="#" className="block px-4 py-2 rounded hover:bg-gray-700">
+          Dashboard
+        </a>
+        <a href="#" className="block px-4 py-2 rounded hover:bg-gray-700">
+          Users
+        </a>
+        <a href="#" className="block px-4 py-2 rounded hover:bg-gray-700">
+          Orders
+        </a>
+        <a href="#" className="block px-4 py-2 rounded hover:bg-gray-700">
+          Settings
+        </a>
+      </nav>
+
+      <div className="px-4 py-4 border-t border-gray-700">
+        <button className="w-full px-4 py-2 text-left rounded hover:bg-gray-700">
+          Logout
+        </button>
+      </div>
+    </aside>
+  </div>
+
   );
 }

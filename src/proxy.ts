@@ -31,7 +31,7 @@ export function proxy(req: NextRequest) {
 
 
   if (!token) {
-    const res = NextResponse.redirect(new URL("/adminLogin", req.url));
+    const res = NextResponse.redirect(new URL("/", req.url));
     return res;
   }
 
@@ -39,7 +39,7 @@ export function proxy(req: NextRequest) {
   try {
     payload = jwtDecode<JwtPayload>(token);
   } catch {
-    const res = NextResponse.redirect(new URL("/adminLogin", req.url));
+    const res = NextResponse.redirect(new URL("/auth/login", req.url));
     return res;
   }
 

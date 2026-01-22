@@ -1,8 +1,9 @@
-export const ORDER_COLUMNS = [
+import type { ColumnConfig } from "@/types/generic-table.types";
+export const ORDER_COLUMNS:ColumnConfig[] = [
     { key: "order_id", title: "Order ID", sortable: false, searchable: true },
-    { key: "order_date", title: "Date", sortable: true },
+    { key: "order_date", title: "Date", sortable: true ,searchByDate:true},
     { key: "username", title: "Customer", sortable: true, searchable: true },
-    { key: "total_amount", title: "Total", sortable: true },
+    { key: "total_amount", title: "Total", sortable: true,searchByNumber:true },
     { key: "status", title: "Status", sortable: true },
     { key: "payment_status", title: "Payment", sortable: true },
 ];

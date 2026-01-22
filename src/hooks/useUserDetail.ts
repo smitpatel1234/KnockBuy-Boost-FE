@@ -65,16 +65,15 @@ export const useUserDetail = () => {
     const handleImageUpload = async (file: File) => {
         try {
             setUploading(true);
-            const uploadRes = await uploadFiles([file], 'user');
-            if (uploadRes.data[0]?.url) {
-                void formik.setFieldValue('profile_image', uploadRes.data[0].url);
+            const uploadRes = await uploadFiles([file], 'user') as { data: { url?: string } } ;
+            if (uploadRes.data?.url) {
+                void formik.setFieldValue('profile_image', uploadRes.data.url);
                 toast.success("Profile image uploaded successfully");
             } else {
                 toast.error("Invalid response from server");
             }
 
         } catch (error) {
-            console.error(error);
             toast.error("Failed to upload image");
         } finally {
             setUploading(false);

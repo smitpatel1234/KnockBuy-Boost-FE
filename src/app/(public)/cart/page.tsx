@@ -1,10 +1,8 @@
 'use client'
-
 import CartLayout from '@/components/templates/CartLayout'
 import EmptyCartState from '@/components/organisms/cart/EmptyCartState'
 import { useCart } from '@/hooks/useCart'
 export default function CartPage() {
-
   const {
     cartItems,
     promoCode,
@@ -19,7 +17,6 @@ export default function CartPage() {
   if (cartItems.length === 0) {
     return <EmptyCartState />
   }
-
   return (
     <CartLayout
       items={cartItems}

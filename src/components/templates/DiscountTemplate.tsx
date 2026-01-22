@@ -8,7 +8,7 @@ import Dialogbox from "@/components/organisms/discount/Dialogbox";
 import type { Discount } from "@/types/discount.types";
 import { useAppDispatch } from "@/redux/store";
 import { removeDiscount, fetchDiscounts } from "@/redux/features/discount-slice";
-import type { PageParams } from "@/types/pagination.types";
+import type { PageParams, PaginationResponse } from "@/types/pagination.types";
 import { useAppSelector } from "@/redux/store";
 export default function DiscountTemp() {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -40,10 +40,10 @@ export default function DiscountTemp() {
     setDialogOpen(false);
     setSelectedDiscount(null);
   };
-  const fetchdata = async (PageParams: PageParams): Promise<number> => {
+  const fetchdata = async (PageParams: PageParams): Promise<PaginationResponse<Discount>> => {
 
     const res = await dispatch(fetchDiscounts(PageParams)).unwrap();
-    return res.meta.total;
+    return res;
   }
 
   return (

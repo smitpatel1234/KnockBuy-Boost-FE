@@ -10,7 +10,7 @@ import { useAppDispatch } from "@/redux/store";
 import { fetchCategoriesAll } from "@/redux/features/category-slice";
 import { fetchVariantData } from "@/redux/features/variant-slice";
 import { removeItem, fetchItems } from "@/redux/features/item-slice";
-import type { PageParams } from "@/types/pagination.types";
+import type { PageParams, PaginationResponse } from "@/types/pagination.types";
 import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/redux/store";
 export default function ProductTemp() {
@@ -29,9 +29,9 @@ export default function ProductTemp() {
     router.push(`/adminLogin/admin/item/${item.item_id}`);
   };
 
-  const fetchProducts = async (PageParams: PageParams): Promise<number> => {
+  const fetchProducts = async (PageParams: PageParams): Promise<PaginationResponse<Item>> => {
     const res = await dispatch(fetchItems(PageParams)).unwrap();
-    return res.meta.total;
+    return res;
   }
 
   const handleDelete = async (item: Item) => {
@@ -70,7 +70,7 @@ export default function ProductTemp() {
           dataOfColumn={itemColumn}
           fetchData={fetchProducts}
           onEdit={handleEdit}
-          onDelete={handleDelete}
+          onDelete={(item) => { void handleDelete(item); }}
         />
       </div>
     </div>

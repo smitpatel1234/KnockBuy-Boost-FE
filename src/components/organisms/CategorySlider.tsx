@@ -11,6 +11,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
+import { useRouter } from "next/navigation";
 export default function CategorySlider() {
     const {
         categories,
@@ -21,17 +22,13 @@ export default function CategorySlider() {
         getParentCategory,
         selectCategory
     } = useCategorySlider();
-
+    const router = useRouter()
     const [isPopoverOpen, setIsPopoverOpen] = useState(false);
     const [currentParentId, setCurrentParentId] = useState<string | null>(null);
 
     const visibleCategories = useMemo(() => {
         return getCategoriesByParent(currentParentId);
     }, [currentParentId, getCategoriesByParent]);
-
-
-
-
     const handleBack = () => {
         if (!currentParentId) return;
         const parent = getParentCategory(currentParentId);
@@ -44,10 +41,12 @@ export default function CategorySlider() {
         if (hasChildren) {
             setCurrentParentId(category.category_id);
             selectCategory(category.category_id);
+
         } else {
             selectCategory(category.category_id);
             setIsPopoverOpen(false);
         }
+        router.push(`search/`)
     };
 
     if (loading) {
@@ -61,7 +60,7 @@ export default function CategorySlider() {
     }
 
     return (
-        <div className="w-1/4 bg-white border-b border-gray-100 py-3">
+        <div className="w-1/4  ">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center gap-4">
                 <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
                     <PopoverTrigger asChild>
