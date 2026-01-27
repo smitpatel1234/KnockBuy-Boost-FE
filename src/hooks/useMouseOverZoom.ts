@@ -84,6 +84,7 @@ function useMouse(ref: React.RefObject<HTMLElement>) {
       ref.current.addEventListener("mousemove", handleMouseMove);
       ref.current.addEventListener("mouseout", handleMouseOut);
       return () => {
+        if(ref.current===null) return;
         ref.current!.removeEventListener("mousemove", handleMouseMove);
         ref.current!.removeEventListener("mouseout", handleMouseOut);
       };

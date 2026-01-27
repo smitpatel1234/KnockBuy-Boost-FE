@@ -9,6 +9,7 @@ import ProductList from "@/components/molecules/ProductList";
 import { useState, type MouseEvent, useRef } from "react";
 import { useWishlist } from "@/hooks/useWishlist";
 import { useMouseOverZoom } from "@/hooks/useMouseOverZoom";
+import Image from "next/image";
 export default function UserProductpage({ slug }: { slug: string }) {
   const { product, AddToCart, loading, varientp } = useItemSlug(slug);
   const { isItemInWishlist, toggleWishlist } = useWishlist();
@@ -32,7 +33,7 @@ export default function UserProductpage({ slug }: { slug: string }) {
   const isInWishlist = product ? isItemInWishlist(product.item_id) : false;
 
   const HoverHandel = (e: MouseEvent<HTMLImageElement>) => {
-    setCurrentImage(e.target.src);
+    setCurrentImage(e.target.src as string);
   };
 
   return (
@@ -52,15 +53,15 @@ export default function UserProductpage({ slug }: { slug: string }) {
               className="absolute pointer-events-none border-2 border-sky-500 bg-sky-400/20"
             />
 
-            <img
+            <Image
               ref={source}
               src={
                 CurrentImage ??
                 product?.images?.[0] ??
-                "../../../stories/assets/download.jpg"
+                "http://localhost:5000/uploads/dummy-product-placeholder.avif"
               }
               alt={"ok"}
-              className="w-full h-full bg-gray-100 cursor-crosshair object-cover"
+              className="w-full h-full bg-gray-100 cursor-crosshair "
             />
           </div>
 

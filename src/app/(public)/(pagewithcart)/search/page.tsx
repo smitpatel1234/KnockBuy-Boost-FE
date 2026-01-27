@@ -16,14 +16,13 @@ export default function SearchPage() {
     total,
     loading,
     setSidebarFilters,
-    availableColors,
-    availableSizes,
     query,
     page,
     limit,
     handlePageChange,
     handleLimitChange,
-    constraints
+    constraints,
+    allVariantProperties
   } = useProductSearch()
 
   const handleFilterChange = (newFilters: FilterState) => {
@@ -66,8 +65,7 @@ export default function SearchPage() {
                 onFilterChange={handleFilterChange}
                 constraints={constraints}
                 dynamicOptions={{
-                  colors: availableColors.length > 0 ? availableColors : undefined,
-                  sizes: availableSizes.length > 0 ? availableSizes : undefined
+                  variantProperties: allVariantProperties && Object.keys(allVariantProperties).length > 0 ? allVariantProperties : undefined
                 }}
               />
             </div>

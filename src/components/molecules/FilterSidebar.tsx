@@ -14,19 +14,14 @@ import {
 
 import type { FilterSidebarProps } from '@/types/filter.types';
 
-const DEFAULT_COLORS: string[] = ['Red', 'Blue', 'Green', 'Black', 'White', 'Yellow'];
-const DEFAULT_SIZES: string[] = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 const RATINGS: number[] = [4, 3, 2, 1];
-
 
 export default function FilterSidebar({ onFilterChange, dynamicOptions, constraints = [] }: FilterSidebarProps & { constraints?: any[] }): React.ReactElement {
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 500]);
   const [selectedRating, setSelectedRating] = useState<string>('0');
-  const [selectedColors, setSelectedColors] = useState<string[]>([]);
-  const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
+  const [selectedVariants, setSelectedVariants] = useState<{ [key: string]: string[] }>({});
 
-  const availableColors = dynamicOptions?.colors && dynamicOptions.colors.length > 0 ? dynamicOptions.colors : DEFAULT_COLORS;
-  const availableSizes = dynamicOptions?.sizes && dynamicOptions.sizes.length > 0 ? dynamicOptions.sizes : DEFAULT_SIZES;
+  const variantProperties = dynamicOptions?.variantProperties || {};
 
   React.useEffect(() => {
     if (constraints && constraints.length > 0) {
@@ -41,28 +36,31 @@ export default function FilterSidebar({ onFilterChange, dynamicOptions, constrai
     onFilterChange?.({
       priceRange,
       selectedRating,
-      selectedColors,
-      selectedSizes,
+      selectedColors: [],
+      selectedSizes: [],
+      selectedVariants,
       search: '',
       sortBy: 'newest'
     });
-  }, [priceRange, selectedRating, selectedColors, selectedSizes, onFilterChange]); // Added dependencies
+  }, [priceRange, selectedRating, selectedVariants, onFilterChange]);
 
-  // ... handlers remain same
-  const handleColorChange = useCallback((color: string, checked: boolean | string): void => {
-    setSelectedColors((prev: string[]): string[] =>
-      typeof checked === 'boolean' && checked
-        ? [...prev, color]
-        : prev.filter((c: string) => c !== color)
-    );
-  }, []);
-
-  const handleSizeChange = useCallback((size: string, checked: boolean | string): void => {
-    setSelectedSizes((prev: string[]): string[] =>
-      typeof checked === 'boolean' && checked
-        ? [...prev, size]
-        : prev.filter((s: string) => s !== size)
-    );
+  const handleVariantChange = useCallback((propertyName: string, value: string, checked: boolean | string): void => {
+    setSelectedVariants((prev: { [key: string]: string[] }): { [key: string]: string[] } => {
+      const isChecked = typeof checked === 'boolean' ? checked : false;
+      const currentValues = prev[propertyName] || [];
+      
+      if (isChecked) {
+        return {
+          ...prev,
+          [propertyName]: [...currentValues, value]
+        };
+      } else {
+        return {
+          ...prev,
+          [propertyName]: currentValues.filter((v: string) => v !== value)
+        };
+      }
+    });
   }, []);
 
   const handlePriceChange = useCallback((value: number[]): void => {
@@ -134,51 +132,40 @@ export default function FilterSidebar({ onFilterChange, dynamicOptions, constrai
 
       <div className="border-t pt-4 mb-4" />
 
-      {/* Color Filter */}
-      <Collapsible defaultOpen className="mb-4">
-        <CollapsibleTrigger className="flex items-center justify-between w-full text-left font-semibold mb-3 hover:underline">
-          <span>Color</span>
-          <ChevronDown className="w-4 h-4" />
-        </CollapsibleTrigger>
-        <CollapsibleContent className="space-y-2">
-          {availableColors.map((color: string) => (
-            <div key={color} className="flex items-center space-x-2">
-              <Checkbox
-                id={`color-${color}`}
-                checked={selectedColors.includes(color)}
-                onCheckedChange={(checked: boolean | string) => { handleColorChange(color, checked); }}
-              />
-              <Label htmlFor={`color-${String(color)}`} className="cursor-pointer">
-                {color}
-              </Label>
-            </div>
-          ))}
-        </CollapsibleContent>
-      </Collapsible>
+      {/* Dynamic Variant Filters */}
+      {Object.entries(variantProperties).map(([propertyName, values]) => (
+        <React.Fragment key={propertyName}>
+          <Collapsible defaultOpen className="mb-4">
+            <CollapsibleTrigger className="flex items-center justify-between w-full text-left font-semibold mb-3 hover:underline capitalize">
+              <span>{propertyName}</span>
+              <ChevronDown className="w-4 h-4" />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="space-y-2">
+              {(values as string[]).map((value: string) => (
+                <div key={value} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`variant-${propertyName}-${value}`}
+                    checked={(selectedVariants[propertyName] || []).includes(value)}
+                    onCheckedChange={(checked: boolean | string) => {
+                      handleVariantChange(propertyName, value, checked);
+                    }}
+                  />
+                  <Label htmlFor={`variant-${propertyName}-${value}`} className="cursor-pointer capitalize">
+                    {value}
+                  </Label>
+                </div>
+              ))}
+            </CollapsibleContent>
+          </Collapsible>
+          <div className="border-t pt-4 mb-4" />
+        </React.Fragment>
+      ))}
 
-      <div className="border-t pt-4 mb-4" />
-
-      {/* Size Filter */}
-      <Collapsible defaultOpen>
-        <CollapsibleTrigger className="flex items-center justify-between w-full text-left font-semibold mb-3 hover:underline">
-          <span>Size</span>
-          <ChevronDown className="w-4 h-4" />
-        </CollapsibleTrigger>
-        <CollapsibleContent className="space-y-2">
-          {availableSizes.map((size: string) => (
-            <div key={size} className="flex items-center space-x-2">
-              <Checkbox
-                id={`size-${size}`}
-                checked={selectedSizes.includes(size)}
-                onCheckedChange={(checked: boolean | string) => { handleSizeChange(size, checked); }}
-              />
-              <Label htmlFor={`size-${String(size)}`} className="cursor-pointer">
-                {size}
-              </Label>
-            </div>
-          ))}
-        </CollapsibleContent>
-      </Collapsible>
+      {Object.keys(variantProperties).length === 0 && (
+        <div className="text-sm text-gray-500 italic">
+          No variant filters available for selected products
+        </div>
+      )}
     </div>
   );
 }

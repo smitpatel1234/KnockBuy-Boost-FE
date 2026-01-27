@@ -40,7 +40,6 @@ export const useTable = <T>({
             isSearchByDate: col?.searchByDate,
             isSearchByNumber: col?.searchByNumber,
             column: col?.filterKey ?? col.key,
-
           };
         }),
       );

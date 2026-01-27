@@ -2,6 +2,7 @@ export interface LoginCredentials {
   identifier: string | number
   password: string
   role: string
+  recaptchaToken?: string |null;
 }
 
 export interface UsernameAsIdentifier {

@@ -41,12 +41,12 @@ export default function CategorySlider() {
         if (hasChildren) {
             setCurrentParentId(category.category_id);
             selectCategory(category.category_id);
-
+            router.push(`/search?category=${category.category_id}`);
         } else {
             selectCategory(category.category_id);
             setIsPopoverOpen(false);
+            router.push(`/search?category=${category.category_id}`);
         }
-        router.push(`search/`)
     };
 
     if (loading) {
@@ -111,6 +111,7 @@ export default function CategorySlider() {
                                 onClick={() => {
                                     selectCategory(null);
                                     setIsPopoverOpen(false);
+                                    router.push(`/search`);
                                 }}
                                 className={cn(
                                     "flex items-center justify-between w-full px-4 py-2.5 text-sm transition-all hover:bg-blue-50/50 border-b border-gray-50",

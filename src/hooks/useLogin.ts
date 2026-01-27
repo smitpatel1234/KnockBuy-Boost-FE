@@ -1,17 +1,19 @@
 "use client";
 import { useFormik } from "formik";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { loginUser } from "@/redux/features/auth-slice";
 import type { LoginCredentials } from "../types/auth.types";
 import { LoginCredentialsSchema } from "../utils/validation/schemas/auth";
 import { useRouter } from "next/navigation";
 import { useAppDispatch } from "@/redux/store";
+import ReCAPTCHA from "react-google-recaptcha";
 export const useLogin = ({ Role }: { Role: string | undefined }) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<boolean>(false);
+  const reRef = useRef<ReCAPTCHA>(null);
   const formik = useFormik<LoginCredentials>({
     initialValues: {
       identifier: "",
@@ -23,8 +25,10 @@ export const useLogin = ({ Role }: { Role: string | undefined }) => {
     validationSchema: LoginCredentialsSchema,
     onSubmit: async (values: LoginCredentials, { resetForm }) => {
       try {
+         const token = await reRef.current?.executeAsync();
         setLoading(true);
         setError(null);
+        values={...values, recaptchaToken:  token};
         const response = await dispatch(loginUser(values)).unwrap();
         if (response.status !== 200) {
           throw new Error(typeof response.data === 'object' ? response.data.message : "Login failed");
@@ -66,5 +70,6 @@ export const useLogin = ({ Role }: { Role: string | undefined }) => {
     loading,
     error,
     data,
+    reRef,
   };
 };

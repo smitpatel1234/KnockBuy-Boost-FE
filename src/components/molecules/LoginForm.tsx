@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SpinnerCustom } from "@/components/ui/loading";
 import type { LoginFormProps } from "@/types/loginform.types";
+import ReCAPTCHA from "react-google-recaptcha";
 import React from "react";
 
 export function LoginForm({
@@ -22,13 +23,16 @@ export function LoginForm({
   data,
   color,
   disabled,
+  reRef,
   ...props
 }: LoginFormProps) {
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
+       
         <CardHeader>
           <CardTitle className="text-2xl">Login</CardTitle>
+           <ReCAPTCHA size="invisible" ref={reRef} sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}  />
           <CardDescription>
             Enter your email below to login to your account
           </CardDescription>

@@ -1,9 +1,11 @@
 import { MaxMinConstraints } from '@/types/pagination.types';
 import { useSearchParams } from 'next/navigation';
 import { useState, useEffect, useMemo } from 'react';
+import * as React from 'react';
 import type { Item } from '@/types/item.types';
 import { searchItems } from '@/services/item.service';
 import type { SearchFilter, SearchPageParams } from '@/types/';
+import type { FilterState } from '@/types/filter.types';
 import { useRouter } from 'next/navigation';
 export const useProductSearch = () => {
     const searchParams = useSearchParams();
@@ -16,6 +18,7 @@ export const useProductSearch = () => {
     const [total, setTotal] = useState(0);
     const [loading, setLoading] = useState(true);
     const [constraints, setConstraints] = useState<MaxMinConstraints[]>([]);
+    const [allVariantProperties, setAllVariantProperties] = useState<{ [key: string]: string[] }>({});
 
     const [sidebarFilters, setSidebarFilters] = useState<FilterState>({
         search: '',
@@ -23,20 +26,33 @@ export const useProductSearch = () => {
         priceRange: [0, 500],
         selectedRating: '0',
         selectedColors: [],
-        selectedSizes: []
+        selectedSizes: [],
+        selectedVariants: {}
     });
 
-    const { availableColors, availableSizes } = useMemo(() => {
-        const colors = new Set<string>();
-        const sizes = new Set<string>();
-        // Logic to extract variants could go here if we were processing product data
-        if (products.length > 0) {
-            // Placeholder: functionality to extract facets from products
-        }
-        return {
-            availableColors: Array.from(colors),
-            availableSizes: Array.from(sizes)
-        };
+
+    // Extract all unique variant properties from products
+    React.useEffect(() => {
+        const variantProps: { [key: string]: Set<string> } = {};
+        
+        products.forEach((product) => {
+            if (product.variant && Array.isArray(product.variant)) {
+                product.variant.forEach((v) => {
+                    if (!variantProps[v.property_name]) {
+                        variantProps[v.property_name] = new Set();
+                    }
+                    variantProps[v.property_name].add(v.variant_value);
+                });
+            }
+        });
+
+        // Convert sets to arrays
+        const variantData: { [key: string]: string[] } = {};
+        Object.keys(variantProps).forEach((key) => {
+            variantData[key] = Array.from(variantProps[key]).sort();
+        });
+        
+        setAllVariantProperties(variantData);
     }, [products]);
 
     useEffect(() => {
@@ -49,13 +65,19 @@ export const useProductSearch = () => {
                 if (categoryParam && categoryParam !== 'all') activeFilters.push({ column: 'category.category_id', eq: categoryParam });
 
                 if (sidebarFilters.priceRange && sidebarFilters.priceRange.length === 2) {
-                    activeFilters.push({ column: 'item.item_price', between: sidebarFilters.priceRange, isSearchByNumber: true });
+                    activeFilters.push({ column: 'item_price', between: sidebarFilters.priceRange, isSearchByNumber: true });
                 }
 
                 if (sidebarFilters.selectedRating && sidebarFilters.selectedRating !== '0') activeFilters.push({ column: 'item.rating', gt: Number(sidebarFilters.selectedRating) });
 
-                if (sidebarFilters.selectedColors && sidebarFilters.selectedColors.length > 0) activeFilters.push({ column: 'variantValue.value', in: sidebarFilters.selectedColors });
-                if (sidebarFilters.selectedSizes && sidebarFilters.selectedSizes.length > 0) activeFilters.push({ column: 'variantValue.value', in: sidebarFilters.selectedSizes });
+                // Add variant filters (removed color/size, using generic variant filtering)
+                if (sidebarFilters.selectedVariants && Object.keys(sidebarFilters.selectedVariants).length > 0) {
+                    Object.entries(sidebarFilters.selectedVariants).forEach(([propertyName, values]) => {
+                        if (Array.isArray(values) && values.length > 0) {
+                            activeFilters.push({ column: 'variantValue.variant_value', in: values });
+                        }
+                    });
+                }
 
                 const params: SearchPageParams = {
                     pagination: { page, limit },
@@ -103,13 +125,12 @@ export const useProductSearch = () => {
         loading,
         sidebarFilters,
         setSidebarFilters,
-        availableColors,
-        availableSizes,
         query,
         page,
         limit,
         handlePageChange,
         handleLimitChange,
-        constraints
+        constraints,
+        allVariantProperties
     };
 };

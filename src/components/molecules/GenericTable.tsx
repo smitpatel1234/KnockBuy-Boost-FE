@@ -88,7 +88,6 @@ export default function GenericTable<T>({
         <Table className="w-full border-collapse ">
           <TableHeader className="bg-slate-50/80 backdrop-blur-sm sticky top-0 border-b border-slate-200">
             <TableRow className="max-h-[10vh] hover:bg-transparent border-none ">
-              
               {dataOfColumn.map((col) => (
                 <TableHead
                   className="py-4 px-6 align-bottom max-w-[180px]"
@@ -102,7 +101,7 @@ export default function GenericTable<T>({
                         "flex items-center text-xs font-semibold text-slate-500 uppercase tracking-wider transition-colors group",
                         col.sortable
                           ? "cursor-pointer hover:text-slate-900"
-                          : "cursor-default"
+                          : "cursor-default",
                       )}
                       onClick={() => col.sortable && onSort?.(col.key)}
                     >
@@ -131,16 +130,15 @@ export default function GenericTable<T>({
                       <div className="relative group/input max-w-[200px]">
                         <div className="mt-1 flex flex-row center">
                           <DateRangePicker
-
                             onUpdate={(values) => {
                               onFilterChange?.(col.key, {
                                 lowerBoundDate: formatDate(values.range.from),
                                 upperBoundDate: formatDate(values.range.to),
-                              })
+                              });
                             }}
                             initialDateFrom="2023-01-01"
                             initialDateTo="2023-12-31"
-                            align='center'
+                            align="center"
                             locale="en-IN"
                             showCompare={false}
                           />
@@ -159,14 +157,43 @@ export default function GenericTable<T>({
                     {col.searchByNumber && (
                       <div className="relative group/input max-w-[200px]">
                         <SliderRange
-                          min={constraints?.find((c) => c.column === col.key || c.column === col.filterKey)?.min ? Number(constraints.find((c) => c.column === col.key || c.column === col.filterKey)?.min) : undefined}
-                          max={constraints?.find((c) => c.column === col.key || c.column === col.filterKey)?.max ? Number(constraints.find((c) => c.column === col.key || c.column === col.filterKey)?.max) : undefined}
+                          min={
+                            constraints?.find(
+                              (c) =>
+                                c.column === col.key ||
+                                c.column === col.filterKey,
+                            )?.min
+                              ? Number(
+                                  constraints.find(
+                                    (c) =>
+                                      c.column === col.key ||
+                                      c.column === col.filterKey,
+                                  )?.min,
+                                )
+                              : undefined
+                          }
+                          max={
+                            constraints?.find(
+                              (c) =>
+                                c.column === col.key ||
+                                c.column === col.filterKey,
+                            )?.max
+                              ? Number(
+                                  constraints.find(
+                                    (c) =>
+                                      c.column === col.key ||
+                                      c.column === col.filterKey,
+                                  )?.max,
+                                )
+                              : undefined
+                          }
                           onChange={(e) => {
                             onFilterChange?.(col.key, {
                               lowerBoundNumber: e[0],
                               upperBoundNumber: e[1],
-                            })
-                          }} />
+                            });
+                          }}
+                        />
                       </div>
                     )}
                   </div>
@@ -208,73 +235,79 @@ export default function GenericTable<T>({
             ) : data && data.length > 0 ? (
               data.map((row, rowIndex) => {
                 const rowKey = String(
-                  `row-${rowIndex}-${(row as Record<string, unknown>).id ?? ""}`
+                  `row-${rowIndex}-${(row as Record<string, unknown>).id ?? ""}`,
                 );
-                
+
                 return (
                   <React.Fragment key={rowKey}>
-                  <TableRow
-                    className="hover:bg-slate-50/50 transition-colors border-b border-slate-100 last:border-0  "
-                  >
-
-                  {dataOfColumn.map((col) => {
-                    const cellValue = (row as Record<string, unknown>)[col.key];a
-                    return (
-                      <TableCell
-                        className="relative py-4 px-6 text-sm text-slate-700 font-medium"
-                        key={`${String(
-                          (row as Record<string, unknown>).id ??
-                          String(rowIndex)
-                        )}-${col.key}`}
-                      >
-                       { (row as Record<string, unknown>).isNew && col.key === "order_id" ? <span className="absolute font-bold text-red-500 text-xs z-50 top-0 left-0"> New!!</span> : null}
-
-                        {columnRenderers?.[col.key]
-                          ? columnRenderers[col.key](
-                            String(cellValue ?? ""),
-                            row
-                          )
-                          : cellValue === null || cellValue === undefined
-                            ? "-"
-                            : String(cellValue)}
-                      </TableCell>
-                    );
-                  })}
-
-                  {(onEdit || onDelete) && (
-                    <TableCell className="py-4 px-6 text-right">
-                      <div className="flex justify-end gap-2.5">
-                        {onEdit && (
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className="h-8 w-8 p-0 rounded-full hover:bg-blue-50 hover:text-blue-600 transition-all border border-transparent hover:border-blue-100 shadow-sm"
-                            onClick={() => {
-                              onEdit(row);
-                            }}
-                            title="Edit"
+                    <TableRow className="hover:bg-slate-50/50 transition-colors border-b border-slate-100 last:border-0  ">
+                      {dataOfColumn.map((col) => {
+                        const cellValue = (row as Record<string, unknown>)[
+                          col.key
+                        ];
+                        a;
+                        return (
+                          <TableCell
+                            className="relative py-4 px-6 text-sm text-slate-700 font-medium"
+                            key={`${String(
+                              (row as Record<string, unknown>).id ??
+                                String(rowIndex),
+                            )}-${col.key}`}
                           >
-                            <EditIcon className="w-4 h-4" />
-                          </Button>
-                        )}
-                        {onDelete && (
-                          <Button
-                            debounceMs={1000}
-                            size="sm"
-                            variant="ghost"
-                            className="h-8 w-8 p-0 rounded-full hover:bg-red-50 hover:text-red-600 transition-all border border-transparent hover:border-red-100 shadow-sm"
-                            onClick={() => {
-                              handleDeleteClick(row);
-                            }}
-                            title="Delete"
-                          >
-                            <Trash2Icon className="w-4 h-4" />
-                          </Button>
-                        )}
-                      </div>
-                    </TableCell>
-                  )}
-                  </TableRow>
+                            {(row as Record<string, unknown>).isNew &&
+                            col.key === "order_id" ? (
+                              <span className="absolute font-bold text-red-500 text-xs z-50 top-0 left-0">
+                                {" "}
+                                New!!
+                              </span>
+                            ) : null}
+
+                            {columnRenderers?.[col.key]
+                              ? columnRenderers[col.key](
+                                  String(cellValue ?? ""),
+                                  row,
+                                )
+                              : cellValue === null || cellValue === undefined
+                                ? "-"
+                                : String(cellValue)}
+                          </TableCell>
+                        );
+                      })}
+
+                      {(onEdit || onDelete) && (
+                        <TableCell className="py-4 px-6 text-right">
+                          <div className="flex justify-end gap-2.5">
+                            {onEdit && (
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-8 w-8 p-0 rounded-full hover:bg-blue-50 hover:text-blue-600 transition-all border border-transparent hover:border-blue-100 shadow-sm"
+                                onClick={() => {
+                                  onEdit(row);
+                                }}
+                                title="Edit"
+                              >
+                                <EditIcon className="w-4 h-4" />
+                              </Button>
+                            )}
+                            {onDelete && (
+                              <Button
+                                debounceMs={1000}
+                                size="sm"
+                                variant="ghost"
+                                className="h-8 w-8 p-0 rounded-full hover:bg-red-50 hover:text-red-600 transition-all border border-transparent hover:border-red-100 shadow-sm"
+                                onClick={() => {
+                                  handleDeleteClick(row);
+                                }}
+                                title="Delete"
+                              >
+                                <Trash2Icon className="w-4 h-4" />
+                              </Button>
+                            )}
+                          </div>
+                        </TableCell>
+                      )}
+                    </TableRow>
                   </React.Fragment>
                 );
               })

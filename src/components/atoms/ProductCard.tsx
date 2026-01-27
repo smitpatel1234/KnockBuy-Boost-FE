@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Star, ShoppingCart, Heart, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { ProductCardProps } from "@/types/productcard.types";
-import FallBackImage from "../../stories/assets/download.jpg";
+import FallBackImage from "../../../assets/dummy-product-placeholder.avif";
 import { Button } from "@/components/ui/button";
 import { useItemSlug } from "@/hooks/useItemSlug";
 import { useWishlist } from "@/hooks/useWishlist";

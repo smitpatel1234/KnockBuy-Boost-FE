@@ -84,7 +84,7 @@ export default function SearchSection({ search, globalSearchChange }: SearchSect
                                         <h3 className="text-xs font-semibold text-gray-500 mb-2 px-2">PRODUCTS</h3>
                                         {suggestions.items.map((i) => (
                                             <Link key={i.item_id} href={`/search?query=${i.item_name}`} className="block px-2 py-2 hover:bg-gray-50 rounded text-sm text-gray-700">
-                                                <div className="flex justify-between items-center"><span>{i.item_name}</span><span className="text-xs text-gray-400 font-medium">Wait...</span></div>
+                                                <div className="flex justify-between items-center"><span>{i.item_name}</span></div>
                                             </Link>
                                         ))}
                                     </div>

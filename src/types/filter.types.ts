@@ -7,6 +7,7 @@ export interface FilterState {
     selectedRating?: string;
     selectedColors?: string[];
     selectedSizes?: string[];
+    selectedVariants?: { [key: string]: string[] };
 }
 
 export interface FilterSidebarProps {
@@ -16,5 +17,6 @@ export interface FilterSidebarProps {
     dynamicOptions?: {
         colors?: string[];
         sizes?: string[];
+        variantProperties?: { [key: string]: string[] };
     };
 }

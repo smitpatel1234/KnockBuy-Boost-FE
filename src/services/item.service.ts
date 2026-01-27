@@ -23,6 +23,7 @@ export const deleteItem = (id: string) => api.delete("/item/delete-item", { data
 export const updateItemVariantCollections = (item_id: string, variant_collections: string[]) =>
   api.put("/item/update-item", { item_id, variant_collections });
 
+
 export const createItemVariantCollections = (item_id: string, variant_collections: string[]) =>
   api.put("/item/update-item", { item_id, variant_collections });
 
