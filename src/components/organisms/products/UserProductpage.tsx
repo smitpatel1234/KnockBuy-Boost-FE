@@ -1,7 +1,7 @@
 "use client";
 
 import { useItemSlug } from "@/hooks/useItemSlug";
-import { Star, ShoppingCart, Heart, Loader2 } from "lucide-react";
+import { Star, ShoppingCart, Heart, Loader2, Package, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import CarouselBox from "../../molecules/CarouselBox";
 import { Button } from "@/components/ui/button";
@@ -42,31 +42,43 @@ export default function UserProductpage({ slug }: { slug: string }) {
         <div className="lg:w-1/2 w-full  relative">
           {isA && <canvas
             ref={target}
-            width={300}
-            height={300}
-            className="absolute left-full ml-4 z-50 border bg-white"
+            width={700}
+            height={700}
+            className="absolute left-full ml-4 z-50 border-2 border-indigo-200 bg-white rounded-xl shadow-2xl"
           />
           }
-          <div className="bg-white w-full rounded-xl shadow-sm border p-1 flex justify-center h-80 relative overflow-hidden">
-            <div
-              ref={cursor}
-              className="absolute pointer-events-none border-2 border-sky-500 bg-sky-400/20"
-            />
+          <div className="bg-white w-full rounded-2xl shadow-xl border-2 border-indigo-100 p-4 relative overflow-hidden group transition-all duration-300 hover:shadow-2xl">
+            {/* Hover to Zoom Indicator */}
+            <div className="absolute top-4 right-4 z-20 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-3 py-1.5 rounded-full text-xs font-medium shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center gap-1">
+              <Sparkles className="w-3 h-3" />
+              Hover to zoom
+            </div>
 
-            <Image
-              ref={source}
-              src={
-                CurrentImage ??
-                product?.images?.[0] ??
-                "http://localhost:5000/uploads/dummy-product-placeholder.avif"
-              }
-              alt={"ok"}
-              className="w-full h-full bg-gray-100 cursor-crosshair "
-            />
+            {/* Dynamic aspect ratio container */}
+            <div className="relative w-full" style={{ aspectRatio: '1 / 1' }}>
+              <div
+                ref={cursor}
+                className="absolute pointer-events-none border-2 border-indigo-500 bg-indigo-400/20 rounded-lg z-10"
+              />
+
+              <Image
+                ref={source}
+                src={
+                  CurrentImage ??
+                  product?.images?.[0] ??
+                  "http://localhost:5000/uploads/dummy-product-placeholder.avif"
+                }
+                fill
+                sizes="(max-width: 768px) 100vw, 50vw"
+                alt={product?.item_name ?? "Product"}
+                className="object-contain cursor-crosshair transition-transform duration-300 group-hover:scale-105"
+                priority
+              />
+            </div>
           </div>
 
 
-          <div className="h-20 w-full">
+          <div className="h-24 w-full mt-4">
             <CarouselBox
               HandelOnhover={HoverHandel}
               carousel_images={product?.images}
@@ -144,26 +156,41 @@ export default function UserProductpage({ slug }: { slug: string }) {
 
           {/* Variants */}
           {product?.variant && product.variant.length > 0 && (
-            <div>
-              <h3 className="text-base font-semibold mb-2 text-gray-800">
-                Variants
+            <div className="border-t border-gray-100 pt-6">
+              <h3 className="text-lg font-bold mb-4 text-gray-800 flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-indigo-600" />
+                Available Variants
               </h3>
-              <div className="flex flex-wrap gap-2">
-                {varientp?.map((v) => (
-                  <div key={v}>
-                    {
-                      product.variant?.find((vo) => vo.variantProperty_id === v)
-                        ?.property_name
-                    }
-                    {product.variant?.map((variant) => (
-                      <div key={variant.variantValue_id}>
-                        {variant.variantProperty_id === v && (
-                          <>{variant.variant_value}</>
-                        )}
+              <div className="space-y-5">
+                {varientp?.map((v) => {
+                  const propertyName = product.variant?.find((vo) => vo.variantProperty_id === v)?.property_name;
+                  const propertyValues = product.variant?.filter((variant) => variant.variantProperty_id === v);
+
+                  return (
+                    <div key={v} className="space-y-3">
+                      {/* Property Name */}
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-bold text-gray-700 uppercase tracking-wide">
+                          {propertyName}:
+                        </span>
                       </div>
-                    ))}
-                  </div>
-                ))}
+
+                      {/* Property Values */}
+                      <div className="flex flex-wrap gap-3">
+                        {propertyValues?.map((variant) => (
+                          <button
+                            key={variant.variantValue_id}
+                            className="group relative px-5 py-2.5 bg-white border-2 border-gray-200 rounded-lg text-sm font-medium text-gray-800 hover:border-indigo-500 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
+                          >
+                            <span className="relative z-10">{variant.variant_value}</span>
+                            {/* Subtle gradient overlay on hover */}
+                            <div className="absolute inset-0 bg-gradient-to-r from-blue-600/0 to-indigo-600/0 group-hover:from-blue-600/5 group-hover:to-indigo-600/5 rounded-lg transition-all duration-200"></div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}

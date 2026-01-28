@@ -5,14 +5,34 @@ import Link from "next/link";
 import { Star, ShoppingCart, Heart, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { ProductCardProps } from "@/types/productcard.types";
-import FallBackImage from "../../../assets/dummy-product-placeholder.avif";
+import FallBackImage from "../../../../assets/dummy-product-placeholder.avif";
 import { Button } from "@/components/ui/button";
 import { useItemSlug } from "@/hooks/useItemSlug";
 import { useWishlist } from "@/hooks/useWishlist";
-
+import { createItemCart } from "@/services/cartitem.service";
+import { fetchCart } from "@/redux/features/cart-slice";
+import { useAppDispatch } from "@/redux/store";
+import { toast } from "sonner";
 export default function ProductCard({ product }: ProductCardProps) {
   const { isItemInWishlist, toggleWishlist } = useWishlist();
-  const { AddToCart } = useItemSlug(product.slug ?? "");
+  const dispatch = useAppDispatch();
+  const AddToCart = async () => {
+    if (!product) {
+      return toast.message("Product not found")
+    }
+    const item_id = product.item_id;
+    try {
+      await createItemCart({
+        item: item_id,
+        quantity: 1,
+      });
+
+      void dispatch(fetchCart());
+      toast.success("Added to cart");
+    } catch {
+      toast.message("Failed to add to cart or out of stock");
+    }
+  };
 
   if (!product.slug) {
     return (

@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import ProductCard from '@/components/atoms/ProductCard'
+import ProductCard from '@/components/organisms/products/ProductCard'
 import type { ProductListProps } from '@/types/productlist.types'
 
 export default function ProductList({
