@@ -1,4 +1,4 @@
-import ProductsPage from "@/components/templates/ProductsPage";
+import ProductsPage from "@/components/templates/";
 
 export default function AddItemPage() {
     return <ProductsPage />;

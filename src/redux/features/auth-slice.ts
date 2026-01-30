@@ -28,7 +28,7 @@ export const fetchUserProfile = createAsyncThunk<AuthUser | null>(
     async (_, { rejectWithValue }) => {
         try {
             const response = await api.get<{ data?: AuthUser }>('/user/get-user');
-            return (response.data?.data ?? null);
+            return (response.data.data ?? null);
         } catch (err: unknown) {
             const error = err as { response?: { data?: { message?: string } } };
             return rejectWithValue(error.response?.data?.message ?? 'Failed to fetch profile');
@@ -71,9 +71,9 @@ const authSlice = createSlice({
         });
         builder.addCase(loginUser.fulfilled, (state, action) => {
             state.loading = false;
-            if (action.payload?.status === 200 && action?.payload?.data) {
-                const data = (action.payload as { data?: { data?: unknown } }).data;
-                state.user = data ? (data as { data?: unknown }).data : null;
+            if (action.payload.status === 200) {
+                const data = action.payload.data as { data?: unknown };
+                state.user = (data.data as AuthUser | null) ?? null;
             }
         });
         builder.addCase(loginUser.rejected, (state, action) => {

@@ -5,8 +5,8 @@ import { getOrderHistory } from "@/services/order.service";
 import type { OrderAllType } from "@/types/order.types";
 import { Loader2, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
-export default function OrderHistory({router}:{router:AppRouterInstance}) {
+import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+export default function OrderHistory({router}:{readonly router:AppRouterInstance}) {
     const [orders, setOrders] = useState<OrderAllType[]>([]);
     const [loading, setLoading] = useState(true);
     
@@ -40,7 +40,16 @@ export default function OrderHistory({router}:{router:AppRouterInstance}) {
             </div>
         );
     }
-
+   const applyStatusStyles = (status: string) => {
+    switch (status) {
+        case "completed":
+            return "bg-green-100 text-green-700";
+        case "cancelled":
+            return "bg-red-100 text-red-700";
+        default:
+            return "bg-yellow-100 text-yellow-700";
+    }
+  };
     return (
         <div className="space-y-4">
             {orders.map((order) => (
@@ -52,10 +61,7 @@ export default function OrderHistory({router}:{router:AppRouterInstance}) {
                         <div>
                             <div className="flex items-center gap-2 mb-1">
                                 <h3 className="font-bold text-gray-900">Order #{order.order_id.slice(0, 8)}</h3>
-                                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${order.status === "completed" || order.status === "delivered" ? "bg-green-100 text-green-700" :
-                                        order.status === "cancelled" ? "bg-red-100 text-red-700" :
-                                            "bg-yellow-100 text-yellow-700"
-                                    }`}>
+                                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${applyStatusStyles(order.status)}`}>
                                     {order.status.toUpperCase()}
                                 </span>
                             </div>
@@ -65,13 +71,20 @@ export default function OrderHistory({router}:{router:AppRouterInstance}) {
                         </div>
 
                         <div className="text-right">
-                            <p className="font-bold text-gray-900 text-lg">₹{Number(order.total_amount).toFixed(2)}</p>
+                            <p className="font-bold text-gray-900 text-lg">₹{order.total_amount}</p>
                             <p className="text-xs text-gray-500">{order.payment_method} - {order.payment_status}</p>
                         </div>
                     </div>
 
                     <div className="mt-4 pt-3 border-t border-slate-100 flex justify-end">
-                        <Button variant="outline" size="sm" className="text-xs" onClick={()=>{router.push(`profile/${order.order_id}`)}} >
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-xs"
+                          onClick={() => {
+                            router.push(`/profile/${order.order_id}`);
+                          }}
+                        >
                             View Details
                         </Button>
                     </div>

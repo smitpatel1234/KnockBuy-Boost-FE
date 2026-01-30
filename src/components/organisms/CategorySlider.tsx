@@ -6,26 +6,13 @@ import { cn } from "@/lib/utils";
 import { useState, useMemo } from "react";
 import type { Category } from "@/types/category.types";
 import { Button } from "@/components/ui/button";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent,  PopoverTrigger } from "@/components/ui/popover";
 import { useRouter } from "next/navigation";
 export default function CategorySlider() {
-    const {
-        categories,
-        loading,
-        selectedCategory,
-        selectedCategoryId,
-        getCategoriesByParent,
-        getParentCategory,
-        selectCategory
-    } = useCategorySlider();
+    const {  categories,  loading, selectedCategory, selectedCategoryId,   getCategoriesByParent,   getParentCategory,selectCategory} = useCategorySlider();
     const router = useRouter()
     const [isPopoverOpen, setIsPopoverOpen] = useState(false);
     const [currentParentId, setCurrentParentId] = useState<string | null>(null);
-
     const visibleCategories = useMemo(() => {
         return getCategoriesByParent(currentParentId);
     }, [currentParentId, getCategoriesByParent]);
@@ -82,7 +69,6 @@ export default function CategorySlider() {
                         sideOffset={8}
                         className="w-80 p-0 overflow-hidden rounded-xl shadow-2xl border-gray-200"
                     >
-                        {/* Header */}
                         <div className="flex items-center justify-between p-3 border-b border-gray-100 bg-gray-50/80 backdrop-blur-sm">
                             {currentParentId ? (
                                 <button
@@ -97,15 +83,13 @@ export default function CategorySlider() {
                                     Product Hierarchy
                                 </span>
                             )}
-                            <button
-                                onClick={() => { setIsPopoverOpen(false); }}
-                                className="p-1 rounded-full hover:bg-gray-200 text-gray-400 hover:text-gray-600 transition-colors"
-                            >
+                            <button onClick={() => { setIsPopoverOpen(false); }}
+                                className="p-1 rounded-full hover:bg-gray-200 text-gray-400 hover:text-gray-600 transition-colors" >
+                                
                                 <X className="h-3.5 w-3.5" />
                             </button>
                         </div>
 
-                        {/* Root Option if at Root */}
                         {!currentParentId && (
                             <button
                                 onClick={() => {
@@ -115,15 +99,13 @@ export default function CategorySlider() {
                                 }}
                                 className={cn(
                                     "flex items-center justify-between w-full px-4 py-2.5 text-sm transition-all hover:bg-blue-50/50 border-b border-gray-50",
-                                    !selectedCategoryId ? "text-blue-600 bg-blue-50/30 font-semibold" : "text-gray-600"
-                                )}
-                            >
+                                    selectedCategoryId ?   "text-gray-600":"text-blue-600 bg-blue-50/30 font-semibold"
+                                )}>
                                 <span>All Categories</span>
                                 {!selectedCategoryId && <Check className="h-4 w-4" />}
                             </button>
                         )}
 
-                        {/* List Content */}
                         <div className="max-h-[400px] overflow-y-auto p-1.5 no-scrollbar">
                             {visibleCategories.length > 0 ? (
                                 visibleCategories.map((cat) => {
@@ -136,9 +118,7 @@ export default function CategorySlider() {
                                             onClick={() => { handleSelectAction(cat); }}
                                             className={cn(
                                                 "flex items-center justify-between w-full px-3 py-2.5 text-sm transition-all rounded-lg group mb-0.5",
-                                                isSelected
-                                                    ? "bg-blue-50 text-blue-700 font-semibold"
-                                                    : "text-gray-700 hover:bg-gray-50 hover:text-blue-600"
+                                                isSelected ? "bg-blue-50 text-blue-700 font-semibold"  : "text-gray-700 hover:bg-gray-50 hover:text-blue-600"
                                             )}
                                         >
                                             <div className="flex items-center gap-2">
@@ -165,16 +145,11 @@ export default function CategorySlider() {
                         </div>
                     </PopoverContent>
                 </Popover>
-
                 {selectedCategory && (
                     <div className="flex items-center gap-2 text-sm text-gray-400 animate-in fade-in slide-in-from-left-2 overflow-hidden">
                         <span className="text-gray-300 hidden sm:block">/</span>
                         <span className="font-medium text-gray-500 truncate max-w-[150px]">{selectedCategory.category_name}</span>
-                        <button
-                            onClick={() => { selectCategory(null); }}
-                            className="p-1 hover:bg-gray-100 rounded-full transition-colors group"
-                            title="Clear selection"
-                        >
+                        <button   onClick={() => { selectCategory(null); }} className="p-1 hover:bg-gray-100 rounded-full transition-colors group"    title="Clear selection" >
                             <X className="h-3 w-3 group-hover:text-red-500" />
                         </button>
                     </div>

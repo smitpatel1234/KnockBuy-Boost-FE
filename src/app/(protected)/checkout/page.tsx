@@ -43,7 +43,7 @@ export default function Page() {
         </div>
         <Button
           className="bg-blue-600 hover:bg-blue-700 text-white min-w-[200px]"
-          onClick={() => window.location.href = "/profile"}
+          onClick={() => globalThis.window.location.href = "/profile"}
         >
           Go to Profile
         </Button>

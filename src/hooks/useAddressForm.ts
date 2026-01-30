@@ -8,7 +8,7 @@ import { AddressSchema } from "../schemas/address.schema";
 
 interface UseAddressFormProps {
   initialValues?: Partial<Address>;
-  onSubmit: (values: Address | AddAddress) => void;
+  onSubmit: (values: Address | AddAddress) => void | Promise<void>;
 }
 
 export const useAddressForm = ({
@@ -26,13 +26,20 @@ export const useAddressForm = ({
       pincode: initialValues?.pincode ,
     } as Address | AddAddress,
     validationSchema: AddressSchema,
-    onSubmit: (values) => {
-      if ('address_id' in values && values.address_id) {
-        onSubmit(values);
+    onSubmit: async  (values) => {
+      try {
+            if ('address_id' in values && values.address_id) {
+
+        await onSubmit(values);
       } else {
         const { address_id: _, ...data } = values as Address;
-        onSubmit(data as AddAddress);
+        await onSubmit(data as AddAddress);
       }
+      }
+      catch(error){
+        console.error("Error submitting address form:", error);
+      }
+      
     },
     enableReinitialize: true,
   });

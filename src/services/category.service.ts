@@ -10,7 +10,6 @@ export const getAllCategories = async (): Promise<AxiosResponse<{ message: strin
 
 
 export const getAllCategoriesPage = async (params: PageParams): Promise<{ data: PaginationResponse<Category> }> => {
-    console.log("Fetching categories with params: in getAllCategoriesPage ", params);
     const response = await api.post<{ message: string; data: PaginationResponse<Category> }>("/category/get-all-categories-page", params);
     return response.data;
 };

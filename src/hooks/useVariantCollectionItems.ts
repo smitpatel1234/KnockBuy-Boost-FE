@@ -19,13 +19,13 @@ export function useVariantCollectionItems(): UseVariantCollectionItemsReturn {
         setError(null);
         const response = await getAllItems();
         let itemsData: Item[] = [];
-        if (response?.data?.data && Array.isArray(response.data.data)) {
+        if (Array.isArray(response.data.data)) {
           itemsData = response.data.data;
         }
         setItems(itemsData);
       } catch (err: unknown) {
         const error = err as { response?: { data?: { message?: string } }; message?: string };
-        const errorMsg = error.response?.data?.message ? error.response.data.message : error.message ?? "Failed to fetch items";
+        const errorMsg = error.response?.data?.message ?? error.message ?? "Failed to fetch items";
         setError(errorMsg);
         setItems([]);
       } finally {
@@ -35,6 +35,7 @@ export function useVariantCollectionItems(): UseVariantCollectionItemsReturn {
 
     void fetchItems();
   }, []);
+
 
   return { items, loading, error };
 }

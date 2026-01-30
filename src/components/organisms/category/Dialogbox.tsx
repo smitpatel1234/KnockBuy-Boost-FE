@@ -113,6 +113,12 @@ export default function Dialogbox({
                     value={formik.values.description}
                     onChange={formik.handleChange}
                   />
+                  {formik.touched.description &&
+                    formik.errors.description && (
+                      <span className="text-xs text-red-500">
+                        {formik.errors.description}
+                      </span>
+                    )}
                 </div>
 
                 <div className="flex gap-2 justify-end mt-4">

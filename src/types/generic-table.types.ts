@@ -1,6 +1,5 @@
 import type React from "react";
-import type { Filter, Sort, MaxMinConstraints } from "./pagination.types";
-
+import type { Filter, Sort, MaxMinConstraints , PageParams, PaginationResponse } from "./pagination.types";
 export interface ColumnConfig {
    title: string;
    key: string;
@@ -23,4 +22,9 @@ export interface GenericTableType<T> {
    onFilterChange?: (column: string, { value, upperBoundDate, lowerBoundDate, upperBoundNumber, lowerBoundNumber }: Omit<Filter, 'column'>) => void;
    columnRenderers?: Record<string, (value: string, row: T) => React.ReactNode>;
    constraints?: MaxMinConstraints[];
+}
+export interface UseTableProps<T> {
+  fetchData: (params: PageParams) => Promise<PaginationResponse<T>>;
+  dataOfColumn: ColumnConfig[];
+  initialLimit?: number;
 }

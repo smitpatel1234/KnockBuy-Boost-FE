@@ -1,12 +1,14 @@
-import React, { useState, useEffect, useMemo } from "react";
+import type React from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
+
 
 export function useMouseOverZoom(
-  source: React.RefObject<HTMLImageElement>,
-  target: React.RefObject<HTMLCanvasElement>,
-  cursor: React.RefObject<HTMLElement>,
+  source: React.RefObject<HTMLImageElement | null>,
+  target: React.RefObject<HTMLCanvasElement | null>,
+  cursor: React.RefObject<HTMLElement | null>,
   radius = 25
 ) {
-  // Capture Mouse position
+
   const { x, y, isActive: isOverContainer } = useMouse(source);
 
   // Calculate actual rendered image bounds (for object-contain)
@@ -41,7 +43,7 @@ export function useMouseOverZoom(
       renderedWidth,
       renderedHeight,
     };
-  }, [source.current?.naturalWidth, source.current?.naturalHeight, source.current?.width, source.current?.height]);
+  }, [source]);
 
   // Restrict zoom to only when mouse is over the actual rendered image
   const isActive = useMemo(() => {
@@ -79,19 +81,27 @@ export function useMouseOverZoom(
       imageY: imageY - radius,
     };
   }, [x, y, imageBounds, radius]);
-
+ 
   // move the cursor to the mouse position
-  useEffect(() => {
-    if (cursor.current) {
-      const { left, top, width, height } = zoomBounds;
+  const cursorStyle = useMemo(() => {
+    const { left, top, width, height } = zoomBounds;
+    return {
+      left: `${String(left)}px`,
+      top: `${String(top)}px`,
+      width: `${String(width)}px`,
+      height: `${String(height)}px`,
+    };
+  }, [zoomBounds]);
 
-      cursor.current.style.left = `${left}px`;
-      cursor.current.style.top = `${top}px`;
-      cursor.current.style.width = `${width}px`;
-      cursor.current.style.height = `${height}px`;
-      cursor.current.style.display = isActive ? "block" : "none";
+  const assignCursorStyle = useCallback(() => {
+    if (cursor.current) {
+      Object.assign(cursor.current.style, cursorStyle);
     }
-  }, [zoomBounds, isActive, cursor]);
+  }, [cursor,cursor.current, cursorStyle]);
+
+  useEffect(() => {
+     assignCursorStyle()
+  }, [assignCursorStyle]);
 
   // draw the zoomed image on the canvas
   useEffect(() => {
@@ -127,7 +137,7 @@ export function useMouseOverZoom(
 
   return isActive;
 }
-function useMouse(ref: React.RefObject<HTMLElement>) {
+function useMouse(ref: React.RefObject<HTMLElement | null>) {
   const [mouse, setMouse] = useState<{ x: number; y: number, isActive: boolean }>({ x: 0, y: 0, isActive: false });
   useEffect(() => {
     if (ref.current) {
@@ -151,10 +161,10 @@ function useMouse(ref: React.RefObject<HTMLElement>) {
       }
       ref.current.addEventListener("mousemove", handleMouseMove);
       ref.current.addEventListener("mouseout", handleMouseOut);
+      const element = ref.current;
       return () => {
-        if (ref.current === null) return;
-        ref.current!.removeEventListener("mousemove", handleMouseMove);
-        ref.current!.removeEventListener("mouseout", handleMouseOut);
+        element.removeEventListener("mousemove", handleMouseMove);
+        element.removeEventListener("mouseout", handleMouseOut);
       };
     }
   });

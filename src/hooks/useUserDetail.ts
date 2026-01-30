@@ -44,7 +44,7 @@ export const useUserDetail = () => {
             setLoading(true);
             const response = await getUser(user_id as string);
             const userData = response.data.data;
-            void formik.setValues({
+            await formik.setValues({
                 user_id: userData.user_id,
                 username: userData.username,
                 email: userData.email,
@@ -52,8 +52,8 @@ export const useUserDetail = () => {
                 wishlist_name: userData.wishlist_name ?? '',
                 profile_image: userData.profile_image ?? '',
             });
-        } catch (err) {
-            console.error("[FETCH USER ERROR]", err);
+        } catch (error_) {
+            console.error("[FETCH USER ERROR]", error_);
             toast.error("Failed to fetch user details");
         } finally {
             setLoading(false);
@@ -66,14 +66,13 @@ export const useUserDetail = () => {
         try {
             setUploading(true);
             const uploadRes = await uploadFiles([file], 'user') as { data: { url?: string } } ;
-            if (uploadRes.data?.url) {
-                void formik.setFieldValue('profile_image', uploadRes.data.url);
+            if (uploadRes.data.url) {
+                await formik.setFieldValue('profile_image', uploadRes.data.url);
                 toast.success("Profile image uploaded successfully");
             } else {
                 toast.error("Invalid response from server");
             }
-
-        } catch (error) {
+        } catch  {
             toast.error("Failed to upload image");
         } finally {
             setUploading(false);

@@ -20,3 +20,9 @@ export interface AddDiscountParams {
     discount_start_date?: string;
     active_flag?: 1|0;
 }
+export interface DialogboxProps {
+  isOpen: boolean;
+  item?: Discount | null;
+  onClose: () => void;
+  onSuccess: () => void;
+}

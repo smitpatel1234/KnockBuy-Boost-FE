@@ -55,7 +55,7 @@ export const useItemSlug = (id: string) => {
     };
 
     void fetchProduct();
-  }, []);
+  }, [id]);
 
   return { loading, product, AddToCart, varientp };
 };

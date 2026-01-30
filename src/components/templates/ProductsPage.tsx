@@ -14,12 +14,10 @@ import { loading as setLoading } from "@/redux/features/item-slice";
 import { fetchVariantData } from "@/redux/features/variant-slice";
 import { fetchCategoriesAll } from "@/redux/features/category-slice";
 import { getItem } from "@/services/item.service";
-
-interface ProductsPageProps {
-  item_id?: string;
-}
-
-export default function ProductsPage({ item_id }: ProductsPageProps) {
+import type { ProductsPageProps } from "@/types/product-display.types";
+import LoadingProduct from "../organisms/products/LoadingProduct";
+import Section from "../molecules/Section";
+export default function ProductsPage({ item_id }: Readonly<ProductsPageProps>) {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { loading ,error} = useAppSelector((state) => state.item);
@@ -31,16 +29,11 @@ export default function ProductsPage({ item_id }: ProductsPageProps) {
   const formik = useItemForm({
     onClose: handleOnClose,
   });
-
-  useEffect(() => {
-    void dispatch(fetchVariantData());
-    void dispatch(fetchCategoriesAll());
-
-    const fetchItem = async () => {
-      if (!item_id) return;
-      void dispatch(setLoading(true));
+   const fetchItem = async () => {
+      if (!item_id) { return;}
+       dispatch(setLoading(true));
       const res = await getItem(item_id);
-      void dispatch(setLoading(false));
+       dispatch(setLoading(false));
       if (res.data.message === "Unauthorized") {
         router.push("/adminLogin/admin");
         return;
@@ -48,9 +41,9 @@ export default function ProductsPage({ item_id }: ProductsPageProps) {
 
       const data = res.data.data;
 
-      if (formik.values.item_id) return;
+      if (formik.values.item_id) {return;}
 
-      void formik.setValues({
+       await  formik.setValues({
         item_id: data.item_id,
         item_name: data.item_name,
         item_price: data.item_price,
@@ -68,19 +61,17 @@ export default function ProductsPage({ item_id }: ProductsPageProps) {
       });
     };
 
+
+  useEffect(() => {
+    void dispatch(fetchVariantData());
+    void dispatch(fetchCategoriesAll());
+
     void fetchItem();
-  }, []);
+  }, [ ]);
 
   if (item_id && loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
-          <p className="text-slate-600 font-medium">
-            Loading product details...
-          </p>
-        </div>
-      </div>
+       <LoadingProduct />
     );
   }
 
@@ -100,7 +91,7 @@ export default function ProductsPage({ item_id }: ProductsPageProps) {
     );
   }
 
-
+  const IsEditMode = (item_id:string | undefined)=>{return item_id ? "Update Product" : "Save Product";}
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
       <form onSubmit={(e) => {
@@ -126,11 +117,7 @@ export default function ProductsPage({ item_id }: ProductsPageProps) {
                 className="bg-blue-600 hover:bg-blue-700 text-white px-8"
                 disabled={formik.isSubmitting}
               >
-                {formik.isSubmitting
-                  ? "Saving..."
-                  : item_id
-                    ? "Update Product"
-                    : "Save Product"}
+                {formik.isSubmitting? "Saving...": IsEditMode(item_id)} 
               </Button>
             </div>
           </div>
@@ -151,9 +138,7 @@ export default function ProductsPage({ item_id }: ProductsPageProps) {
             </Section>
 
             <Section title="Variant Collections" subtitle="Group related items">
-              <VariantCollectionComponent
-                formik={formik}
-              />
+              <VariantCollectionComponent formik={formik} />
             </Section>
           </div>
 
@@ -162,10 +147,10 @@ export default function ProductsPage({ item_id }: ProductsPageProps) {
               <ProductImage
                 images={formik.values.images ?? []}
                 onUpload={(file) => void formik.handleImageUpload([file])}
-                onRemove={(index) => {
+                onRemove={ async  (index) => {
                   const newImages = [...(formik.values.images ?? [])];
                   newImages.splice(index, 1);
-                  void formik.setFieldValue("images", newImages);
+                   await formik.setFieldValue("images", newImages);
                 }}
               />
             </Section>
@@ -183,22 +168,4 @@ export default function ProductsPage({ item_id }: ProductsPageProps) {
   );
 }
 
-function Section({
-  title,
-  subtitle,
-  children,
-}: {
-  title: string;
-  subtitle: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="bg-white rounded-xl shadow-md border border-slate-100 overflow-hidden">
-      <div className="p-6 border-b border-slate-200 bg-slate-50/50">
-        <h2 className="text-xl font-semibold text-gray-900">{title}</h2>
-        <p className="mt-1 text-sm text-gray-500">{subtitle}</p>
-      </div>
-      <div className="p-6">{children}</div>
-    </div>
-  );
-}
+

@@ -28,6 +28,12 @@ export default function SearchPage() {
   const handleFilterChange = (newFilters: FilterState) => {
     setSidebarFilters(newFilters);
   };
+  const checkTotal = (total: number) => {
+    if(total === 1 ){
+      return 'product';
+    }
+    return 'products';
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
@@ -37,7 +43,9 @@ export default function SearchPage() {
           {query ? `Search Results for "${query}"` : 'Browse Products'}
         </h1>
         <p className="text-sm text-gray-600 mt-1">
-          {loading ? 'Searching...' : `${total} ${total === 1 ? 'product' : 'products'} found`}
+          {loading
+            ? 'Searching...'
+            : `${String(total)} ${checkTotal(total)} found`}
         </p>
       </div>
 
@@ -65,7 +73,7 @@ export default function SearchPage() {
                 onFilterChange={handleFilterChange}
                 constraints={constraints}
                 dynamicOptions={{
-                  variantProperties: allVariantProperties && Object.keys(allVariantProperties).length > 0 ? allVariantProperties : undefined
+                  variantProperties: allVariantProperties 
                 }}
               />
             </div>

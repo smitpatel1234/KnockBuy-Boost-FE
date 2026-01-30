@@ -5,7 +5,6 @@ import { useWishlist } from "@/hooks/useWishlist";
 import { Loader2, Heart } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { useEffect } from "react";
 
 export default function WishlistPage() {
     const { items, loading } = useWishlist();

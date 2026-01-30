@@ -1,23 +1,14 @@
 "use client";
-
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { debounce } from "lodash";
 import type {
   PageParams,
   Sort,
   Filter,
-  PaginationResponse,
   MaxMinConstraints,
 } from "../types/pagination.types";
-import type { ColumnConfig } from "../types/generic-table.types";
+import type { UseTableProps } from "../types/generic-table.types";
 import { DateToTime } from "@/utils/common/formatDate";
-
-interface UseTableProps<T> {
-  fetchData: (params: PageParams) => Promise<PaginationResponse<T>>;
-  dataOfColumn: ColumnConfig[];
-  initialLimit?: number;
-}
-
 export const useTable = <T>({
   fetchData,
   dataOfColumn,
@@ -37,27 +28,20 @@ export const useTable = <T>({
       return filters.concat(
         ...dataOfColumn.map((col) => {
           return {
-            isSearchByDate: col?.searchByDate,
-            isSearchByNumber: col?.searchByNumber,
-            column: col?.filterKey ?? col.key,
+            isSearchByDate: col.searchByDate,
+            isSearchByNumber: col.searchByNumber,
+            column: col.filterKey ?? col.key,
           };
         }),
       );
     }
-    return filters
-      .filter(
-        (v) =>
-          v.value !== "" ||
-          v.lowerBoundDate ||
-          v.upperBoundDate ||
-          v.lowerBoundNumber ||
-          v.upperBoundNumber ||
-          v.isSearchByNumber ||
-          v.isSearchByDate,
+    return filters.filter(
+        (v) => v.value !== "" || 
+        (v.lowerBoundDate ?? v.upperBoundDate ?? v.lowerBoundNumber ?? v.upperBoundNumber ?? v.isSearchByNumber ?? v.isSearchByDate),
       )
       .map((v) => {
         const col = dataOfColumn.find(
-          (c) => c.key === v.column || c.searchByDate || c.searchByNumber,
+          (c) => c.key === v.column || (c.searchByDate ?? c.searchByNumber),
         );
         return {
           ...v,
@@ -94,9 +78,8 @@ export const useTable = <T>({
     try {
       const response = await fetchData(params);
       setTotal(response.meta.total);
-      if (response.meta.constraints) {
-        setConstraints(response.meta.constraints);
-      }
+      setConstraints(response.meta.constraints);
+      
     } catch (error) {
       console.error("Error fetching table data:", error);
     } finally {
@@ -130,15 +113,15 @@ export const useTable = <T>({
     column: string,
     filterData: Omit<Filter, "column">,
   ) => {
-    let index = localFilters.findIndex((v) => v.column === column);
+    const index = localFilters.findIndex((v) => v.column === column);
     let nextFilters: Filter[];
 
-    if (index !== -1) {
+    if (index === -1) {
+      nextFilters = [...localFilters, { column, ...filterData }];
+    } else {
       nextFilters = [...localFilters];
       nextFilters[index] = { ...nextFilters[index], ...filterData };
-    } else {
-      nextFilters = [...localFilters, { column, ...filterData }];
-    }
+    } 
 
     setLocalFilters(nextFilters);
     debouncedSetFilters(nextFilters);
@@ -148,19 +131,17 @@ export const useTable = <T>({
     setSorts((prev) => {
       const existingIndex = prev.findIndex((s) => s.column === column);
 
-      if (existingIndex !== -1) {
+      if (existingIndex === -1) {
+        return [...prev, { column, order: "ASC" }];
+      } else {
         const existing = prev[existingIndex];
         const newSorts = [...prev];
-
         if (existing.order === "ASC") {
           newSorts[existingIndex] = { column, order: "DESC" };
         } else if (existing.order === "DESC") {
           newSorts.splice(existingIndex, 1);
         }
-
         return newSorts;
-      } else {
-        return [...prev, { column, order: "ASC" }];
       }
     });
     setPage(1);

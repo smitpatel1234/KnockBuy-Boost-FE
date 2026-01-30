@@ -6,7 +6,7 @@ import OrderDetailsTemplate from "@/components/templates/OrderDetailsTemplate";
 export default function AdminOrderDetailsPage({
   params,
 }: {
-  params: Promise<{ "order-id": string }>;
+  readonly params: Promise<{ "order-id": string }>;
 }) {
   const unwrappedParams = React.use(params);
   return <OrderDetailsTemplate orderId={unwrappedParams["order-id"]} />;

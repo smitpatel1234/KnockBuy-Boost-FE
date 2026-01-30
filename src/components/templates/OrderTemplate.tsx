@@ -18,36 +18,36 @@ export default function OrderTemplate() {
         try {
             const res = await getAllOrders(params);
             const responseData = res.data.data;
-            setData(responseData.data || responseData);
+            setData(responseData.data);
             return responseData as PaginationResponse<OrderAllType>;
         } catch (error) {
-            console.error(error);
+            console.error(JSON.stringify(error));
             toast.error("Failed to fetch orders");
             return { data: [], meta: {constraints:[], total: 0, page: 1, limit: 10, totalPages: 0 } };
         }
     }, []);
 
-    const handleDelete = async (order: OrderAllType) => {
+    const handleDelete =  (order: OrderAllType) => {
         try {
-            await deleteOrder(order.order_id);
+             deleteOrder(order.order_id).catch(((error : unknown) => {
+                console.error(JSON.stringify(error));
+                toast.error("Failed to delete order");
+             }));
             toast.success("Order deleted successfully");
-            window.location.reload();
+            globalThis.window.location.reload();
         } catch (error) {
-            console.error(error);
+            console.error(JSON.stringify(error));
             toast.error("Failed to delete order");
         }
     };
 
-    const columnRenderers = {
-        
+    const columnRenderers: Record<string, (val: string | number | null | undefined) => React.ReactNode> = {
         order_date: (val: string | number | null | undefined) =>    
-
-
             val ? formatDate(val) : "-",
         total_amount: (val: string | number | null | undefined) =>
-            `₹${parseFloat(String(val ?? 0)).toFixed(2)}`,
+            `₹${Number.parseFloat(String(val ?? 0)).toFixed(2)}`,
         status: (val: string | number | null | undefined) => (
-            <Badge className={STATUS_COLORS[String(val || "").toLowerCase()] || "bg-gray-100 text-gray-800"}>
+            <Badge className={STATUS_COLORS[String(val ?? "").toLowerCase()] || "bg-gray-100 text-gray-800"}>
                 {val}
             </Badge>
         ),

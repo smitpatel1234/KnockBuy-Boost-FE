@@ -34,12 +34,15 @@ export const fetchDiscounts = createAsyncThunk<
     try {
       const response = await getAllDiscountsPage(pageParams);
       
-      const transformedData = response.data.data.map((discount: Discount) => ({
-        ...discount,
-        ...(discount.discount_start_date && {
-          discount_start_date: formatDate(discount.discount_start_date)
-        })
-      }));
+      const transformedData: Discount[] = response.data.data.map((discount: Discount) => {
+        const transformed: Discount = {
+          ...discount,
+        };
+        if (discount.discount_start_date && typeof discount.discount_start_date === 'string') {
+          transformed.discount_start_date = formatDate(discount.discount_start_date) ;
+        }
+        return transformed;
+      });
 
       const result: PaginationResponse<Discount> = {
         ...response.data,
@@ -120,7 +123,7 @@ const discountSlice = createSlice({
     });
     builder.addCase(fetchDiscounts.rejected, (state, action) => {
       state.loading = false;
-      state.error = (action.payload as string) ? (action.payload as string) : "Failed to fetch discounts";
+      state.error = action.payload  ?? "Failed to fetch discounts";
     });
   },
 });

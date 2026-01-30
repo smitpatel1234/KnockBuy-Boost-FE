@@ -53,7 +53,7 @@ export default function SearchSection({ search, globalSearchChange }: SearchSect
     };
 
     return (
-        <div className="flex w-full gap-2 items-center relative" onBlur={() => { setTimeout(() => setShowSuggestions(false), 200); }}>
+        <div className="flex w-full gap-2 items-center relative" onBlur={() => { setTimeout(() => { setShowSuggestions(false); }, 200); }}>
             <div className="hidden md:block flex-shrink-0">
               <CategorySlider />
             </div>

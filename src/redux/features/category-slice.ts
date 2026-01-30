@@ -24,10 +24,10 @@ const initialState: CategoryState = {
 
 export const fetchCategoriesAll = createAsyncThunk<Category[]>(
     'category/fetchAll',
-    async (_, { rejectWithValue }) => {
+    async (_params, { rejectWithValue }) => {
         try {
             const response = await getAllCategories();
-            return (response?.data?.data) ?? [];
+            return response.data.data;
         } catch (err: unknown) {
             const error = err as { response?: { data?: { message?: string } } };
             return rejectWithValue(error.response?.data?.message ?? 'Failed to fetch categories');

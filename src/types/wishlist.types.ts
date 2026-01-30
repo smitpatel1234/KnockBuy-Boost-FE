@@ -18,7 +18,7 @@ export interface WishlistItem {
   image_url?: string;
 }
 
-export type WishlistState  = {
+export interface WishlistState {
     items: WishlistItem[];
     loading: boolean;
     error: string | null;

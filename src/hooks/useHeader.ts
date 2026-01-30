@@ -12,7 +12,7 @@ export interface UseHeaderResult {
   search: string
 }
 
-export function useHeader(router: AppRouterInstance): UseHeaderResult {
+export function useHeader(_router: AppRouterInstance): UseHeaderResult {
 
   const [search, setSearch] = React.useState<string>("");
   const dispatch = useAppDispatch()

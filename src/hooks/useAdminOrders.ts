@@ -18,12 +18,14 @@ export const useAdminOrders = () => {
                 limit: 10,
                 search: filters.username || filters.order_id || "",
             });
-            const responseData = res.data.data;
-            setData(responseData.data || responseData);
-            setTotalPages(responseData.meta?.lastPage || 1);
+            const responseData = res.data.data as { data?: OrderAllType[]; meta?: { lastPage?: number } } | OrderAllType[];
+            setData(Array.isArray(responseData) ? responseData : (responseData.data ?? []));
+            const pageNum = !Array.isArray(responseData) && responseData.meta?.lastPage ? responseData.meta.lastPage : 1;
+            setTotalPages(typeof pageNum === 'number' ? pageNum : 1);
         } catch (error) {
-            console.error(error);
-            toast.error("Failed to fetch orders");
+            const errorMsg = (error as { response?: { data?: { message?: string } } }).response?.data?.message ?? "Failed to fetch orders";
+            console.error(JSON.stringify(error));
+            toast.error(errorMsg);
         } finally {
             setLoading(false);
         }
@@ -31,7 +33,7 @@ export const useAdminOrders = () => {
 
     useEffect(() => {
         void fetchOrders();
-    }, []);
+    }, [fetchOrders]);
 
     const handleDelete = async (orderId: string) => {
         try {

@@ -10,7 +10,7 @@ export default function CartItemRow({
   cartitem,
   onQuantityChange,
   onRemove,
-}: CartItemRowProps) {
+}: Readonly<CartItemRowProps>) {
   const {  totalPrice } = useCartItem(cartitem)
 
   return (
@@ -44,7 +44,7 @@ export default function CartItemRow({
 
           <div className="flex items-center gap-2 mt-1">
             <span className="text-lg font-bold text-gray-900">
-              ₹{Number(cartitem.item_price).toFixed(2)}
+              ₹{cartitem.item_price.toFixed(2)}
             </span>
           </div>
         </div>
@@ -55,7 +55,9 @@ export default function CartItemRow({
             disabled={!!cartitem.deleted_at}
             variant="outline"
             size="sm"
-            onClick={() => { onQuantityChange(cartitem, cartitem.quantity - 1); }}
+            onClick={() => {
+              onQuantityChange(cartitem, cartitem.quantity - 1);
+            }}
             className="h-8 w-8 p-0"
           >
             <Minus className="w-4 h-4" />
@@ -65,7 +67,7 @@ export default function CartItemRow({
             min="1"
             disabled={!!cartitem.deleted_at}
             value={cartitem.quantity}
-            onChange={(e) => { onQuantityChange(cartitem, parseInt(e.target.value) || 1); }}
+            onChange={(e) => { onQuantityChange(cartitem, Number.parseInt(e.target.value) || 1); }}
             className="w-20 h-8 text-center"
           />
           <Button

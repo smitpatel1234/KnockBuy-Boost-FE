@@ -8,8 +8,8 @@ import { useEffect } from "react";
 import { fetchUserProfile } from "@/redux/features/auth-slice";
 import { useWishlist } from "@/hooks/useWishlist";
 import { fetchCart } from "@/redux/features/cart-slice";
-import SearchSection from "./Header/SearchSection";
-import HeaderActions from "./Header/HeaderActions";
+import SearchSection from "./header/SearchSection";
+import HeaderActions from "./header/HeaderActions";
 
 export default function Header() {
   const dispatch = useAppDispatch();
@@ -17,10 +17,11 @@ export default function Header() {
   const { items: cartItems } = useAppSelector((state) => state.cart);
 
   useEffect(() => {
-    dispatch(fetchUserProfile())
-    void fetchWishlistByUser()
-    dispatch(fetchCart())
-  }, [dispatch, fetchWishlistByUser])
+    void dispatch(fetchUserProfile());
+    fetchWishlistByUser();
+    void dispatch(fetchCart());
+  }, [dispatch, fetchWishlistByUser]);
+
 
   const { user, loading } = useAppSelector((state) => state.auth)
   const router = useRouter();

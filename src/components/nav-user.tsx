@@ -1,11 +1,9 @@
 "use client"
 
 import {
-  BellIcon,
-  CreditCardIcon,
+
   LogOutIcon,
   MoreVerticalIcon,
-  UserCircleIcon,
 } from "lucide-react"
 import * as React from "react"
 
@@ -17,7 +15,6 @@ import {
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -29,14 +26,14 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { AuthUser } from "@/types/auth.types"
+import type { AuthUser } from "@/types/auth.types"
 import { logoutUser } from "@/redux/features/auth-slice"
 import { useAppDispatch } from "@/redux/store"
 
 export function NavUser({
   user,
 }: {
-  user: AuthUser | null
+  readonly user: AuthUser | null
 }) {
   const { isMobile } = useSidebar()
   const dispatch = useAppDispatch()
@@ -106,7 +103,11 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
 
-            <DropdownMenuItem onClick={()=>{dispatch(logoutUser()); }}>
+            <DropdownMenuItem
+              onClick={() => {
+                void dispatch(logoutUser());
+              }}
+            >
               <LogOutIcon />
               Log out
             </DropdownMenuItem>

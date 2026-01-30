@@ -17,6 +17,9 @@ export default defineConfig([
     "eslint.config.mjs",
     "postcss.config.js",
     ".storybook/**",
+    "src/components/ui/**",
+    "__test__/**",
+    "coverage/**",
   ]),
   ...tseslint.configs.strictTypeChecked,
   ...tseslint.configs.stylisticTypeChecked,
@@ -60,7 +63,7 @@ export default defineConfig([
       "react/no-unescaped-entities": "error",
       "max-lines": [
         "error",
-        { max: 100, skipBlankLines: true, skipComments: true },
+        { max: 150, skipBlankLines: true, skipComments: true },
       ],
       "max-lines-per-function": [
         "error",

@@ -1,9 +1,8 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/redux/store";
-import { Mail, User as UserIcon, Calendar } from "lucide-react";
-import { Package } from "lucide-react";
-import OrderHistory from "@/components/organisms/profile/OrderHistory";import { useEffect } from "react";
+import { Mail, User as UserIcon, Calendar ,Package} from "lucide-react";
+import OrderHistory from "@/components/organisms/profile/OrderHistory";
 
 export default function ProfilePage() {
   const { user, loading } = useAppSelector((state) => state.auth);

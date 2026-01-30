@@ -1,20 +1,9 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { getAllVariantValuesPage, getAllVariantProperties, createVariantProperty, updateVariantProperty, deleteVariantProperty, getAllVariantValues, createVariantValue, updateVariantValue, deleteVariantValue } from '../../services/variant.service';
 import type { PageParams } from '../../types/pagination.types';
 import type { VariantProperty, VariantValue } from '../../types/variant.types';
-interface VariantState {
-    properties: VariantProperty[];
-    values: VariantValue[];
-    loading: boolean;
-    error: string | null;
-}
+import { initialState } from '../../types/variant.types';
 
-const initialState: VariantState = {
-    properties: [],
-    values: [],
-    loading: false,
-    error: null,
-};
 export const fetchVariantValuePage = createAsyncThunk(
     'variant/fetchAllPage',
     async (pageParams: PageParams, { rejectWithValue }) => {
@@ -23,10 +12,7 @@ export const fetchVariantValuePage = createAsyncThunk(
                 getAllVariantProperties(),
                 getAllVariantValuesPage(pageParams)
             ]);
-            return {
-                properties: (propsRes.data.data as VariantProperty[]) ?? [],
-                values: valuesRes.data ?? []
-            };
+            return { properties: propsRes.data.data as unknown as VariantProperty[] , values: valuesRes.data };
         } catch (err: unknown) {
             const error = err as { response?: { data?: { message?: string } } };
             return rejectWithValue(error.response?.data?.message ?? 'Failed to fetch variant data');
@@ -43,8 +29,8 @@ export const fetchVariantData = createAsyncThunk(
                 getAllVariantValues()
             ]);
             return {
-                properties: (propsRes.data.data as VariantProperty[]) ?? [],
-                values: (valuesRes.data.data as VariantValue[]) ?? []
+                properties: propsRes.data.data ,
+                values: valuesRes.data.data
             };
         } catch (err: unknown) {
             const error = err as { response?: { data?: { message?: string } } };
@@ -58,8 +44,8 @@ export const addVariantProperty = createAsyncThunk(
     async (data: { property_name: string }, { rejectWithValue, dispatch }) => {
         try {
             await createVariantProperty(data);
-            void dispatch(fetchVariantData());
-            return;
+            await dispatch(fetchVariantData());
+
         } catch (err: unknown) {
             const error = err as { response?: { data?: { message?: string } } };
             return rejectWithValue(error.response?.data?.message ?? 'Failed to add variant property');
@@ -162,7 +148,7 @@ const variantSlice = createSlice({
         builder.addCase(fetchVariantValuePage.fulfilled, (state, action) => {
             state.loading = false;
             state.properties = action.payload.properties;
-            state.values = action.payload.values.data;
+            state.values = action.payload.values.data as unknown as VariantValue[];
         });
         builder.addCase(fetchVariantValuePage.rejected, (state, action) => {
             state.loading = false;

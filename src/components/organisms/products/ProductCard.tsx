@@ -3,23 +3,18 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Star, ShoppingCart, Heart, Loader2 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import type { ProductCardProps } from "@/types/productcard.types";
 import FallBackImage from "../../../../assets/dummy-product-placeholder.avif";
 import { Button } from "@/components/ui/button";
-import { useItemSlug } from "@/hooks/useItemSlug";
 import { useWishlist } from "@/hooks/useWishlist";
+import { toast } from "sonner";
 import { createItemCart } from "@/services/cartitem.service";
 import { fetchCart } from "@/redux/features/cart-slice";
 import { useAppDispatch } from "@/redux/store";
-import { toast } from "sonner";
 export default function ProductCard({ product }: ProductCardProps) {
   const { isItemInWishlist, toggleWishlist } = useWishlist();
   const dispatch = useAppDispatch();
   const AddToCart = async () => {
-    if (!product) {
-      return toast.message("Product not found")
-    }
     const item_id = product.item_id;
     try {
       await createItemCart({
@@ -33,7 +28,6 @@ export default function ProductCard({ product }: ProductCardProps) {
       toast.message("Failed to add to cart or out of stock");
     }
   };
-
   if (!product.slug) {
     return (
       <div className="flex justify-center  ">
@@ -41,9 +35,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       </div>
     );
   }
-
   const isInWishlist = isItemInWishlist(product.item_id);
-
   return (
     <div className="group bg-white border border-slate-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow duration-200 cursor-pointer h-full flex flex-col relative">
       <div className="absolute top-2 right-2 z-10">
@@ -59,20 +51,16 @@ export default function ProductCard({ product }: ProductCardProps) {
           <Heart className={`w-4 h-4 ${isInWishlist ? "fill-current" : ""}`} />
         </button>
       </div>
-
       <Link href={`/product/${product.slug}`}>
         <div className="relative w-full h-40 bg-slate-100 overflow-hidden">
           <Image
-            src={product.image_url  ?? FallBackImage}
+            src={product.image_url ?? FallBackImage}
             alt={product.item_name}
-            fill
+            fill={"true"}
             className="object-cover"
           />
-
-
         </div>
       </Link>
-
       <div className="p-3 flex-1 flex flex-col">
         <Link href={`/product/${product.slug}`}>
           <p className="text-xs text-gray-500 uppercase tracking-wide font-medium mb-1">
@@ -81,7 +69,6 @@ export default function ProductCard({ product }: ProductCardProps) {
           <h3 className="text-sm font-semibold text-gray-900 line-clamp-2 mb-2">
             {product.item_name}
           </h3>
-
           <div className="flex items-center gap-1 mb-2">
             <div className="flex items-center">
               {Array.from({ length: 5 }).map((_, i) => (
@@ -95,7 +82,6 @@ export default function ProductCard({ product }: ProductCardProps) {
               ))}
             </div>
           </div>
-
           <div className="flex items-center gap-2 mb-3">
             <span className="text-sm font-bold text-gray-900">
               ₹{product.item_price}
@@ -103,9 +89,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           </div>
         </Link>
         <Button
-          onClick={() => {
-            void AddToCart();
-          }}
+          onClick={() => { void AddToCart(); }}
           className="mt-auto w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded text-xs font-medium flex items-center justify-center gap-1 transition-colors duration-200"
         >
           <ShoppingCart className="w-3 h-3" />

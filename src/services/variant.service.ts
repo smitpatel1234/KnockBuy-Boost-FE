@@ -1,7 +1,9 @@
 import api, { publicapi } from "./api.service";
 import type { PageParams, PaginationResponse } from "../types/pagination.types";
+import type { AxiosResponse } from "axios";
+import type{ VariantProperty ,VariantValue } from "@/types/variant.types";
 
-export const getAllVariantProperties = () => publicapi.get("/variant/get-all-variant-properties");
+export const getAllVariantProperties = ():Promise<AxiosResponse<{data: VariantProperty[]}>> => publicapi.get("/variant/get-all-variant-properties");
 
 export const createVariantProperty = (data: { property_name: string }) =>
     api.post("/variant/create-variant-property", data);
@@ -16,7 +18,7 @@ export const deleteVariantProperty = (id: string) =>
         data: { variantProperty_id: id },
     });
 
-export const getAllVariantValues = () => publicapi.get("/variant/get-all-variant-values");
+export const getAllVariantValues = ():Promise<AxiosResponse<{data: VariantValue[]}>> => publicapi.get("/variant/get-all-variant-values");
 
 export const getAllVariantValuesPage = async (params: PageParams): Promise<{ data: PaginationResponse<Record<string, unknown>> }> => {
     const response = await api.post<{ message: string; data: PaginationResponse<Record<string, unknown>> }>("/variant/get-all-variant-values-page", params);

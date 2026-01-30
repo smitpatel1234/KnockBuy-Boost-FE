@@ -98,7 +98,7 @@ const itemSlice = createSlice({
     });
     builder.addCase(fetchItems.fulfilled, (state, action) => {
       state.loading = false;
-      state.items = action.payload?.data ?? [];
+      state.items = action.payload.data;
     });
     builder.addCase(fetchItems.rejected, (state, action) => {
       state.loading = false;
@@ -108,7 +108,7 @@ const itemSlice = createSlice({
       state.loading = true;
       state.error = null;
     });
-    builder.addCase(editItem.fulfilled, (state, action) => {
+    builder.addCase(editItem.fulfilled, (state) => {
       state.loading = false;
     });
     builder.addCase(editItem.rejected, (state, action) => {
@@ -119,12 +119,12 @@ const itemSlice = createSlice({
       state.loading = true;
       state.error = null;
     });
-    builder.addCase(addItem.fulfilled, (state, action) => {
+    builder.addCase(addItem.fulfilled, (state, _action) => {
       state.loading = false;
     });
-    builder.addCase(addItem.rejected, (state, action) => {
+    builder.addCase(addItem.rejected, (state, _action) => {
       state.loading = false;
-      state.error = action.payload as string;
+      state.error = _action.payload as string;
     });
   },
 });

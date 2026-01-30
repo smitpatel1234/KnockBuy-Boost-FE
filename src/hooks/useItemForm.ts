@@ -27,7 +27,7 @@ export const useItemForm = ({ initialData, onClose }: UseItemFormProps) => {
             rating: initialData?.rating ?? 0,
             variant: initialData?.variant ? initialData.variant.map(v => ({ ...v, item_variantvalue_mapping_id: v.item_variantvalue_mapping_id })) : [],
             images: initialData?.images ?? [],
-            variant_collections: initialData?.variant_collections ? initialData.variant_collections : [],
+            variant_collections: initialData?.variant_collections ?? [],
             isEdit: false
         },
         enableReinitialize: true,
@@ -37,7 +37,7 @@ export const useItemForm = ({ initialData, onClose }: UseItemFormProps) => {
                 ...values,
                 item_price: typeof values.item_price === 'number' ? values.item_price : 0,
                 stock: typeof values.stock === 'number' ? values.stock : 0,
-                rating: values.rating ? (typeof values.rating === 'number' ? values.rating : 0) : undefined,
+                rating: (values.rating && typeof values.rating === 'number') ? values.rating : undefined,
                 images: values.images,
                 variant: values.variant && values.variant.length > 0 ? values.variant : undefined,
             };
@@ -67,14 +67,13 @@ export const useItemForm = ({ initialData, onClose }: UseItemFormProps) => {
         try {
             setUploading(true);
             const response = await uploadFiles(files, 'item');
-            if (response && Array.isArray(response.data)) {
-                const urls = response.data.map((file: { url: string|undefined }) => file.url);
+            if (Array.isArray(response.data)) {
+                const urls = response.data.map((file: { url?: string }) => file.url).filter(Boolean);
                 const currentImages = formik.values.images ?? [];
-                void formik.setFieldValue('images', [...currentImages, ...urls]);
-
+                await formik.setFieldValue('images', [...currentImages, ...urls]);
             }
         } catch (error) {
-            console.error(error);
+            console.error(JSON.stringify(error));
 
         } finally {
             setUploading(false);

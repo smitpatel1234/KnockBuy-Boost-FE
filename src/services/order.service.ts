@@ -20,11 +20,11 @@ export const getOrderHistory = (): Promise<AxiosResponse<{ message: string; data
 };
 
 // Admin Methods
-export const getAllOrders = (params: any): Promise<AxiosResponse<{ message: string; data: { data: OrderAllType[]; meta: any } }>> => {
+export const getAllOrders = (params: unknown): Promise<AxiosResponse<{ message: string; data: { data: OrderAllType[]; meta: unknown } }>> => {
     return api.post("/order", params);
 };
 
-export const updateOrder = (order_id: string, data: any): Promise<AxiosResponse<{ message: string }>> => {
+export const updateOrder = (order_id: string, data: unknown): Promise<AxiosResponse<{ message: string }>> => {
     return api.put(`/order/${order_id}`, data);
 };
 

@@ -24,7 +24,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { Dispatch,SetStateAction } from "react"
+import type { Dispatch,SetStateAction } from "react"
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
@@ -116,9 +116,8 @@ const SidebarProvider = React.forwardRef<
           toggleSidebar()
         }
       }
-
-      window.addEventListener("keydown", handleKeyDown)
-      return () => { window.removeEventListener("keydown", handleKeyDown); }
+      globalThis.window.addEventListener("keydown", handleKeyDown)
+      return () => { globalThis.window.removeEventListener("keydown", handleKeyDown); }
     }, [toggleSidebar])
 
     // We add a state so that we can do data-state="expanded" or "collapsed".
@@ -684,7 +683,7 @@ const SidebarMenuSkeleton = React.forwardRef<
     setIsHydrated(true);
   }, []);
 
-  const width = isHydrated ? `${String(Math.floor(Math.random() * 40) + 50)}%` : "100%";
+  const width = isHydrated ? `${String(Math.floor(0.1* 40) + 50)}%` : "100%";
 
   return (
     <div

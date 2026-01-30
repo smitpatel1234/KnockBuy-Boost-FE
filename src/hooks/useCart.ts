@@ -92,7 +92,7 @@ export function useCart() {
 
   useEffect(() => {
     AddToCart();
-  }, []);
+  }, [AddToCart]);
 
   return {
     cartItems,

@@ -6,7 +6,7 @@ import type { LoginCredentials } from "../types/auth.types";
 import { LoginCredentialsSchema } from "../utils/validation/schemas/auth";
 import { useRouter } from "next/navigation";
 import { useAppDispatch } from "@/redux/store";
-import ReCAPTCHA from "react-google-recaptcha";
+import type ReCAPTCHA from "react-google-recaptcha";
 export const useLogin = ({ Role }: { Role: string | undefined }) => {
   const router = useRouter();
   const dispatch = useAppDispatch();

@@ -43,21 +43,17 @@ export interface ButtonProps
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, debounceMs = 0, onClick, ...props }, ref) => {
+  ({ className, variant, size, asChild = false, debounceMs = 300, onClick, ...props }, ref) => {
     const Comp = asChild ? Slot : "button"
     const timerRef = React.useRef<NodeJS.Timeout | null>(null)
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-      if (debounceMs) {
         if (timerRef.current) {
           clearTimeout(timerRef.current)
         }
         timerRef.current = setTimeout(() => {
           onClick?.(event)
         }, debounceMs)
-      } else {
-        onClick?.(event)
-      }
     }
 
     React.useEffect(() => {

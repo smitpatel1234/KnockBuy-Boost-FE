@@ -4,7 +4,6 @@ import Link from 'next/link'
 import { Loader2 } from 'lucide-react'
 import ProductList from '@/components/molecules/ProductList'
 import { useItemFetchAll } from '@/hooks/useItemFetchAll'
-import { useWishlist } from '@/hooks/useWishlist'
 export default function Home() {
   const { products, loading } = useItemFetchAll()
   if (loading) {

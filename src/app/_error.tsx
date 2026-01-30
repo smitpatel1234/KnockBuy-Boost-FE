@@ -1,5 +1,4 @@
-import { NextPage, NextPageContext } from 'next';
-import NextErrorComponent from 'next/error';
+import type { NextPage, NextPageContext } from 'next';
 import React from 'react';
 
 interface ErrorPageProps {
@@ -10,14 +9,14 @@ const CustomError: NextPage<ErrorPageProps> = ({ statusCode }) => {
   return (
     <p>
       {statusCode
-        ? `An error ${statusCode} occurred on server`
+        ? `An error ${String(statusCode)} occurred on server`
         : "An error occurred on client"}
     </p>
   );
 };
 
-CustomError.getInitialProps = ({ res, err }: NextPageContext) => {
-  const statusCode = res ? res.statusCode : err ? err.statusCode : 404;
+CustomError.getInitialProps = ({ res }: NextPageContext) => {
+  const statusCode = res ? res.statusCode :  404;
   return { statusCode };
 };
 

@@ -28,10 +28,10 @@ export const useCategoryForm = ({ initialData, onClose }: UseCategoryFormProps) 
                 category_name: values.category_name,
                 description: values.description,
                 image_url: values.image_url,
-                parent_category_id: values.parent_category_id !== undefined && values.parent_category_id !== null ? values.parent_category_id : undefined,
+                parent_category_id: values.parent_category_id ?? undefined,
             };
 
-            if (isEdit && initialData) {
+            if (isEdit) {
                 await dispatch(editCategory({ ...payload, category_id: initialData.category_id }));
             } else {
                 await dispatch(addCategory(payload));
@@ -45,7 +45,13 @@ export const useCategoryForm = ({ initialData, onClose }: UseCategoryFormProps) 
             setUploading(true);
             const response = await uploadFiles([file], 'category') as { data: { url?: string } };
             if (response.data.url) {
-                void formik.setFieldValue('image_url', response.data.url);
+                try {
+                  await  formik.setFieldValue('image_url', response.data.url);
+                }
+                catch (error) {
+                    console.error("Failed to set formik field value", error);
+                }
+                
             }
 
         } catch (error) {

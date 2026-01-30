@@ -13,6 +13,6 @@ export type DeleteAddress = Pick<Address, 'address_id'>
 
 export interface AddressFormProps {
     initialValues?: Partial<Address> | null;
-    onSubmit: (values: Address | AddAddress) => void | Promise<void>;
+    onSubmit: (values: Address | AddAddress) => Promise<void>;
     onCancel: () => void;
 }

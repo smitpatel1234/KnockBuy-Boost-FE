@@ -1,12 +1,11 @@
-import { MaxMinConstraints } from '@/types/pagination.types';
-import { useSearchParams } from 'next/navigation';
-import { useState, useEffect, useMemo } from 'react';
+import type { MaxMinConstraints } from '@/types/pagination.types';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import * as React from 'react';
 import type { Item } from '@/types/item.types';
 import { searchItems } from '@/services/item.service';
-import type { SearchFilter, SearchPageParams } from '@/types/';
+import type { SearchFilter, SearchPageParams } from '@/types';
 import type { FilterState } from '@/types/filter.types';
-import { useRouter } from 'next/navigation';
 export const useProductSearch = () => {
     const searchParams = useSearchParams();
     const query = searchParams.get('query') ?? '';
@@ -18,7 +17,7 @@ export const useProductSearch = () => {
     const [total, setTotal] = useState(0);
     const [loading, setLoading] = useState(true);
     const [constraints, setConstraints] = useState<MaxMinConstraints[]>([]);
-    const [allVariantProperties, setAllVariantProperties] = useState<{ [key: string]: string[] }>({});
+    const [allVariantProperties, setAllVariantProperties] = useState<Record<string, string[]>>({});
 
     const [sidebarFilters, setSidebarFilters] = useState<FilterState>({
         search: '',
@@ -33,25 +32,23 @@ export const useProductSearch = () => {
 
     // Extract all unique variant properties from products
     React.useEffect(() => {
-        const variantProps: { [key: string]: Set<string> } = {};
-        
+        const variantProps: Record<string, Set<string>> | null= {};
+
         products.forEach((product) => {
             if (product.variant && Array.isArray(product.variant)) {
                 product.variant.forEach((v) => {
-                    if (!variantProps[v.property_name]) {
-                        variantProps[v.property_name] = new Set();
-                    }
+                    variantProps[v.property_name] ??= new Set();
                     variantProps[v.property_name].add(v.variant_value);
                 });
             }
         });
 
         // Convert sets to arrays
-        const variantData: { [key: string]: string[] } = {};
+        const variantData: Record<string, string[]> = {};
         Object.keys(variantProps).forEach((key) => {
-            variantData[key] = Array.from(variantProps[key]).sort();
+            variantData[key] = Array.from(variantProps[key]).sort((a, b) => a.localeCompare(b));
         });
-        
+
         setAllVariantProperties(variantData);
     }, [products]);
 
@@ -62,17 +59,17 @@ export const useProductSearch = () => {
                 const activeFilters: SearchFilter[] = [];
 
                 if (query) activeFilters.push({ column: 'item.item_name', like: query });
-                if (categoryParam && categoryParam !== 'all') activeFilters.push({ column: 'category.category_id', eq: categoryParam });
+                if (categoryParam !== 'all') activeFilters.push({ column: 'category.category_id', eq: categoryParam });
 
-                if (sidebarFilters.priceRange && sidebarFilters.priceRange.length === 2) {
+                if (sidebarFilters.priceRange?.length === 2) {
                     activeFilters.push({ column: 'item_price', between: sidebarFilters.priceRange, isSearchByNumber: true });
                 }
 
                 if (sidebarFilters.selectedRating && sidebarFilters.selectedRating !== '0') activeFilters.push({ column: 'item.rating', gt: Number(sidebarFilters.selectedRating) });
 
                 // Add variant filters (removed color/size, using generic variant filtering)
-                if (sidebarFilters.selectedVariants && Object.keys(sidebarFilters.selectedVariants).length > 0) {
-                    Object.entries(sidebarFilters.selectedVariants).forEach(([propertyName, values]) => {
+                if (Object.keys(sidebarFilters.selectedVariants).length > 0) {
+                    Object.entries(sidebarFilters.selectedVariants).forEach(([_propertyName, values]) => {
                         if (Array.isArray(values) && values.length > 0) {
                             activeFilters.push({ column: 'variantValue.variant_value', in: values });
                         }
@@ -88,9 +85,8 @@ export const useProductSearch = () => {
                 const response = await searchItems(params);
                 setProducts(response.data.data);
                 setTotal(response.data.meta.total);
-                if (response.data.meta.constraints) {
-                    setConstraints(response.data.meta.constraints);
-                }
+                setConstraints(response.data.meta.constraints);
+                
             } catch (error) {
                 console.error('Failed to fetch products', error);
             } finally {
@@ -101,7 +97,7 @@ export const useProductSearch = () => {
         const timer = setTimeout(() => {
             fetchProducts().catch((err: unknown) => { console.error(err); });
         }, 300);
-        return () => clearTimeout(timer);
+        return () => { clearTimeout(timer); };
     }, [query, categoryParam, sidebarFilters, page, limit]);
 
     const router = useRouter();

@@ -1,7 +1,7 @@
 import type { FormikProps } from 'formik'
 import type { LoginCredentials } from '@/types/auth.types'
 import type React from 'react'
-import { ReCAPTCHA } from 'react-google-recaptcha'
+import type { ReCAPTCHA } from 'react-google-recaptcha'
 
 export interface LoginFormProps extends React.ComponentPropsWithoutRef<'div'> {
   disabled?: boolean

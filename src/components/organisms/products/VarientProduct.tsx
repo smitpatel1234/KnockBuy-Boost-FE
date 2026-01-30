@@ -11,28 +11,20 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { PlusCircleIcon, Trash2Icon } from "lucide-react";
-import type { FormikProps } from "formik";
-import type { Item } from "@/types/item.types";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { fetchVariantData } from "@/redux/features/variant-slice";
-import type { VariantProperty, VariantValue } from "@/types/variant.types";
+import type { VariantProperty, VariantValue,VarientProductProps } from "@/types/variant.types";
 
-interface VarientProductProps {
-  formik: FormikProps<Item>;
-}
 
-export default function VarientProduct({ formik }: VarientProductProps) {
+
+export default function VarientProduct({ formik }: Readonly<VarientProductProps>) {
   const dispatch = useAppDispatch();
   const { properties, values } = useAppSelector((state) => state.variant);
-
-
   useEffect(() => {
     void dispatch(fetchVariantData());
-  }, []);
-
+  }, [dispatch]);
   const addVariant = () => {
-    void formik.setFieldValue("variant", [
-      ...(formik.values.variant ?? []),
+    void formik.setFieldValue("variant", [...(formik.values.variant ?? []),
       {
         variantProperty_id: "",
         variantValue_id: "",
@@ -49,21 +41,12 @@ export default function VarientProduct({ formik }: VarientProductProps) {
   };
 
 
-  const updateVariantField = (
-    index: number,
-    field: "variantProperty_id" | "variantValue_id",
-    value: string
+  const updateVariantField = (index: number,field: "variantProperty_id" | "variantValue_id", value: string
   ) => {
     const updated = [...(formik.values.variant ?? [])];
-
     updated[index] = {
-      ...updated[index],
-      [field]: value,
-      ...(field === "variantProperty_id"
-        ? { variantValue_id: "" }
-        : {}),
+      ...updated[index],[field]: value,...(field === "variantProperty_id"? { variantValue_id: "" }: {}),
     };
-
     void formik.setFieldValue("variant", updated);
   };
 
@@ -82,7 +65,7 @@ export default function VarientProduct({ formik }: VarientProductProps) {
           className="gap-2 bg-blue-600 hover:bg-blue-700 text-white h-9"
         >
           <PlusCircleIcon className="w-4 h-4" />
-          Add Option
+         Add Option
         </Button>
       </div>
 
@@ -110,7 +93,7 @@ export default function VarientProduct({ formik }: VarientProductProps) {
                     }
                   >
                     <SelectTrigger className="bg-white">
-                      <SelectValue placeholder="Select Property" />
+                    <SelectValue placeholder="Select Property" />
                     </SelectTrigger>
                     <SelectContent>
                       {properties.map((p: VariantProperty) => (

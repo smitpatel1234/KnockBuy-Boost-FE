@@ -1,6 +1,6 @@
 import Image from "next/image";
 import type { Item } from "@/types/item.types";
-import { MouseEvent } from "react";
+import type { MouseEvent } from "react";
 export default function CarouselBox({
   carousel_images,
   HandelOnhover,

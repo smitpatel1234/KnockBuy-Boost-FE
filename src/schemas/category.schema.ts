@@ -2,7 +2,7 @@ import * as Yup from "yup";
 
 export const CategorySchema = Yup.object({
     category_name: Yup.string().required("Category name is required"),
-    description: Yup.string(),
+    description: Yup.string().max(200, "Description can't be more than 200 characters"),
     image_url: Yup.string(),
     parent_category_id: Yup.string().nullable(),
 });

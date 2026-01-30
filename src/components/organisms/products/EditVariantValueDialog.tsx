@@ -102,7 +102,7 @@ export default function EditVariantValueDialog({
                         <Button variant="outline" onClick={onClose} disabled={loading}>
                             Cancel
                         </Button>
-                        <Button onClick={handleSubmit} disabled={loading}>
+                        <Button onClick={() => void handleSubmit()} disabled={loading}>
                             {loading ? "Saving..." : "Save Changes"}
                         </Button>
                     </div>

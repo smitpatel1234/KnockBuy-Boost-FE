@@ -7,19 +7,10 @@ import type { AxiosError, InternalAxiosRequestConfig } from "axios";
 axios.defaults.withCredentials = true;
 
 const ISvalidateToken = (exp: number): boolean => {
-  try {
-    if (exp == 0) {
-      return true;
-    }
-    if (exp < Date.now() / 1000) {
-      return false;
-    } else {
-      return true;
-    }
-  } catch (_error) {
-    return false;
-  }
-};
+    if (exp == 0) { return true; }
+    if (exp < Date.now() / 1000) {  return false; }
+    else { return true; }
+}
 
 const privateapi = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -52,9 +43,7 @@ const processQueue = (error: unknown, _token: string | null = null) => {
 privateapi.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
     const expInCookie = getCookie("expIn");
-    const expIn = Number.parseInt(
-      typeof expInCookie === "string" ? expInCookie : "0"
-    );
+    const expIn = Number.parseInt( typeof expInCookie === "string" ? expInCookie : "0");
 
     if (!ISvalidateToken(expIn)) {
       if (isRefreshing) {
@@ -69,8 +58,8 @@ privateapi.interceptors.request.use(
           .then(() => {
             return config;
           })
-          .catch((err) => {
-            return Promise.reject(err);
+          .catch((err : unknown) => {
+             throw err;
           });
       }
 
@@ -84,11 +73,7 @@ privateapi.interceptors.request.use(
         isRefreshing = false;
         processQueue(refreshError);
         redirect("/auth/login");
-        return Promise.reject(
-          refreshError instanceof Error
-            ? refreshError
-            : new Error(String(refreshError))
-        );
+
       }
     }
 
@@ -96,8 +81,8 @@ privateapi.interceptors.request.use(
     console.log("[API REQUEST]", {
       method: config.method?.toUpperCase(),
       url: config.url,
-      params: config.params,
-      data: config.data,
+      params: config.params as Record<string, unknown>,
+      data: config.data as Record<string, unknown>,
       headers: config.headers,
     });
     return config;
@@ -116,7 +101,7 @@ privateapi.interceptors.response.use(
     console.log("[API RESPONSE]", {
       url: response.config.url,
       status: response.status,
-      data: response.data,
+      data: response.data as Record<string, unknown>,
     });
 
     return response;
@@ -145,8 +130,8 @@ publicapi.interceptors.request.use(
     console.log("[API REQUEST]", {
       method: config.method?.toUpperCase(),
       url: config.url,
-      params: config.params,
-      data: config.data,
+      params: config.params as Record<string, unknown>,
+      data: config.data as Record<string, unknown>,
       headers: config.headers,
     });
     return config;
@@ -162,7 +147,7 @@ publicapi.interceptors.response.use(
     console.log("[API RESPONSE]", {
       url: response.config.url,
       status: response.status,
-      data: response.data,
+      data: response.data as Record<string, unknown>,
     });
     return response;
   },

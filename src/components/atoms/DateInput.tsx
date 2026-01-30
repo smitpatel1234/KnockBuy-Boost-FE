@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Calendar } from 'lucide-react';
 import type { DateInputProps } from '@/types/dateinput.types';
+import { MiniCalendar } from './MiniCalendar';
 
 // Demo wrapper to show the component working
-export default function DateInputComponent({ placeholder, value, onChange ,className}: { placeholder?: string, value?: string, onChange?: (date: string) => void ,className:string}) {
+export default function DateInputComponent({ placeholder, value, onChange ,className}:
+    {readonly placeholder?: string,readonly value?: string,readonly onChange?: (date: string) => Promise<void> | void ,readonly className:string}) {
   // Use internal state if value/onChange not provided (controlled vs uncontrolled behavior could be better, but this matches the wrapper pattern)
   const [internalDate, setInternalDate] = useState('');
 
@@ -28,27 +30,21 @@ const DateInput = React.forwardRef<HTMLDivElement, DateInputProps>(
     const selectedDate = React.useMemo(() => {
       if (!value) return undefined;
       const date = new Date(value);
-      return isNaN(date.getTime()) ? undefined : date;
+      return Number.isNaN(date.getTime()) ? undefined : date;
     }, [value]);
 
     const displayDate = React.useMemo(() => {
       if (!selectedDate) return null;
-      return selectedDate.toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric'
-      });
-    }, [selectedDate]);
+      return selectedDate.toLocaleDateString('en-US', { month: 'short' , day: 'numeric' , year: 'numeric'});}, [selectedDate]);
 
-    const handleDateSelect = (date: Date | undefined) => {
+    const handleDateSelect = async (date: Date | undefined) => {
       if (date && onChange) {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
        
         const dateString = `${String(year)}-${month}-${day}`;
-        console.log(`${dateString} date string ${year} year ${month} month ${day} day`);
-        onChange(dateString);
+        await  onChange(dateString);
       }
       setOpen(false);
     };
@@ -67,10 +63,8 @@ const DateInput = React.forwardRef<HTMLDivElement, DateInputProps>(
               bg-white border rounded-lg
               transition-all duration-200
               ${disabled
-                ? 'border-slate-200 bg-slate-50 cursor-not-allowed opacity-60'
-                : open
-                  ? 'border-blue-500 ring-2 ring-blue-300'
-                  : 'border-slate-300 hover:border-slate-400'
+                ? 'border-slate-200 bg-slate-50 cursor-not-allowed opacity-60' : open ? 'border-blue-500 ring-2 ring-blue-300'
+                : 'border-slate-300 hover:border-slate-400'
               }
               ${!value && !disabled ? 'text-slate-400' : 'text-slate-700'}
               font-normal text-sm
@@ -82,10 +76,7 @@ const DateInput = React.forwardRef<HTMLDivElement, DateInputProps>(
 
           {open && !disabled && (
             <>
-              <div
-                className="fixed inset-0 z-50"
-                onClick={() => { setOpen(false); }}
-              />
+              <div className="fixed inset-0 z-50" onClick={() => { setOpen(false); }} />
               <div className="absolute left-0 top-full mt-2 z-50 bg-white rounded-lg shadow-md border border-slate-200 p-4 animate-in fade-in slide-in-from-top-2 duration-200">
                 <MiniCalendar
                   selected={selectedDate}
@@ -102,117 +93,3 @@ const DateInput = React.forwardRef<HTMLDivElement, DateInputProps>(
 );
 
 DateInput.displayName = 'DateInput';
-
-// Simple calendar component
-interface MiniCalendarProps {
-  selected?: Date;
-  onSelect: (date: Date | undefined) => void;
-  disabled?: boolean;
-}
-
-function MiniCalendar({ selected, onSelect, disabled }: MiniCalendarProps) {
-  const [currentMonth, setCurrentMonth] = useState(() => selected ?? new Date());
-
-  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'];
-
-  const daysInMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDate();
-  const firstDayOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(),1).getDay();
-
-  const prevMonth = () => {
-    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1));
-  };
-
-  const nextMonth = () => {
-    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1));
-  };
-
-  const isSelected = (day: number) => {
-    if (!selected) return false;
-    return selected.getDate() === day &&
-      selected.getMonth() === currentMonth.getMonth() &&
-      selected.getFullYear() === currentMonth.getFullYear();
-  };
-
-  const isToday = (day: number) => {
-    const today = new Date();
-    return today.getDate() === day &&
-      today.getMonth() === currentMonth.getMonth() &&
-      today.getFullYear() === currentMonth.getFullYear();
-  };
-
-  const handleDayClick = (day: number) => {
-    if (disabled) return;
-    const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
-    onSelect(date);
-  };
-
-  const days = [];
-  for (let i = 0; i < firstDayOfMonth; i++) {
-    days.push(<div key={`empty-${String(i)}`} className="h-8" />);
-  }
-
-  for (let day = 1; day <= daysInMonth; day++) {
-    days.push(
-      <button
-        key={day}
-        type="button"
-        onClick={() => { handleDayClick(day); }}
-        disabled={disabled}
-        className={`
-          h-8 rounded font-medium text-xs
-          transition-all duration-150
-          ${isSelected(day)
-            ? 'bg-blue-500 text-white shadow-lg scale-105 font-bold'
-            : isToday(day)
-              ? 'bg-blue-50 text-blue-600 border-2 border-blue-200 font-semibold'
-              : 'text-slate-700 hover:bg-slate-100 hover:scale-105'
-          }
-          ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-        `}
-      >
-        {day}
-      </button>
-    );
-  }
-
-  return (
-    <div className="w-64">
-      <div className="flex items-center justify-between mb-3 pb-2 border-b border-slate-200">
-        <button
-          type="button"
-          onClick={prevMonth}
-          className="p-1 hover:bg-slate-100 rounded transition-colors"
-        >
-          <svg className="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-        <h3 className="text-sm font-semibold text-slate-800">
-          {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
-        </h3>
-        <button
-          type="button"
-          onClick={nextMonth}
-          className="p-1 hover:bg-slate-100 rounded transition-colors"
-        >
-          <svg className="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
-      </div>
-
-      <div className="grid grid-cols-7 gap-1 mb-2">
-        {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(day => (
-          <div key={day} className="h-8 flex items-center justify-center text-xs font-semibold text-slate-500">
-            {day}
-          </div>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-7 gap-1">
-        {days}
-      </div>
-    </div>
-  );
-}

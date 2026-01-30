@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ShoppingCart, LogOut, Heart } from "lucide-react";
 import { SpinnerCustom } from "../../ui/loading";
 import type { AuthUser } from "@/types/auth.types";
-
+import Image from "next/image";
 interface HeaderActionsProps {
     wishlistCount: number;
     cartCount: number;
@@ -12,6 +12,12 @@ interface HeaderActionsProps {
     loading: boolean;
     handleLogout: () => void;
 }
+    function usernameCheck(username: string|undefined): string {
+        if (username && username.length > 0) {
+            return username.charAt(0).toUpperCase();
+        }
+        return "U";
+    }
 
 export default function HeaderActions({
     wishlistCount,
@@ -19,7 +25,9 @@ export default function HeaderActions({
     user,
     loading,
     handleLogout,
-}: HeaderActionsProps) {
+}: Readonly<HeaderActionsProps>) {
+
+
     return (
         <div className="flex items-center gap-2 md:gap-4 flex-shrink-0">
             {/* Wishlist */}
@@ -62,7 +70,7 @@ export default function HeaderActions({
                                 className="flex items-center gap-2 hover:bg-gray-50 p-1 pr-3 rounded-full border border-transparent hover:border-gray-200 transition-all flex-shrink-0"
                             >
                                 <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xs">
-                                    {user.username?.[0]?.toUpperCase() ?? "U"}
+                                    {user.profile_image && user.username ?  <Image src={user.profile_image} alt={user.username} width={32} height={32} /> : usernameCheck(user.username)}
                                 </div>
                                 <span className="text-xs md:text-sm font-medium text-gray-700 hidden md:block">
                                     {user.username}

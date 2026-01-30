@@ -18,6 +18,6 @@ export type GetAllItemCartType = {
     deleted_at: string | null,
     image_url?: string | null,
 } & Pick<Item, 'item_id' | 'item_name' | 'item_price' | 'stock'>
-export type UseCartItemResult = {
+export interface UseCartItemResult {
   totalPrice: number
 }

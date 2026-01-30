@@ -2,7 +2,7 @@ import * as Yup from "yup";
 
 const usernameRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{5,}$/;
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[-&!])[A-Za-z\d-&!]{8,}$/;
-const phoneRegex = /^[0-9]{10}$/;
+const phoneRegex = /^\d{10}$/;
 
 export const LoginCredentialsSchema = Yup.object({
   identifier: Yup.string()

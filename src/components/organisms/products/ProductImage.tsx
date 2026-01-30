@@ -3,17 +3,17 @@ import { ImageUploadButton } from "@/components/molecules/ImageUploadButton";
 import { ImagePreview } from "@/components/molecules/ImagePreview";
 import type { ProductImageProps } from "@/types/productimage.types";
 
-export function ProductImage({ images, onUpload, onRemove }: ProductImageProps) {
+export function ProductImage({ images, onUpload, onRemove }: Readonly<ProductImageProps>) {
     return (
         <div className="flex flex-col gap-4">
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
                 {images.map((url, index) => (
-                    <div key={index} className="relative group">
+                    <div key={url} className="relative group">
                         <ImagePreview src={url} className="w-full h-32 object-cover rounded-md border" />
                         {onRemove && (
                             <button
                                 type="button"
-                                onClick={() => { onRemove(index); }}
+                                onClick={() => { void onRemove(index); }}
                                 className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
                                 title="Remove Image"
                             >

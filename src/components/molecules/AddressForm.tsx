@@ -14,16 +14,15 @@ import {
 import { useAddressForm } from "@/hooks/useAddressForm";
 import type { AddressFormProps } from "@/types/address.types";
 
-export default function AddressForm({ initialValues, onSubmit, onCancel }: AddressFormProps) {
+export default function AddressForm( { initialValues, onSubmit, onCancel }:  Readonly<AddressFormProps>) {
     const { formik, countries, states, cities } = useAddressForm({
         initialValues: initialValues ?? undefined,
         onSubmit,
     });
-
     return (
-        <form onSubmit={(e) => {
+        <form onSubmit={  (e) => {
             e.preventDefault();
-            formik.handleSubmit(e);
+                 void formik.submitForm();
         }} className="space-y-4 bg-slate-50 p-6 rounded-xl border border-slate-200 shadow-inner">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1">
@@ -55,10 +54,11 @@ export default function AddressForm({ initialValues, onSubmit, onCancel }: Addre
                     <Label className="text-xs font-bold text-slate-500 uppercase">Country</Label>
                     <Select
                         value={formik.values.country}
-                        onValueChange={(val) => {
-                            void formik.setFieldValue("country", val);
-                            void formik.setFieldValue("state", "");
-                            void formik.setFieldValue("city", "");
+                        onValueChange={ async (val) => { 
+
+                           await  formik.setFieldValue("country", val);
+                           await formik.setFieldValue("state", "");
+                           await  formik.setFieldValue("city", "");
                         }}
                     >
                         <SelectTrigger className="h-10">
@@ -77,9 +77,9 @@ export default function AddressForm({ initialValues, onSubmit, onCancel }: Addre
                     <Select
                         disabled={!formik.values.country}
                         value={formik.values.state}
-                        onValueChange={(val) => {
-                            void formik.setFieldValue("state", val);
-                            void formik.setFieldValue("city", "");
+                        onValueChange={async(val) => {
+                             await formik.setFieldValue("state", val);
+                             await formik.setFieldValue("city", "");
                         }}
                     >
                         <SelectTrigger className="h-10">
@@ -98,7 +98,7 @@ export default function AddressForm({ initialValues, onSubmit, onCancel }: Addre
                     <Select
                         disabled={!formik.values.state}
                         value={formik.values.city}
-                        onValueChange={(val) => { void formik.setFieldValue("city", val); }}
+                        onValueChange={ async (val) => {  await formik.setFieldValue("city", val); }}
                     >
                         <SelectTrigger className="h-10">
                             <SelectValue placeholder="Select City" />

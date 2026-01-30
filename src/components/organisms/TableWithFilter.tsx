@@ -25,7 +25,7 @@ export default function TableWithFilter<T>({
   onDelete,
   columnRenderers,
   initialLimit = 10,
-}: TableWithFilterProps<T>) {
+}: Readonly<TableWithFilterProps<T>>) {
   const {
 
     loading,
