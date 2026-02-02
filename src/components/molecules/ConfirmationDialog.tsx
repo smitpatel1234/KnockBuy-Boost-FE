@@ -20,7 +20,7 @@ export function ConfirmationDialog({
   cancelLabel = "Cancel",
   variant = "destructive",
   isLoading = false,
-}: ConfirmationDialogProps) {
+}: Readonly<ConfirmationDialogProps>) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">

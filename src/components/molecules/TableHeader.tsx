@@ -38,11 +38,14 @@ export function TableHeaderRow<T>({
   onEdit,
   onDelete,
 }: Readonly<TableHeaderRowProps<T>>) {
+    
   return (
     <TableHeader className="bg-slate-50/80 backdrop-blur-sm sticky top-0 border-b border-slate-200">
       <TableRow className="max-h-[10vh] hover:bg-transparent border-none">
-        {dataOfColumn.map((col) => (
-          <TableHead className="py-4 px-6 align-bottom max-w-[180px]" key={col.key}>
+        {dataOfColumn.map((col) => {
+           
+           const constraint =  (constraints)?.find((c) => c.column === col.key || c.column === col.filterKey)
+         return <TableHead className="py-4 px-6 align-bottom max-w-[180px]" key={col.key}>
             <div className="flex flex-col gap-3">
               <button type="button" disabled={!col.sortable} className={cn("flex items-center text-xs font-semibold text-slate-500 uppercase tracking-wider transition-colors group", col.sortable ? "cursor-pointer hover:text-slate-900" : "cursor-default")} onClick={() => col.sortable && onSort?.(col.key)}>
                 {col.title}
@@ -81,18 +84,20 @@ export function TableHeaderRow<T>({
                   </div>
                 </div>
               )}
-              {col.searchByNumber && (
+              {col.searchByNumber && 
+              constraint &&
+               (
                 <div className="relative group/input max-w-[200px]">
                   <SliderRange
-                    min={(constraints ?? []).find((c) => c.column === col.key || c.column === col.filterKey)?.min ? Number((constraints ?? []).find((c) => c.column === col.key || c.column === col.filterKey)?.min) : undefined}
-                    max={(constraints ?? []).find((c) => c.column === col.key || c.column === col.filterKey)?.max ? Number((constraints ?? []).find((c) => c.column === col.key || c.column === col.filterKey)?.max) : undefined}
+                    min={Number(constraint.min)}
+                    max={Number(constraint.max)}
                     onChange={(e) => onFilterChange?.(col.key, { lowerBoundNumber: e[0], upperBoundNumber: e[1] })}
                   />
                 </div>
               )}
             </div>
           </TableHead>
-        ))}
+        })}
         {onEdit || onDelete ? (<TableHead className="py-4 px-6 font-bold text-slate-500 uppercase tracking-wider text-xs align-bottom text-right">Actions</TableHead>) : null}
       </TableRow>
     </TableHeader>

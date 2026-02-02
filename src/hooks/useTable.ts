@@ -9,6 +9,7 @@ import type {
 } from "../types/pagination.types";
 import type { UseTableProps } from "../types/generic-table.types";
 import { DateToTime } from "@/utils/common/formatDate";
+
 export const useTable = <T>({
   fetchData,
   dataOfColumn,
@@ -24,44 +25,51 @@ export const useTable = <T>({
   const [constraints, setConstraints] = useState<MaxMinConstraints[]>([]);
 
   const formattedFilters: Filter[] = useMemo(() => {
+    const baseFilters: Filter[] = dataOfColumn
+      .filter((col) => col.searchByDate ?? col.searchByNumber)
+      .map((col) => ({
+        isSearchByDate: col.searchByDate,
+        isSearchByNumber: col.searchByNumber,
+        column: col.filterKey ?? col.key,
+      }));
+
     if (!filters.length) {
-      return filters.concat(
-        ...dataOfColumn.map((col) => {
-          return {
-            isSearchByDate: col.searchByDate,
-            isSearchByNumber: col.searchByNumber,
-            column: col.filterKey ?? col.key,
-          };
-        }),
-      );
+      return baseFilters;
     }
-    return filters.filter(
-        (v) => v.value !== "" || 
-        (v.lowerBoundDate ?? v.upperBoundDate ?? v.lowerBoundNumber ?? v.upperBoundNumber ?? v.isSearchByNumber ?? v.isSearchByDate),
+
+    const activeFilters = filters
+      .filter(
+        (v) =>
+          v.value !== "" ||
+          v.lowerBoundDate != null ||
+          v.upperBoundDate != null ||
+          v.lowerBoundNumber != null ||
+          v.upperBoundNumber != null,
       )
       .map((v) => {
         const col = dataOfColumn.find(
-          (c) => c.key === v.column || (c.searchByDate ?? c.searchByNumber),
+          (c) => c.key === v.column || c.filterKey === v.column,
         );
+
         return {
           ...v,
-          lowerBoundDate: DateToTime(v.lowerBoundDate),
-          upperBoundDate: DateToTime(v.upperBoundDate),
+          lowerBoundDate: v.lowerBoundDate? DateToTime(v.lowerBoundDate) : undefined,
+          upperBoundDate: v.upperBoundDate? DateToTime(v.upperBoundDate): undefined,
           isSearchByDate: col?.searchByDate,
           isSearchByNumber: col?.searchByNumber,
           column: col?.filterKey ?? v.column,
         };
       });
+    return [...activeFilters, ...baseFilters.map((bf) => {
+      if (!activeFilters.some((af) => af.column === bf.column)) {return bf;}
+      return null;
+    }).filter(Boolean) as Filter[]];
   }, [filters, dataOfColumn]);
 
   const formattedSorts: Sort[] = useMemo(() => {
     return sorts
       .filter((s) => s.order !== undefined)
-      .map((s) => ({
-        column:
-          dataOfColumn.find((c) => c.key === s.column)?.filterKey ?? s.column,
-        order: s.order,
-      }));
+      .map((s) => ({column:dataOfColumn.find((c) => c.key === s.column)?.filterKey ?? s.column, order: s.order, }));
   }, [sorts, dataOfColumn]);
 
   const params: PageParams = useMemo(
@@ -79,7 +87,6 @@ export const useTable = <T>({
       const response = await fetchData(params);
       setTotal(response.meta.total);
       setConstraints(response.meta.constraints);
-      
     } catch (error) {
       console.error("Error fetching table data:", error);
     } finally {
@@ -88,13 +95,14 @@ export const useTable = <T>({
   }, [params, fetchData]);
 
   const debouncedSetFilters = useMemo(
-    () =>
-      debounce((newFilters: Filter[]) => {
+    () =>debounce((newFilters: Filter[]) => {
         setFilters(newFilters);
-        setPage(1);
-      }, 500),
-    [],
-  );
+        setPage(1);}, 500),[]);
+  useEffect(() => {
+    return () => {
+      debouncedSetFilters.cancel();
+    };
+  }, [debouncedSetFilters]);
 
   useEffect(() => {
     void loadData();
@@ -106,8 +114,7 @@ export const useTable = <T>({
 
   const handleLimitChange = (newLimit: number) => {
     setLimit(newLimit);
-    setPage(1);
-  };
+    setPage(1);};
 
   const handleFilterChange = (
     column: string,
@@ -115,15 +122,13 @@ export const useTable = <T>({
   ) => {
     const index = localFilters.findIndex((v) => v.column === column);
     let nextFilters: Filter[];
-
     if (index === -1) {
       nextFilters = [...localFilters, { column, ...filterData }];
     } else {
       nextFilters = [...localFilters];
       nextFilters[index] = { ...nextFilters[index], ...filterData };
-    } 
-
-    setLocalFilters(nextFilters);
+    }
+   setLocalFilters(nextFilters);
     debouncedSetFilters(nextFilters);
   };
 
@@ -131,19 +136,20 @@ export const useTable = <T>({
     setSorts((prev) => {
       const existingIndex = prev.findIndex((s) => s.column === column);
 
-      if (existingIndex === -1) {
-        return [...prev, { column, order: "ASC" }];
+      if (existingIndex === -1) {return [...prev, { column, order: "ASC" }];}
+
+      const existing = prev[existingIndex];
+      const newSorts = [...prev];
+
+      if (existing.order === "ASC") {
+        newSorts[existingIndex] = { column, order: "DESC" };
       } else {
-        const existing = prev[existingIndex];
-        const newSorts = [...prev];
-        if (existing.order === "ASC") {
-          newSorts[existingIndex] = { column, order: "DESC" };
-        } else if (existing.order === "DESC") {
-          newSorts.splice(existingIndex, 1);
-        }
-        return newSorts;
+        newSorts.splice(existingIndex, 1);
       }
+
+      return newSorts;
     });
+
     setPage(1);
   };
 

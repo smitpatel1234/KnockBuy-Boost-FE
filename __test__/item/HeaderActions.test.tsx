@@ -4,7 +4,6 @@ import HeaderActions from "../../src/components/organisms/header/HeaderActions";
 import { user } from '../test_data/user_data'
 
 describe("HeaderActions", () => {
-  // Test 1: When user is logged in with full profile
   it("should render user profile with username when user is logged in", () => {
     render(
       <HeaderActions
@@ -15,18 +14,10 @@ describe("HeaderActions", () => {
         user={user}
       />,
     );
-    
-    // Check if username exists
     expect(screen.getByText(user.username)).toBeInTheDocument();
-    
-    // Check if logout button exists
     expect(screen.getByTitle("Logout")).toBeInTheDocument();
-    
-    // Check if Sign In link does NOT exist
     expect(screen.queryByText("Sign In")).not.toBeInTheDocument();
   });
-
-  // Test 2: When user is logged in without profile image
   it("should render username initial when profile image is missing", () => {
     const userWithoutImage = { ...user, profile_image: "" };
     
@@ -39,16 +30,11 @@ describe("HeaderActions", () => {
         user={userWithoutImage}
       />,
     );
-    
-    // Check if username exists
     expect(screen.getByText(userWithoutImage.username)).toBeInTheDocument();
-    
-    // Check if first letter of username is shown as initial
     const initial = userWithoutImage.username.charAt(0);
     expect(screen.getByText(initial)).toBeInTheDocument();
   });
 
-  // Test 3: When user is not logged in (loading state)
   it("should render loading spinner when loading is true", () => {
     render(
       <HeaderActions
@@ -60,14 +46,10 @@ describe("HeaderActions", () => {
       />,
     );
     
-    // Check that Sign In button does NOT exist during loading
     expect(screen.queryByText("Sign In")).not.toBeInTheDocument();
-    
-    // Check that logout button does NOT exist during loading
     expect(screen.queryByTitle("Logout")).not.toBeInTheDocument();
   });
 
-  // Test 4: When user is not logged in and not loading
   it("should render Sign In link when user is not logged in", () => {
     render(
       <HeaderActions

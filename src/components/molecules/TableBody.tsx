@@ -88,7 +88,7 @@ export function TableBodyComponent<T>({
         <TableRow className="hover:bg-slate-50/50 transition-colors border-b border-slate-100 last:border-0">
           {dataOfColumn.map((col) => {
             const cellValue = (row as Record<string, unknown>)[col.key];
-            const isNew = (row as Record<string, unknown>).isNew === true;
+            const isNew = (row as Record<string, unknown>).isNew === 1;
             const shouldShowNew = isNew && col.key === "order_id";
             const displayValue = getCellDisplayValue(cellValue, columnRenderers?.[col.key], row);
             return (

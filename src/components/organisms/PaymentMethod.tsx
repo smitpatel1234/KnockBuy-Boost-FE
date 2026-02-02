@@ -6,7 +6,7 @@ export interface PaymentProps {
   payment_method: payment_method
   SetPayment_Method: (value: payment_method) => void
 }
-export default function PaymentMethod({ payment_method, SetPayment_Method }: PaymentProps) {
+export default function PaymentMethod({ payment_method, SetPayment_Method }: Readonly<PaymentProps>) {
   return (
     <section className="border rounded-lg p-4 space-y-4">
       <h2 className="text-lg font-semibold">Payment Method</h2>

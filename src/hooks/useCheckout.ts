@@ -21,18 +21,18 @@ export const useCheckout = () => {
     const searchParams = useSearchParams();
     const paramDiscountId = searchParams.get("discountId");
     const [isOrderPlaced, setIsOrderPlaced] = useState(false);
-
+    
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
             try {
                 const cartRes = await getItemCart();
                 setCartItems(cartRes.data.data);
-
+               console.log("Cart Items:", paramDiscountId);
                 if (paramDiscountId) {
                     try {
                         const discountRes = await getDiscount(paramDiscountId);
-                        setDiscount(discountRes.data);
+                        setDiscount(discountRes.data.data);
                     } catch (e) {
                         console.error("Failed to load discount", e);
                         toast.error("Invalid discount code");
@@ -101,7 +101,7 @@ export const useCheckout = () => {
             setLoading(false);
         }
     }, [selectedAddress, paymentMethod, discount, cartItems]);
-
+    console.log("useCheckout discount:", discount);
     return {
         selectedAddress,
         setSelectedAddress,

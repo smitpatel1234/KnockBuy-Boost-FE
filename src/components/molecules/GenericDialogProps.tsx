@@ -15,7 +15,7 @@ export function GenericDialog<T>({
   data,
   onClose,
   children,
-}: GenericDialogProps<T>) {
+}: Readonly<GenericDialogProps<T>>) {
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col shadow-lg border border-slate-200">

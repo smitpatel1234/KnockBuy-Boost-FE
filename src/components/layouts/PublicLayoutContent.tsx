@@ -3,7 +3,7 @@
 import { useAppSelector } from "@/redux/store";
 import CartSidebar from "@/components/organisms/cart/CartSidebar";
 
-export default function PublicLayoutContent({ children }: { children: React.ReactNode }) {
+export default function PublicLayoutContent({ children }: { readonly children: React.ReactNode }) {
     const { items } = useAppSelector((state) => state.cart);
     const showSidebar = items.length > 0;
 

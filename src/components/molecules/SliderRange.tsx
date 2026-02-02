@@ -1,13 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import {  useState } from "react";
 import { Slider } from "@/components/ui/slider";
 
 export const title = "Price Range Slider";
 
 
-const SliderRange = ({ min = 0, max = 10000, onChange }: { min?: number, max?: number, onChange: (e: number[]) => void }) => {
+const SliderRange = ({ min , max , onChange }: { min: number, max: number, onChange: (e: number[]) => void }) => {
+
   const [value, setValue] = useState([min, max]);
+
+  
 
   const updateValue = (e: number[]) => {
     setValue(e);
