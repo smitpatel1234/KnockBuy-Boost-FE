@@ -3,8 +3,8 @@ import type { LoginCredentials, AuthUser, RegisterCredentials } from "../types/a
 import type { AxiosResponse } from "axios";
 
 export interface AuthResponse {
-      message: string,
-      data: AuthUser
+   message: string,
+   data: AuthUser
 }
 
 export const login = async (l: LoginCredentials): Promise<AxiosResponse<AuthResponse>> => {

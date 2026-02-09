@@ -1,10 +1,10 @@
-import {socket }from '../utils/helper/socket';
-import { useEffect ,useState } from 'react';
+import { socket } from '../utils/helper/socket';
+import { useEffect, useState } from 'react';
 
 
 
 export const useSocket = () => {
-    const [numnotification, setnumnotification] = useState<number>(0);
+  const [numnotification, setnumnotification] = useState<number>(0);
 
   useEffect(() => {
     function onConnect() {

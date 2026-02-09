@@ -16,7 +16,7 @@ export default function PublicLayoutContent({ children }: { readonly children: R
             </main>
 
             {showSidebar && (
-                <aside className="w-[250px] shrink-0 border-l hidden md:block">
+                <aside className=" shrink-0 border-l hidden md:block">
                     <CartSidebar />
                 </aside>
             )}

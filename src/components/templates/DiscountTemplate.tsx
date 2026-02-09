@@ -6,10 +6,9 @@ import { Button } from "@/components/ui/button";
 import { PlusIcon } from "lucide-react";
 import Dialogbox from "@/components/organisms/discount/Dialogbox";
 import type { Discount } from "@/types/discount.types";
-import { useAppDispatch } from "@/redux/store";
+import { useAppDispatch ,useAppSelector} from "@/redux/store";
 import { removeDiscount, fetchDiscounts } from "@/redux/features/discount-slice";
 import type { PageParams, PaginationResponse } from "@/types/pagination.types";
-import { useAppSelector } from "@/redux/store";
 export default function DiscountTemp() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedDiscount, setSelectedDiscount] = useState<Discount | null>(null);

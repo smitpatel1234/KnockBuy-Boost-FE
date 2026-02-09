@@ -1,4 +1,4 @@
-import ProductsPage from "@/components/templates/";
+import ProductsPage from "@/components/templates/ProductsPage";
 
 export default async function EditItemPage({ params }: { readonly params: Promise<{ item_id: string }> }) {
   const { item_id } = await params;

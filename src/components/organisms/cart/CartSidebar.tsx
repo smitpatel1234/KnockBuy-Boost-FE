@@ -15,7 +15,7 @@ export default function CartSidebar() {
     }
 
     return (
-        <div className="w-[355px] bg-white border-l h-[calc(100vh-4rem)] sticky top-16 flex flex-col shadow-sm">
+        <div className=" bg-white border-l h-[calc(100vh-4rem)] sticky top-16 flex flex-col shadow-sm">
             <div className="p-4 border-b">
                 <h2 className="text-lg font-semibold">Your Cart</h2>
                 <p className="text-sm text-gray-500">{cartItems.length} items</p>
