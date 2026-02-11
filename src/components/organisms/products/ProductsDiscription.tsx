@@ -34,7 +34,7 @@ export default function ProductsDiscription({ formik }: ProductsDiscriptionProps
           <div className="text-red-500 text-sm mt-1">{formik.errors.description}</div>
         )}
       </div>
-      
+
     </div>
   )
 }

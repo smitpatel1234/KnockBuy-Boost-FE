@@ -7,21 +7,23 @@ import userReducer from './features/user-slice'
 import discountReducer from './features/discount-slice';
 import wishlistReducer from './features/wishlist-slice';
 import cartReducer from './features/cart-slice';
+import reviewReducer from './features/review-slice';
 import type { TypedUseSelectorHook } from 'react-redux';
 import { useDispatch, useSelector } from 'react-redux';
 
 export const store = configureStore({
-    reducer: {
-        auth: authReducer,
-        category: categoryReducer,
-        item: itemReducer,
-        variant: variantReducer,
-        user: userReducer,
-        discount: discountReducer,
-        wishlist: wishlistReducer,
-        cart: cartReducer,
-    },
-    middleware: (getDefaultMiddleware) =>
+  reducer: {
+    auth: authReducer,
+    category: categoryReducer,
+    item: itemReducer,
+    variant: variantReducer,
+    user: userReducer,
+    discount: discountReducer,
+    wishlist: wishlistReducer,
+    cart: cartReducer,
+    reviews: reviewReducer,
+  },
+  middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false,
     }),

@@ -32,7 +32,6 @@ export default function WishlistPage() {
                 <ProductList
                     products={items.map((item) => ({
                         ...item,
-                        rating: item.rating ?? 0,
                         image_url: item.image_url ?? "",
                         category_name: item.category_name ?? "General",
                     }))}

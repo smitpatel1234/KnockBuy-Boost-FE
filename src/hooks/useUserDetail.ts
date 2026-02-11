@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useParams } from "next/navigation";
-import { getUser, updateUser } from "@/services/user.service";
+import { getUser, updateUser, updateSelfProfile, getSelfProfile } from "@/services/user.service";
 import { toast } from "sonner";
 import { uploadFiles } from "../services/uploads.service";
 import type { UserProfile } from "@/types/user.types";
@@ -29,7 +29,11 @@ export const useUserDetail = () => {
         }),
         onSubmit: async (values) => {
             try {
-                await updateUser(values);
+                if (user_id) {
+                    await updateUser(values);
+                } else {
+                    await updateSelfProfile(values);
+                }
                 toast.success("User profile updated successfully");
             } catch (error) {
                 toast.error("Failed to update user profile");
@@ -39,10 +43,12 @@ export const useUserDetail = () => {
     });
 
     const fetchUser = useCallback(async () => {
-        if (!user_id) return;
         try {
             setLoading(true);
-            const response = await getUser(user_id as string);
+            const response = user_id
+                ? await getUser(user_id as string)
+                : await getSelfProfile();
+
             const userData = response.data.data;
             await formik.setValues({
                 user_id: userData.user_id,
@@ -65,14 +71,14 @@ export const useUserDetail = () => {
     const handleImageUpload = async (file: File) => {
         try {
             setUploading(true);
-            const uploadRes = await uploadFiles([file], 'user') as { data: { url?: string } } ;
+            const uploadRes = await uploadFiles([file], 'user') as { data: { url?: string } };
             if (uploadRes.data.url) {
                 await formik.setFieldValue('profile_image', uploadRes.data.url);
                 toast.success("Profile image uploaded successfully");
             } else {
                 toast.error("Invalid response from server");
             }
-        } catch  {
+        } catch {
             toast.error("Failed to upload image");
         } finally {
             setUploading(false);

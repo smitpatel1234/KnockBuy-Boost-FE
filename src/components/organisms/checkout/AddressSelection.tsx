@@ -11,7 +11,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 export default function AddressSelection({
   onSelect,
 }: {
-  onSelect: (address: Address) => void;
+  onSelect?: (address: Address) => void;
 }) {
   const {
     addresses,

@@ -12,7 +12,6 @@ export function ProductInfo({
   price,
   isInWishlist,
   onWishlistToggle,
-  description,
 }: Readonly<ProductInfoProps>) {
   const isAvailable = inStock > 0;
 
@@ -28,11 +27,10 @@ export function ProductInfo({
         </div>
         <button
           onClick={onWishlistToggle}
-          className={`p-2 rounded-full border transition-colors ${
-            isInWishlist
-              ? "bg-red-50 border-red-200 text-red-500"
-              : "bg-white border-gray-200 text-gray-400 hover:text-red-500"
-          }`}
+          className={`p-2 rounded-full border transition-colors ${isInWishlist
+            ? "bg-red-50 border-red-200 text-red-500"
+            : "bg-white border-gray-200 text-gray-400 hover:text-red-500"
+            }`}
         >
           <Heart
             className={`w-6 h-6 ${isInWishlist ? "fill-current" : ""}`}
@@ -47,11 +45,10 @@ export function ProductInfo({
             {Array.from({ length: STAR_COUNT }).map((_, i) => (
               <Star
                 key={`rating-star-${String(i)}`}
-                className={`w-4 h-4 ${
-                  i < Math.floor(rating)
-                    ? "fill-yellow-400 text-yellow-400"
-                    : "text-gray-300"
-                }`}
+                className={`w-4 h-4 ${i < Math.floor(rating)
+                  ? "fill-yellow-400 text-yellow-400"
+                  : "text-gray-300"
+                  }`}
               />
             ))}
           </div>
@@ -61,9 +58,6 @@ export function ProductInfo({
         </div>
       )}
 
-      {/* Description */}
-      <p className="text-sm text-gray-700 leading-relaxed">{description}</p>
-
       {/* Price + Stock */}
       <div className="flex items-center justify-between border-t pt-4">
         <div>
@@ -71,9 +65,8 @@ export function ProductInfo({
             ₹{String(price ?? 0)}
           </p>
           <p
-            className={`text-sm font-medium ${
-              isAvailable ? "text-green-600" : "text-red-600"
-            }`}
+            className={`text-sm font-medium ${isAvailable ? "text-green-600" : "text-red-600"
+              }`}
           >
             {isAvailable ? "In Stock" : "Out of Stock"}
           </p>

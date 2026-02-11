@@ -15,8 +15,14 @@ export const getAllUsersPage = async (params: PageParams): Promise<{ data: Pagin
 export const updateUser = (data: Partial<UserProfile>) =>
   api.put("/user/update-user", data);
 
+export const updateSelfProfile = (data: Partial<UserProfile>) =>
+  api.put("/user/update-profile", data);
+
 export const getUser = (id: string) =>
   api.get<{ message: string; data: UserProfile }>(`/user/get-user/${id}`);
+
+export const getSelfProfile = () =>
+  api.get<{ message: string; data: UserProfile }>("/user/get-user/");
 
 export const deleteUser = (id: string) => {
   return api.delete("/user/delete-user", { data: { user_id: id } });

@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { registerSchema } from "@/utils/validation/schemas/register_user";
 import type { RegisterFormProps } from "@/types/registerform.types";
 import { usePasswordStrength } from "@/types/registerform.types";
-export default function RegisterForm({onSubmit,isLoading = false, error, }: Readonly<RegisterFormProps>) {
+export default function RegisterForm({ onSubmit, isLoading = false, error, }: Readonly<RegisterFormProps>) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { passwordStrength, strengthColor } = usePasswordStrength();
@@ -24,7 +24,6 @@ export default function RegisterForm({onSubmit,isLoading = false, error, }: Read
         phone_number: "",
         password: "",
         confirmPassword: "",
-        agreeToTerms: false,
       }}
       validationSchema={registerSchema}
       onSubmit={onSubmit}
@@ -49,7 +48,7 @@ export default function RegisterForm({onSubmit,isLoading = false, error, }: Read
                 onChange={handleChange}
                 disabled={isLoading}
               />
-              {touched.username && errors.username && ( <p className="text-xs text-red-600">{errors.username}</p>  )}
+              {touched.username && errors.username && (<p className="text-xs text-red-600">{errors.username}</p>)}
             </div>
 
             <div className="space-y-2">
@@ -103,7 +102,7 @@ export default function RegisterForm({onSubmit,isLoading = false, error, }: Read
                 <>
                   <div className="flex gap-1 h-1.5">
                     {Array.from({ length: 4 }).map((_, i) => (
-                      
+
                       <div
                         key={i}
                         className={`flex-1 rounded-full ${i < strength ? strengthColor(strength) : "bg-gray-200"}`}
@@ -133,12 +132,11 @@ export default function RegisterForm({onSubmit,isLoading = false, error, }: Read
                 />
                 <button
                   type="button"
-                  onClick={() =>
-                    { setShowConfirmPassword(!showConfirmPassword); }
+                  onClick={() => { setShowConfirmPassword(!showConfirmPassword); }
                   }
                   className="absolute right-3 top-1/2 -translate-y-1/2"
                 >
-                  {showConfirmPassword ? ( <EyeOff size={16} />) : ( <Eye size={16} /> )}
+                  {showConfirmPassword ? (<EyeOff size={16} />) : (<Eye size={16} />)}
                 </button>
               </div>
               {touched.confirmPassword && errors.confirmPassword && (
