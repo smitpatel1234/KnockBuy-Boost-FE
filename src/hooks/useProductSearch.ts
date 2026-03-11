@@ -32,7 +32,7 @@ export const useProductSearch = () => {
 
     // Extract all unique variant properties from products
     React.useEffect(() => {
-        const variantProps: Record<string, Set<string>> | null= {};
+        const variantProps: Record<string, Set<string>> | null = {};
 
         products.forEach((product) => {
             if (product.variant && Array.isArray(product.variant)) {
@@ -65,7 +65,6 @@ export const useProductSearch = () => {
                     activeFilters.push({ column: 'item_price', between: sidebarFilters.priceRange, isSearchByNumber: true });
                 }
 
-                if (sidebarFilters.selectedRating && sidebarFilters.selectedRating !== '0') activeFilters.push({ column: 'item.rating', gt: Number(sidebarFilters.selectedRating) });
 
                 // Add variant filters (removed color/size, using generic variant filtering)
                 if (Object.keys(sidebarFilters.selectedVariants).length > 0) {
@@ -86,7 +85,7 @@ export const useProductSearch = () => {
                 setProducts(response.data.data);
                 setTotal(response.data.meta.total);
                 setConstraints(response.data.meta.constraints);
-                
+
             } catch (error) {
                 console.error('Failed to fetch products', error);
             } finally {

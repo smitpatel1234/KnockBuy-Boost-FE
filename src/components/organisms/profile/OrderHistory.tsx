@@ -6,10 +6,19 @@ import type { OrderAllType } from "@/types/order.types";
 import { Loader2, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
-export default function OrderHistory({router}:{readonly router:AppRouterInstance}) {
+import { useVirtualizer } from "@tanstack/react-virtual";
+export default function OrderHistory({ router }: { readonly router: AppRouterInstance }) {
     const [orders, setOrders] = useState<OrderAllType[]>([]);
     const [loading, setLoading] = useState(true);
-    
+    const parentRef = React.useRef<HTMLDivElement>(null);
+
+    const rowVirtualizer = useVirtualizer({
+        count: orders.length,
+        getScrollElement: () => parentRef.current,
+        estimateSize: () => 140, // Estimated height of an order card
+        overscan: 5,
+    });
+
     useEffect(() => {
         const fetchOrders = async () => {
             try {
@@ -40,56 +49,82 @@ export default function OrderHistory({router}:{readonly router:AppRouterInstance
             </div>
         );
     }
-   const applyStatusStyles = (status: string) => {
-    switch (status) {
-        case "completed":
-            return "bg-green-100 text-green-700";
-        case "cancelled":
-            return "bg-red-100 text-red-700";
-        default:
-            return "bg-yellow-100 text-yellow-700";
-    }
-  };
+    const applyStatusStyles = (status: string) => {
+        switch (status) {
+            case "completed":
+                return "bg-green-100 text-green-700";
+            case "cancelled":
+                return "bg-red-100 text-red-700";
+            default:
+                return "bg-yellow-100 text-yellow-700";
+        }
+    };
     return (
-        <div className="space-y-4">
-            {orders.map((order) => (
-                <div
-                    key={order.order_id}
-                    className="bg-white border border-slate-200 rounded-lg p-4 hover:border-blue-200 transition-colors"
-                >
-                    <div className="flex flex-col md:flex-row justify-between gap-4">
-                        <div>
-                            <div className="flex items-center gap-2 mb-1">
-                                <h3 className="font-bold text-gray-900">Order #{order.order_id.slice(0, 8)}</h3>
-                                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${applyStatusStyles(order.status)}`}>
-                                    {order.status.toUpperCase()}
-                                </span>
-                            </div>
-                            <p className="text-sm text-gray-500">
-                                Date: {new Date(order.order_date).toLocaleDateString()}
-                            </p>
-                        </div>
-
-                        <div className="text-right">
-                            <p className="font-bold text-gray-900 text-lg">₹{order.total_amount}</p>
-                            <p className="text-xs text-gray-500">{order.payment_method} - {order.payment_status}</p>
-                        </div>
-                    </div>
-
-                    <div className="mt-4 pt-3 border-t border-slate-100 flex justify-end">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="text-xs"
-                          onClick={() => {
-                            router.push(`/profile/${order.order_id}`);
-                          }}
+        <div
+            ref={parentRef}
+            className="h-[500px] overflow-auto pr-2 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent"
+        >
+            <div
+                style={{
+                    height: `${rowVirtualizer.getTotalSize().toString()}px`,
+                    width: '100%',
+                    position: 'relative',
+                }}
+            >
+                {rowVirtualizer.getVirtualItems().map((virtualItem) => {
+                    const order = orders[virtualItem.index];
+                    return (
+                        <div
+                            key={virtualItem.key}
+                            style={{
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                width: '100%',
+                                height: `${virtualItem.size.toString()}px`,
+                                transform: `translateY(${virtualItem.start.toString()}px)`,
+                            }}
+                            className="pb-4"
                         >
-                            View Details
-                        </Button>
-                    </div>
-                </div>
-            ))}
+                            <div
+                                className="bg-white border border-slate-200 rounded-lg p-4 hover:border-blue-200 transition-colors shadow-sm"
+                            >
+                                <div className="flex flex-col md:flex-row justify-between gap-4">
+                                    <div>
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <h3 className="font-bold text-gray-900">Order #{order.order_id.slice(0, 8)}</h3>
+                                            <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${applyStatusStyles(order.status)}`}>
+                                                {order.status.toUpperCase()}
+                                            </span>
+                                        </div>
+                                        <p className="text-sm text-gray-500">
+                                            Date: {new Date(order.order_date).toLocaleDateString()}
+                                        </p>
+                                    </div>
+
+                                    <div className="text-right">
+                                        <p className="font-bold text-gray-900 text-lg">₹{order.total_amount}</p>
+                                        <p className="text-xs text-gray-500">{order.payment_method} - {order.payment_status}</p>
+                                    </div>
+                                </div>
+
+                                <div className="mt-4 pt-3 border-t border-slate-100 flex justify-end">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="text-xs"
+                                        onClick={() => {
+                                            router.push(`/profile/${order.order_id}`);
+                                        }}
+                                    >
+                                        View Details
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
         </div>
     );
 }

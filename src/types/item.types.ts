@@ -8,6 +8,13 @@ export interface Variant {
     item_variantvalue_mapping_id?: string;
 }
 
+export interface RichDescription {
+    how_its_made?: string | null;
+    how_to_use?: string | null;
+    key_features?: Record<string, string>;
+    specifications?: string[];
+}
+
 export interface Item {
     item_id: string;
     item_name: string;
@@ -21,8 +28,9 @@ export interface Item {
     slug?: string;
     variant_collections?: MultiSelectItem[];
     variant?: Variant[];
-    isEdit?: boolean;
     images?: string[];
+    rich_description?: RichDescription;
+    isEdit?: boolean;
 }
 export interface ItemCart {
     item_id: string;
@@ -36,6 +44,7 @@ export interface ItemCart {
     description: string;
     slug?: string;
     image_url?: string;
+    rich_description?: RichDescription;
 }
 
 export interface AddItemParams {
@@ -49,6 +58,7 @@ export interface AddItemParams {
     variant?: { variantValue_id: string, variantProperty_id: string, variant_value: string, property_name: string }[];
     variant_collections: MultiSelectItem[];
     images?: string[];
+    rich_description?: RichDescription;
 }
 export interface VariantCollectionProps {
     formik: FormikProps<Item>;
@@ -74,4 +84,16 @@ export interface ItemBySlug {
     variant?: Variant[];
     isEdit?: boolean;
     images?: string[];
+    rich_description?: RichDescription;
 }
+
+export interface ItemDescriptionFormProps {
+    formik: FormikProps<Item>;
+}
+
+export interface KeyFeatureItem {
+    id: string;
+    key: string;
+    value: string;
+}
+

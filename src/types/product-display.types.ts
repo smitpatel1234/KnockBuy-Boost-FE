@@ -15,7 +15,6 @@ export interface ProductInfoProps {
   readonly price: number | undefined;
   readonly isInWishlist: boolean;
   readonly onWishlistToggle: () => void;
-  readonly description: string | undefined;
 }
 export interface ProductsPageProps {
   item_id?: string;

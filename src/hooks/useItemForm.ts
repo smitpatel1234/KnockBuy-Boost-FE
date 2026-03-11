@@ -28,6 +28,12 @@ export const useItemForm = ({ initialData, onClose }: UseItemFormProps) => {
             variant: initialData?.variant ? initialData.variant.map(v => ({ ...v, item_variantvalue_mapping_id: v.item_variantvalue_mapping_id })) : [],
             images: initialData?.images ?? [],
             variant_collections: initialData?.variant_collections ?? [],
+            rich_description: initialData?.rich_description ?? {
+                how_its_made: "",
+                how_to_use: "",
+                key_features: {},
+                specifications: []
+            },
             isEdit: false
         },
         enableReinitialize: true,
@@ -40,6 +46,7 @@ export const useItemForm = ({ initialData, onClose }: UseItemFormProps) => {
                 rating: (values.rating && typeof values.rating === 'number') ? values.rating : undefined,
                 images: values.images,
                 variant: values.variant && values.variant.length > 0 ? values.variant : undefined,
+                rich_description: values.rich_description,
             };
 
             if ('isEdit' in payload) delete payload.isEdit;

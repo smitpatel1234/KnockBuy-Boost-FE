@@ -1,12 +1,12 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/redux/store";
-import { Mail, User as UserIcon, Calendar ,Package} from "lucide-react";
+import { Mail, User as UserIcon, Calendar, Package } from "lucide-react";
 import OrderHistory from "@/components/organisms/profile/OrderHistory";
 
 export default function ProfilePage() {
   const { user, loading } = useAppSelector((state) => state.auth);
- const router = useRouter()
+  const router = useRouter()
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
