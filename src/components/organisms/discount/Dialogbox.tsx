@@ -10,7 +10,6 @@ import type { DialogboxProps} from "@/types/discount.types";
 import { useDiscountForm } from "@/hooks/useDiscountForm";
 import { Checkbox } from "@/components/ui/checkbox";
 
-
 export default function Dialogbox({ isOpen, item, onClose, onSuccess, }: Readonly<DialogboxProps>) {
   const formik = useDiscountForm({ initialData: item, onClose,  onSuccess, });
   const renderError = (field: keyof typeof formik.values) =>
@@ -28,12 +27,12 @@ export default function Dialogbox({ isOpen, item, onClose, onSuccess, }: Readonl
               id="active_flag"
               checked={!!formik.values.active_flag}
               onCheckedChange={(checked) => {
-                 formik.setFieldValue("active_flag", checked ? 1 : 0).catch((err : unknown ) => {console.error("Error setting active_flag:", err);});
+                void formik.setFieldValue("active_flag", checked ? 1 : 0).catch((err: unknown) => {
+                    console.error("Error setting active_flag:", err);
+                  });
               }}
             />
-            <label  htmlFor="active_flag" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-              Active
-            </label>
+            <label  htmlFor="active_flag" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Active</label>
           </div>
 
           {/* Discount Name */}
@@ -50,18 +49,14 @@ export default function Dialogbox({ isOpen, item, onClose, onSuccess, }: Readonl
             />
             {renderError("discount_name")}
           </div>
-
-
-          
-
           {/* Discount Type */}
           <div className="flex flex-col gap-1">
             <label htmlFor="discount_type" className="text-sm font-medium text-muted-foreground">Discount Type</label>
             <Select
               value={formik.values.discount_type}
-              onValueChange={ async (value) => {
-                 await formik.setFieldValue("discount_type", value);
-                await formik.setFieldTouched("discount_type", true);
+              onValueChange={(value) => {
+                void formik.setFieldValue("discount_type", value);
+                void formik.setFieldTouched("discount_type", true);
               }}
             >
               <SelectTrigger className="h-9">
@@ -100,12 +95,12 @@ export default function Dialogbox({ isOpen, item, onClose, onSuccess, }: Readonl
               Offer Start Date
             </label>
             <DateInputComponent
-            className=""
+              className=""
               placeholder="Select offer start date"
               value={formik.values.discount_start_date}
-              onChange={async (date) => {
-                 await formik.setFieldValue("discount_start_date", date);
-                 await formik.setFieldTouched("discount_start_date", true);
+              onChange={(date) => {
+                void formik.setFieldValue("discount_start_date", date);
+                void formik.setFieldTouched("discount_start_date", true);
               }}
             />
             {renderError("discount_start_date")}

@@ -1,6 +1,5 @@
 'use client';
 import React from 'react'
-import { Rating, RatingButton } from '@/components/ui/rating';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectGroup, SelectLabel, SelectItem } from '@/components/ui/select';

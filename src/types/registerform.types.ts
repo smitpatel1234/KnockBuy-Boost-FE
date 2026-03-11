@@ -2,7 +2,6 @@ import type { RegisterCredentials } from '@/types/auth.types'
 
 export interface RegisterFormValues extends RegisterCredentials {
   confirmPassword: string
-  agreeToTerms: boolean
 }
 
 export interface RegisterFormProps {

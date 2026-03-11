@@ -77,7 +77,7 @@ export default function OrderDetailsTemplate({
           <Select
             disabled={statusLoading}
             value={order.status.toUpperCase()}
-            onValueChange={handleStatusChange}
+            onValueChange={(value) => void handleStatusChange(value)}
           >
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Update Status" />

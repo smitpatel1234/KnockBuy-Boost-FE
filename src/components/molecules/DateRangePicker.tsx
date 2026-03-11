@@ -94,7 +94,7 @@ export const DateRangePicker: FC<DateRangePickerProps> & { filePath: string } = 
   }
 
   return (
-    <Popover modal={true} open={isOpen} onOpenChange={(open: boolean) => { !open && resetValues(); setIsOpen(open) }}>
+    <Popover modal={true} open={isOpen} onOpenChange={(open: boolean) => { if (!open) resetValues(); setIsOpen(open); }}>
       <PopoverTrigger asChild>
         <Button size={'sm'} variant='outline'>
           <div className="text-right">
@@ -121,7 +121,12 @@ export const DateRangePicker: FC<DateRangePickerProps> & { filePath: string } = 
         </div>
         <div className="flex justify-end gap-2 py-2 pr-4">
           <Button onClick={() => { setIsOpen(false); resetValues() }} variant="ghost">Cancel</Button>
-          <Button onClick={() => { setIsOpen(false); if (!areRangesEqual(range, openedRangeRef.current) || !areRangesEqual(rangeCompare, openedRangeCompareRef.current)) onUpdate?.({ range, rangeCompare }) }}>Update</Button>
+          <Button onClick={() => {
+            setIsOpen(false);
+            if (!areRangesEqual(range, openedRangeRef.current) || !areRangesEqual(rangeCompare, openedRangeCompareRef.current)) {
+              onUpdate?.({ range, rangeCompare });
+            }
+          }}>Update</Button>
         </div>
       </PopoverContent>
     </Popover>

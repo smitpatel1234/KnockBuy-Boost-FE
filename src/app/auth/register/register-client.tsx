@@ -15,7 +15,7 @@ export default function RegisterPageClient() {
     try {
       setIsLoading(true);
       setError(undefined);
-      const { confirmPassword: _confirmPassword, agreeToTerms: _agreeToTerms, ...credentials } = formValues;
+      const { confirmPassword: _confirmPassword, ...credentials } = formValues;
 
       const response = await register(credentials);
       if (response.status !== 200) {
@@ -23,7 +23,6 @@ export default function RegisterPageClient() {
       }
 
       setIsSuccessful(true);
-      alert("Account created successfully! (Mock)");
     } catch (err) {
       setError(
         err instanceof Error

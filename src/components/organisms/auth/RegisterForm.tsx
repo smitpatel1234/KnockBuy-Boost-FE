@@ -24,7 +24,6 @@ export default function RegisterForm({onSubmit,isLoading = false, error, }: Read
         phone_number: "",
         password: "",
         confirmPassword: "",
-        agreeToTerms: false,
       }}
       validationSchema={registerSchema}
       onSubmit={onSubmit}

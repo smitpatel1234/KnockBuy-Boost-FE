@@ -54,11 +54,10 @@ export default function AddressForm( { initialValues, onSubmit, onCancel }:  Rea
                     <Label className="text-xs font-bold text-slate-500 uppercase">Country</Label>
                     <Select
                         value={formik.values.country}
-                        onValueChange={ async (val) => { 
-
-                           await  formik.setFieldValue("country", val);
-                           await formik.setFieldValue("state", "");
-                           await  formik.setFieldValue("city", "");
+                        onValueChange={(val) => {
+                            void formik.setFieldValue("country", val);
+                            void formik.setFieldValue("state", "");
+                            void formik.setFieldValue("city", "");
                         }}
                     >
                         <SelectTrigger className="h-10">
@@ -77,9 +76,9 @@ export default function AddressForm( { initialValues, onSubmit, onCancel }:  Rea
                     <Select
                         disabled={!formik.values.country}
                         value={formik.values.state}
-                        onValueChange={async(val) => {
-                             await formik.setFieldValue("state", val);
-                             await formik.setFieldValue("city", "");
+                        onValueChange={(val) => {
+                            void formik.setFieldValue("state", val);
+                            void formik.setFieldValue("city", "");
                         }}
                     >
                         <SelectTrigger className="h-10">
@@ -98,7 +97,9 @@ export default function AddressForm( { initialValues, onSubmit, onCancel }:  Rea
                     <Select
                         disabled={!formik.values.state}
                         value={formik.values.city}
-                        onValueChange={ async (val) => {  await formik.setFieldValue("city", val); }}
+                        onValueChange={(val) => {
+                            void formik.setFieldValue("city", val);
+                        }}
                     >
                         <SelectTrigger className="h-10">
                             <SelectValue placeholder="Select City" />
