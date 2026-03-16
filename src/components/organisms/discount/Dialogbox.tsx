@@ -6,33 +6,34 @@ import { Button } from "@/components/atoms/Button";
 import { Textarea } from "@/components/ui/textarea";
 import DateInputComponent from "@/components/atoms/DateInput";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue, } from "@/components/ui/select";
-import type { DialogboxProps} from "@/types/discount.types";
+import type { DialogboxProps } from "@/types/discount.types";
 import { useDiscountForm } from "@/hooks/useDiscountForm";
 import { Checkbox } from "@/components/ui/checkbox";
+import DiscountCode from "./DiscountCode";
 
 export default function Dialogbox({ isOpen, item, onClose, onSuccess, }: Readonly<DialogboxProps>) {
-  const formik = useDiscountForm({ initialData: item, onClose,  onSuccess, });
+  const formik = useDiscountForm({ initialData: item, onClose, onSuccess, });
   const renderError = (field: keyof typeof formik.values) =>
     formik.touched[field] && formik.errors[field] ? (
       <p className="text-xs text-red-500">{formik.errors[field]}</p>
     ) : null;
 
   return (
-    <GenericDialog open={isOpen}   title={item ? "Edit Discount" : "Add Discount"}  description={item ? "Update discount details" : "Create a new discount"}  onClose={onClose}>
+    <GenericDialog open={isOpen} title={item ? "Edit Discount" : "Add Discount"} description={item ? "Update discount details" : "Create a new discount"} onClose={onClose}>
       {() => (
         <form onSubmit={(e) => { formik.handleSubmit(e); }} className="flex flex-col gap-6 p-2">
-          {/* Active Flag */}
+
           <div className="flex items-center gap-2">
             <Checkbox
               id="active_flag"
               checked={!!formik.values.active_flag}
               onCheckedChange={(checked) => {
                 void formik.setFieldValue("active_flag", checked ? 1 : 0).catch((err: unknown) => {
-                    console.error("Error setting active_flag:", err);
-                  });
+                  console.error("Error setting active_flag:", err);
+                });
               }}
             />
-            <label  htmlFor="active_flag" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Active</label>
+            <label htmlFor="active_flag" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Active</label>
           </div>
 
           {/* Discount Name */}
@@ -49,7 +50,13 @@ export default function Dialogbox({ isOpen, item, onClose, onSuccess, }: Readonl
             />
             {renderError("discount_name")}
           </div>
-          {/* Discount Type */}
+          <div>
+            <DiscountCode formik={formik} renderError={renderError} />
+          </div>
+
+
+
+
           <div className="flex flex-col gap-1">
             <label htmlFor="discount_type" className="text-sm font-medium text-muted-foreground">Discount Type</label>
             <Select
@@ -73,7 +80,6 @@ export default function Dialogbox({ isOpen, item, onClose, onSuccess, }: Readonl
             {renderError("discount_type")}
           </div>
 
-          {/* Discount Amount */}
           <div className="flex flex-col gap-1">
             <label htmlFor="discount_amount" className="text-sm font-medium text-muted-foreground">
               Discount Value

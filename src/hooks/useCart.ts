@@ -57,7 +57,7 @@ export function useCart() {
 
   const proceedToCheckout = useCallback(() => {
     let url = "/checkout";
-    if (discountData) {
+    if (discountData?.discount_id) {
       url += `?discountId=${discountData.discount_id}`;
     }
     router.push(url);
@@ -72,10 +72,12 @@ export function useCart() {
 
     let discountAmount = 0;
     if (discountData) {
+      const d = discountData.discount_amount ?? 0;
       if (discountData.discount_type === "percentage") {
-        discountAmount = (subtotal * discountData.discount_amount) / 100;
+
+        discountAmount = (subtotal * d) / 100;
       } else {
-        discountAmount = discountData.discount_amount;
+        discountAmount = d;
       }
     }
 

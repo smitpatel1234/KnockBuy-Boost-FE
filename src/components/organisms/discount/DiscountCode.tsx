@@ -4,7 +4,12 @@ import type { JSX } from "react/jsx-dev-runtime";
 import type { Discount } from "@/types/discount.types";
 import type { FormikProps } from "formik";
 
-export default function DiscountCode(formik: FormikProps<Discount> ,renderError: (field: keyof typeof formik.values) => JSX.Element | null) {
+interface DiscountCodeProps {
+  formik: FormikProps<Discount> ;
+  renderError: (field: keyof Discount) => JSX.Element | null;
+}
+
+export default function DiscountCode({ formik, renderError }: DiscountCodeProps) {
       const generateCode = () => {
     const code =
       "DSC" + Math.random().toString(36).substring(2, 8).toUpperCase();
